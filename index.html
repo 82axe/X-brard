@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>미니멀 링크 대시보드</title>
+  <title>나만의 시작 화면</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
@@ -44,15 +44,16 @@
     .wrap{
       max-width:var(--max);
       margin:0 auto;
-      padding:32px 18px 56px;
+      padding:34px 18px 56px;
     }
 
-    /* Header */
+    /* Top */
     .top{
       display:flex;
-      flex-direction:column;
-      gap:12px;
-      margin-bottom:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:16px;
     }
     .brand{min-width:0}
     .brand h1{
@@ -60,12 +61,9 @@
       letter-spacing:-0.02em;
       margin:0 0 6px 0;
       line-height:1.15;
-
-      /* ✅ title not cut */
-      white-space:normal;
-      overflow:visible;
-      text-overflow:clip;
-      word-break:keep-all;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .brand p{
       margin:0;
@@ -73,13 +71,14 @@
       line-height:1.5;
       font-size:14px;
     }
-
-    /* ✅ moved buttons under title */
-    .actions{
+    .right{
       display:flex;
       align-items:center;
       gap:10px;
+      margin-top:4px;
+      flex:0 0 auto;
       flex-wrap:wrap;
+      justify-content:flex-end;
     }
     .btn{
       border:1px solid var(--line);
@@ -101,13 +100,16 @@
       border-color: rgba(239,68,68,.35);
       background: rgba(239,68,68,.08);
     }
+    .btn.ghost{
+      background:transparent;
+    }
 
     /* Search rows */
     .searchRow{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:12px;
-      margin-top:12px;
+      margin-top:14px;
     }
     .search{
       border:1px solid var(--line);
@@ -145,7 +147,7 @@
 
     /* Favorites */
     .favBox{
-      margin-top:14px;
+      margin-top:16px;
       border:1px solid var(--line);
       border-radius:16px;
       background:var(--card);
@@ -252,7 +254,7 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin:16px 0 12px;
+      margin:18px 0 12px;
     }
     .chipbtn{
       border:1px solid var(--line);
@@ -336,6 +338,7 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
+    /* badge moved into left as a chip line (no overlap) */
     .metaRow{
       display:flex;
       gap:8px;
@@ -476,7 +479,6 @@
       .brand h1{font-size:24px;}
       .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
       .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
-      .actions{gap:8px;}
     }
   </style>
 </head>
@@ -489,16 +491,18 @@
         <p>무회원 · 무수집 · 개인화는 브라우저에만 저장됩니다. (공유는 URL로만 전달)</p>
       </div>
 
-      <!-- ✅ moved here (under title) -->
-      <div class="actions">
+      <div class="right">
         <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
         <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
+
+        <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크</button>
         <button class="btn" id="exportBtn" type="button">내보내기</button>
         <button class="btn" id="importBtn" type="button">가져오기</button>
-        <button class="btn danger" id="wipeBtn" type="button">개인화 초기화</button>
-        <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
+
         <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
-        <button class="btn" type="button" id="resetBtn">초기화</button>
+        <button class="btn danger" id="wipeBtn" type="button">개인화 초기화</button>
+
+        <button class="btn ghost" type="button" id="resetBtn">초기화</button>
       </div>
     </div>
 
@@ -518,7 +522,7 @@
     </div>
 
     <div class="hint">
-      • ⭐: 즐겨찾기(카테고리별 최대 5) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달(압축)
+      • ⭐: 즐겨찾기(카테고리별 최대 5) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달
     </div>
 
     <!-- Favorites -->
@@ -594,12 +598,12 @@
 
           <div class="field">
             <label>이름</label>
-            <input id="fTitle" placeholder="예: 내 서비스" />
+            <input id="fTitle" placeholder="예: 키워드채팅" />
           </div>
 
           <div class="field">
             <label>설명</label>
-            <input id="fSub" placeholder="예: 메모" />
+            <input id="fSub" placeholder="예: 내 프로젝트" />
           </div>
 
           <div class="field">
@@ -677,328 +681,28 @@
       return map[cat] || cat;
     }
 
-    // ---------------------------
-    // URL-safe compression (LZ-based)
-    // compressToEncodedURIComponent / decompressFromEncodedURIComponent
-    // ---------------------------
-    const _keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
-    function _getBaseValue(alphabet, character) { return alphabet.indexOf(character); }
-    function compressToEncodedURIComponent(input) {
-      if (input == null) return "";
-      return _compress(input, 6, (a) => _keyStrUriSafe.charAt(a));
+    // base64url (UTF-8 safe)
+    function toBase64Url(str){
+      const bytes = new TextEncoder().encode(str);
+      let bin = '';
+      bytes.forEach(b => bin += String.fromCharCode(b));
+      const b64 = btoa(bin);
+      return b64.replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
     }
-    function decompressFromEncodedURIComponent(input) {
-      if (input == null) return "";
-      if (input === "") return null;
-      return _decompress(input.length, 32, (index) => _getBaseValue(_keyStrUriSafe, input.charAt(index)));
-    }
-    function _compress(uncompressed, bitsPerChar, getCharFromInt) {
-      if (uncompressed == null) return "";
-      let i, value;
-      const context_dictionary = {};
-      const context_dictionaryToCreate = {};
-      let context_c = "";
-      let context_wc = "";
-      let context_w = "";
-      let context_enlargeIn = 2;
-      let context_dictSize = 3;
-      let context_numBits = 2;
-      const context_data = [];
-      let context_data_val = 0;
-      let context_data_position = 0;
-
-      for (let ii = 0; ii < uncompressed.length; ii += 1) {
-        context_c = uncompressed.charAt(ii);
-        if (!Object.prototype.hasOwnProperty.call(context_dictionary, context_c)) {
-          context_dictionary[context_c] = context_dictSize++;
-          context_dictionaryToCreate[context_c] = true;
-        }
-
-        context_wc = context_w + context_c;
-        if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
-          context_w = context_wc;
-        } else {
-          if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
-            if (context_w.charCodeAt(0) < 256) {
-              for (i = 0; i < context_numBits; i++) {
-                context_data_val = (context_data_val << 1);
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-              }
-              value = context_w.charCodeAt(0);
-              for (i = 0; i < 8; i++) {
-                context_data_val = (context_data_val << 1) | (value & 1);
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-                value = value >> 1;
-              }
-            } else {
-              value = 1;
-              for (i = 0; i < context_numBits; i++) {
-                context_data_val = (context_data_val << 1) | value;
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-                value = 0;
-              }
-              value = context_w.charCodeAt(0);
-              for (i = 0; i < 16; i++) {
-                context_data_val = (context_data_val << 1) | (value & 1);
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-                value = value >> 1;
-              }
-            }
-            context_enlargeIn--;
-            if (context_enlargeIn == 0) {
-              context_enlargeIn = Math.pow(2, context_numBits);
-              context_numBits++;
-            }
-            delete context_dictionaryToCreate[context_w];
-          } else {
-            value = context_dictionary[context_w];
-            for (i = 0; i < context_numBits; i++) {
-              context_data_val = (context_data_val << 1) | (value & 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = value >> 1;
-            }
-          }
-          context_enlargeIn--;
-          if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
-            context_numBits++;
-          }
-          context_dictionary[context_wc] = context_dictSize++;
-          context_w = String(context_c);
-        }
-      }
-
-      if (context_w !== "") {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
-          if (context_w.charCodeAt(0) < 256) {
-            for (i = 0; i < context_numBits; i++) {
-              context_data_val = (context_data_val << 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-            }
-            value = context_w.charCodeAt(0);
-            for (i = 0; i < 8; i++) {
-              context_data_val = (context_data_val << 1) | (value & 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = value >> 1;
-            }
-          } else {
-            value = 1;
-            for (i = 0; i < context_numBits; i++) {
-              context_data_val = (context_data_val << 1) | value;
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = 0;
-            }
-            value = context_w.charCodeAt(0);
-            for (i = 0; i < 16; i++) {
-              context_data_val = (context_data_val << 1) | (value & 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = value >> 1;
-            }
-          }
-          context_enlargeIn--;
-          if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
-            context_numBits++;
-          }
-          delete context_dictionaryToCreate[context_w];
-        } else {
-          value = context_dictionary[context_w];
-          for (i = 0; i < context_numBits; i++) {
-            context_data_val = (context_data_val << 1) | (value & 1);
-            if (context_data_position == bitsPerChar - 1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else context_data_position++;
-            value = value >> 1;
-          }
-        }
-        context_enlargeIn--;
-        if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
-          context_numBits++;
-        }
-      }
-
-      value = 2;
-      for (i = 0; i < context_numBits; i++) {
-        context_data_val = (context_data_val << 1) | (value & 1);
-        if (context_data_position == bitsPerChar - 1) {
-          context_data_position = 0;
-          context_data.push(getCharFromInt(context_data_val));
-          context_data_val = 0;
-        } else context_data_position++;
-        value = value >> 1;
-      }
-
-      while (true) {
-        context_data_val = (context_data_val << 1);
-        if (context_data_position == bitsPerChar - 1) {
-          context_data.push(getCharFromInt(context_data_val));
-          break;
-        } else context_data_position++;
-      }
-      return context_data.join("");
-    }
-
-    function _decompress(length, resetValue, getNextValue) {
-      const dictionary = [];
-      let next;
-      let enlargeIn = 4;
-      let dictSize = 4;
-      let numBits = 3;
-      let entry = "";
-      const result = [];
-      let i;
-      let w;
-      let bits, resb, maxpower, power;
-      let c;
-      const data = { val: getNextValue(0), position: resetValue, index: 1 };
-
-      for (i = 0; i < 3; i += 1) dictionary[i] = i;
-
-      bits = 0; maxpower = Math.pow(2, 2); power = 1;
-      while (power != maxpower) {
-        resb = data.val & data.position;
-        data.position >>= 1;
-        if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-        bits |= (resb > 0 ? 1 : 0) * power;
-        power <<= 1;
-      }
-
-      switch (next = bits) {
-        case 0:
-          bits = 0; maxpower = Math.pow(2, 8); power = 1;
-          while (power != maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-            bits |= (resb > 0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-          c = String.fromCharCode(bits);
-          break;
-        case 1:
-          bits = 0; maxpower = Math.pow(2, 16); power = 1;
-          while (power != maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-            bits |= (resb > 0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-          c = String.fromCharCode(bits);
-          break;
-        case 2:
-          return "";
-      }
-
-      dictionary[3] = c;
-      w = c;
-      result.push(c);
-
-      while (true) {
-        if (data.index > length) return "";
-
-        bits = 0; maxpower = Math.pow(2, numBits); power = 1;
-        while (power != maxpower) {
-          resb = data.val & data.position;
-          data.position >>= 1;
-          if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-          bits |= (resb > 0 ? 1 : 0) * power;
-          power <<= 1;
-        }
-
-        switch (c = bits) {
-          case 0:
-            bits = 0; maxpower = Math.pow(2, 8); power = 1;
-            while (power != maxpower) {
-              resb = data.val & data.position;
-              data.position >>= 1;
-              if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-              bits |= (resb > 0 ? 1 : 0) * power;
-              power <<= 1;
-            }
-            dictionary[dictSize++] = String.fromCharCode(bits);
-            c = dictSize - 1;
-            enlargeIn--;
-            break;
-          case 1:
-            bits = 0; maxpower = Math.pow(2, 16); power = 1;
-            while (power != maxpower) {
-              resb = data.val & data.position;
-              data.position >>= 1;
-              if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-              bits |= (resb > 0 ? 1 : 0) * power;
-              power <<= 1;
-            }
-            dictionary[dictSize++] = String.fromCharCode(bits);
-            c = dictSize - 1;
-            enlargeIn--;
-            break;
-          case 2:
-            return result.join("");
-        }
-
-        if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
-
-        if (dictionary[c]) entry = dictionary[c];
-        else {
-          if (c === dictSize) entry = w + w.charAt(0);
-          else return null;
-        }
-        result.push(entry);
-
-        dictionary[dictSize++] = w + entry.charAt(0);
-        enlargeIn--;
-        w = entry;
-
-        if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
-      }
+    function fromBase64Url(b64url){
+      let b64 = b64url.replaceAll('-','+').replaceAll('_','/');
+      while(b64.length % 4) b64 += '=';
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder().decode(bytes);
     }
 
     // ---------------------------
     // Base links (추천)
-    // (✅ keyword-chatting removed)
     // ---------------------------
     const BASE = [
-      // comm (10)
+      // comm
       {id:'b_comm_1',cat:'comm',title:'Telegram Web',sub:'메신저',href:'https://web.telegram.org',badge:'COMM'},
       {id:'b_comm_2',cat:'comm',title:'Discord',sub:'커뮤니티/채팅',href:'https://discord.com/app',badge:'COMM'},
       {id:'b_comm_3',cat:'comm',title:'Slack',sub:'업무 메신저',href:'https://slack.com/signin',badge:'COMM'},
@@ -1008,9 +712,9 @@
       {id:'b_comm_7',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'COMM'},
       {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털',href:'https://www.naver.com',badge:'COMM'},
       {id:'b_comm_9',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'COMM'},
-      {id:'b_comm_10',cat:'comm',title:'Facebook Messages',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
+      {id:'b_comm_10',cat:'comm',title:'Messenger',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
 
-      // prod (10)
+      // prod
       {id:'b_prod_1',cat:'prod',title:'Notion',sub:'문서 · 위키',href:'https://www.notion.so',badge:'PROD'},
       {id:'b_prod_2',cat:'prod',title:'Google Docs',sub:'문서',href:'https://docs.google.com',badge:'PROD'},
       {id:'b_prod_3',cat:'prod',title:'Google Sheets',sub:'스프레드시트',href:'https://sheets.google.com',badge:'PROD'},
@@ -1022,7 +726,7 @@
       {id:'b_prod_9',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'PROD'},
       {id:'b_prod_10',cat:'prod',title:'Canva',sub:'템플릿',href:'https://www.canva.com',badge:'PROD'},
 
-      // media (10)
+      // media
       {id:'b_media_1',cat:'media',title:'YouTube',sub:'동영상',href:'https://www.youtube.com',badge:'MEDIA'},
       {id:'b_media_2',cat:'media',title:'YouTube Music',sub:'음악',href:'https://music.youtube.com',badge:'MEDIA'},
       {id:'b_media_3',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'MEDIA'},
@@ -1034,7 +738,7 @@
       {id:'b_media_9',cat:'media',title:'Twitch',sub:'라이브',href:'https://www.twitch.tv',badge:'MEDIA'},
       {id:'b_media_10',cat:'media',title:'Disney+',sub:'스트리밍',href:'https://www.disneyplus.com',badge:'MEDIA'},
 
-      // finance (10)
+      // finance
       {id:'b_fin_1',cat:'finance',title:'Naver Finance',sub:'국내 시세',href:'https://finance.naver.com',badge:'FIN'},
       {id:'b_fin_2',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'FIN'},
       {id:'b_fin_3',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'FIN'},
@@ -1046,7 +750,7 @@
       {id:'b_fin_9',cat:'finance',title:'Toss',sub:'금융',href:'https://www.toss.im',badge:'FIN'},
       {id:'b_fin_10',cat:'finance',title:'KakaoBank',sub:'은행',href:'https://www.kakaobank.com',badge:'FIN'},
 
-      // ai (10)
+      // ai
       {id:'b_ai_1',cat:'ai',title:'ChatGPT',sub:'대화형 AI',href:'https://chat.openai.com',badge:'AI'},
       {id:'b_ai_2',cat:'ai',title:'Claude',sub:'대화형 AI',href:'https://claude.ai',badge:'AI'},
       {id:'b_ai_3',cat:'ai',title:'Gemini',sub:'구글 AI',href:'https://gemini.google.com',badge:'AI'},
@@ -1058,7 +762,7 @@
       {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지',href:'https://www.midjourney.com',badge:'AI'},
       {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인',href:'https://recraft.ai',badge:'AI'},
 
-      // news (10)
+      // news
       {id:'b_news_1',cat:'news',title:'Naver News',sub:'뉴스',href:'https://news.naver.com',badge:'NEWS'},
       {id:'b_news_2',cat:'news',title:'Google News',sub:'뉴스',href:'https://news.google.com',badge:'NEWS'},
       {id:'b_news_3',cat:'news',title:'Bloomberg',sub:'금융뉴스',href:'https://www.bloomberg.com',badge:'NEWS'},
@@ -1070,7 +774,7 @@
       {id:'b_news_9',cat:'news',title:'The Information',sub:'리서치',href:'https://www.theinformation.com',badge:'NEWS'},
       {id:'b_news_10',cat:'news',title:'NYTimes',sub:'뉴스',href:'https://www.nytimes.com',badge:'NEWS'},
 
-      // shop (10)
+      // shop
       {id:'b_shop_1',cat:'shop',title:'Coupang',sub:'쇼핑',href:'https://www.coupang.com',badge:'SHOP'},
       {id:'b_shop_2',cat:'shop',title:'Naver Shopping',sub:'가격비교',href:'https://shopping.naver.com',badge:'SHOP'},
       {id:'b_shop_3',cat:'shop',title:'11st',sub:'쇼핑',href:'https://www.11st.co.kr',badge:'SHOP'},
@@ -1082,7 +786,7 @@
       {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외',href:'https://www.aliexpress.com',badge:'SHOP'},
       {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외',href:'https://www.temu.com',badge:'SHOP'},
 
-      // community (10) - ✅ removed 키워드채팅
+      // community
       {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'COMM'},
       {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'COMM'},
       {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'COMM'},
@@ -1092,9 +796,9 @@
       {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
       {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌',href:'https://www.reddit.com',badge:'COMM'},
       {id:'b_comu_9',cat:'community',title:'Quora',sub:'Q&A',href:'https://www.quora.com',badge:'COMM'},
-      {id:'b_comu_10',cat:'community',title:'Namu Wiki',sub:'위키',href:'https://namu.wiki',badge:'COMM'},
+      {id:'b_comu_10',cat:'community',title:'키워드채팅',sub:'내 프로젝트 (URL 교체)',href:'https://example.com/keyword-chatting',badge:'ME'},
 
-      // dev (10)
+      // dev
       {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드',href:'https://github.com',badge:'DEV'},
       {id:'b_dev_2',cat:'dev',title:'Vercel',sub:'배포',href:'https://vercel.com',badge:'DEV'},
       {id:'b_dev_3',cat:'dev',title:'Netlify',sub:'배포',href:'https://www.netlify.com',badge:'DEV'},
@@ -1106,7 +810,7 @@
       {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'CDN',href:'https://cloudflare.com',badge:'DEV'},
       {id:'b_dev_10',cat:'dev',title:'Supabase',sub:'DB/Auth',href:'https://supabase.com',badge:'DEV'},
 
-      // util (10)
+      // util
       {id:'b_util_1',cat:'util',title:'Google Translate',sub:'번역',href:'https://translate.google.com',badge:'UTIL'},
       {id:'b_util_2',cat:'util',title:'Google Keep',sub:'메모',href:'https://keep.google.com',badge:'UTIL'},
       {id:'b_util_3',cat:'util',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'UTIL'},
@@ -1372,7 +1076,7 @@
     }
 
     // ---------------------------
-    // Render grid
+    // Render grid (✅ fixed layout)
     // ---------------------------
     function renderGrid(){
       const items = getItemsForCat(currentCat);
@@ -1511,14 +1215,20 @@
     }
 
     // ---------------------------
-    // URL state
+    // URL
     // ---------------------------
-    function updateUrlStateOnly(){
+    function updateUrl(){
+      const params = new URLSearchParams();
+      if(currentCat !== 'all') params.set('cat', currentCat);
+      const base = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+      const hash = location.hash || '';
+      history.replaceState(null, '', base + hash);
+    }
+    function readUrl(){
       const params = new URLSearchParams(location.search);
-      if(currentCat === 'all') params.delete('cat');
-      else params.set('cat', currentCat);
-      const base = location.pathname + (params.toString() ? '?' + params.toString() : '');
-      history.replaceState(null,'', base + (location.hash || ''));
+      const cat = params.get('cat') || 'all';
+      const exists = chips.some(c => c.dataset.cat === cat);
+      setActiveChip(exists ? cat : 'all');
     }
 
     // ---------------------------
@@ -1528,7 +1238,7 @@
       chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
       currentCat = cat;
       favScope.textContent = chipLabel(cat);
-      updateUrlStateOnly();
+      updateUrl();
       renderGrid();
       renderFav();
     }
@@ -1551,10 +1261,10 @@
     });
 
     wipeBtn.addEventListener('click', () => {
-      if(!confirm('개인화(즐겨찾기/정렬/내 링크)를 전부 초기화할까요?')) return;
       localStorage.removeItem(FAV_KEY);
       localStorage.removeItem(ORDER_KEY);
       localStorage.removeItem(CUSTOM_KEY);
+      // also clear share hash
       history.replaceState(null,'', location.pathname + location.search);
       renderGrid(); renderFav(); syncStars();
     });
@@ -1653,20 +1363,22 @@
     importCancelBtn.addEventListener('click', () => closeModal());
 
     // ---------------------------
-    // Share link (✅ compressed)
+    // Share link (serverless, URL hash)
     // ---------------------------
     shareBtn.addEventListener('click', async () => {
       const payload = buildPersonalizationPayload();
       const json = JSON.stringify(payload);
-      const packed = compressToEncodedURIComponent(json);
+      const packed = toBase64Url(json);
 
+      // current URL without existing hash
       const base = location.origin + location.pathname + location.search;
       const shareUrl = base + '#p=' + packed;
 
       try{
         await navigator.clipboard.writeText(shareUrl);
-        alert('공유 링크(압축)가 클립보드에 복사되었습니다.');
+        alert('공유 링크가 클립보드에 복사되었습니다.');
       }catch{
+        // fallback: prompt
         prompt('공유 링크를 복사하세요:', shareUrl);
       }
     });
@@ -1678,12 +1390,20 @@
       const packed = hash.slice(3);
       if(!packed) return;
 
-      const json = decompressFromEncodedURIComponent(packed);
-      if (json == null) { alert('공유 링크 해석 실패(손상됨).'); return; }
+      let json;
+      try{
+        json = fromBase64Url(packed);
+      }catch{
+        alert('공유 링크 해석 실패(손상됨).');
+        return;
+      }
 
       let obj;
       try{ obj = JSON.parse(json); }
-      catch{ alert('공유 데이터 JSON 파싱 실패'); return; }
+      catch{
+        alert('공유 데이터 JSON 파싱 실패');
+        return;
+      }
 
       const ok = confirm('공유 링크의 개인화를 이 브라우저에 적용할까요? (기존 개인화는 덮어쓰기)');
       if(!ok) return;
@@ -1694,6 +1414,7 @@
         return;
       }
 
+      // remove hash after applying
       history.replaceState(null,'', location.pathname + location.search);
       renderGrid(); renderFav(); syncStars();
       alert('적용 완료');
@@ -1801,13 +1522,38 @@
     // ---------------------------
     async function registerSW(){
       if(!('serviceWorker' in navigator)) return;
-      try{ await navigator.serviceWorker.register('./sw.js'); } catch {}
+      try{
+        await navigator.serviceWorker.register('./sw.js');
+      }catch(e){
+        // fail silently
+      }
+    }
+
+    // ---------------------------
+    // URL state
+    // ---------------------------
+    function updateUrlStateOnly(){
+      const params = new URLSearchParams(location.search);
+      if(currentCat === 'all') params.delete('cat');
+      else params.set('cat', currentCat);
+      const base = location.pathname + (params.toString() ? '?' + params.toString() : '');
+      history.replaceState(null,'', base + (location.hash || ''));
+    }
+
+    function setActiveChip(cat){
+      chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
+      currentCat = cat;
+      favScope.textContent = chipLabel(cat);
+      updateUrlStateOnly();
+      renderGrid();
+      renderFav();
     }
 
     // ---------------------------
     // Init
     // ---------------------------
     function initChips(){
+      chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
       const params = new URLSearchParams(location.search);
       const cat = params.get('cat') || 'all';
       const exists = chips.some(c => c.dataset.cat === cat);
@@ -1823,11 +1569,12 @@
       }
     });
 
+    // boot
     registerSW();
     initChips();
     renderFav();
     renderGrid();
-    tryApplyFromHash();
+    tryApplyFromHash(); // if opened via share link
   </script>
 </body>
 </html>
