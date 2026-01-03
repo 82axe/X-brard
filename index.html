@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,12 +10,13 @@
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
-  <!-- Minimal white brand favicon (SVG data URI) -->
   <link rel="icon" type="image/svg+xml"
     href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="128" height="128"%3E%3Crect width="128" height="128" rx="28" fill="%23ffffff"/%3E%3Cpath d="M36 40h56v10H36zM36 59h40v10H36zM36 78h56v10H36z" fill="%23111827"/%3E%3C/svg%3E' />
 
   <style>
+    /* =========================
+       THEME (Light / Dark)
+       ========================= */
     :root{
       --bg:#ffffff;
       --text:#111827;
@@ -26,11 +27,29 @@
       --chip:#f3f4f6;
       --shadow: 0 10px 30px rgba(17,24,39,.06);
       --radius:16px;
-      --max:1100px;
+      --max:1160px;
 
       --warn:#ef4444;
       --gold:#f59e0b;
       --ok:#10b981;
+
+      /* Search brand accents */
+      --naver:#03C75A;       /* Naver trademark green */
+      --googleBlue:#4285F4;  /* Google trademark colors */
+      --googleRed:#EA4335;
+      --googleYellow:#FBBC05;
+      --googleGreen:#34A853;
+    }
+
+    html[data-theme="dark"]{
+      --bg:#0b0f19;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#1f2937;
+      --card:#0f1627;
+      --hover:#121c31;
+      --chip:#111b30;
+      --shadow: 0 12px 32px rgba(0,0,0,.35);
     }
 
     *{box-sizing:border-box}
@@ -41,30 +60,30 @@
       background:var(--bg);
       color:var(--text);
     }
+
     .wrap{
       max-width:var(--max);
       margin:0 auto;
-      padding:32px 18px 56px;
+      padding:28px 18px 56px;
     }
 
-    /* Header */
+    /* =========================
+       HEADER
+       ========================= */
     .top{
       display:flex;
       flex-direction:column;
       gap:12px;
-      margin-bottom:14px;
+      margin-bottom:12px;
     }
-    .brand{min-width:0}
+
     .brand h1{
       font-size:30px;
       letter-spacing:-0.02em;
       margin:0 0 6px 0;
       line-height:1.15;
-
-      /* ✅ title not cut */
       white-space:normal;
       overflow:visible;
-      text-overflow:clip;
       word-break:keep-all;
     }
     .brand p{
@@ -74,13 +93,14 @@
       font-size:14px;
     }
 
-    /* ✅ moved buttons under title */
+    /* Actions row */
     .actions{
       display:flex;
       align-items:center;
       gap:10px;
       flex-wrap:wrap;
     }
+
     .btn{
       border:1px solid var(--line);
       background:var(--card);
@@ -99,10 +119,157 @@
     }
     .btn.danger{
       border-color: rgba(239,68,68,.35);
-      background: rgba(239,68,68,.08);
+      background: rgba(239,68,68,.10);
     }
 
-    /* Search rows */
+    /* ✅ theme toggle (BLACK/WHITE) */
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-left:auto;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:var(--card);
+      user-select:none;
+      cursor:pointer;
+      font-weight:950;
+      font-size:12px;
+      color:var(--text);
+    }
+    .toggle:hover{background:var(--hover);}
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--text);
+      opacity:.85;
+    }
+
+    /* =========================
+       TOP UTIL ROW (Weather + Calendar + Clock)
+       ========================= */
+    .utilRow{
+      display:grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--card);
+      box-shadow:var(--shadow);
+      padding:14px;
+      min-width:0;
+    }
+    .panelTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .panelTitle{
+      font-weight:980;
+      letter-spacing:-0.01em;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .panelSub{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:850;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+
+    .clock{
+      font-weight:980;
+      letter-spacing:-0.01em;
+      font-variant-numeric: tabular-nums;
+      white-space:nowrap;
+    }
+
+    .weatherMain{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .wxTemp{
+      font-weight:980;
+      font-size:28px;
+      letter-spacing:-0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .wxMeta{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+    .wxBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--line);
+      background:var(--chip);
+      padding:8px 10px;
+      border-radius:12px;
+      font-weight:900;
+      font-size:12px;
+      color:var(--text);
+      white-space:nowrap;
+    }
+
+    /* Small calendar */
+    .calGrid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:6px;
+      margin-top:10px;
+    }
+    .calHead{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      padding:4px 0;
+    }
+    .calCell{
+      border:1px solid var(--line);
+      background:var(--bg);
+      border-radius:10px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:12px;
+      color:var(--text);
+      opacity:.95;
+      font-variant-numeric: tabular-nums;
+      position:relative;
+    }
+    .calCell.muted{
+      opacity:.35;
+    }
+    .calCell.today::after{
+      content:"";
+      position:absolute;
+      width:22px;height:22px;
+      border-radius:999px;
+      border:2px solid rgba(16,185,129,.8);
+      pointer-events:none;
+    }
+
+    /* =========================
+       SEARCH
+       ========================= */
     .searchRow{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -118,14 +285,7 @@
       align-items:center;
       background:var(--card);
       box-shadow: var(--shadow);
-    }
-    .search .icon{
-      width:36px;height:36px;border-radius:12px;
-      background:var(--chip);
-      display:flex;align-items:center;justify-content:center;
-      color:var(--muted);
-      font-weight:950;
-      flex:0 0 auto;
+      min-width:0;
     }
     .search input{
       border:0;
@@ -136,6 +296,63 @@
       color:var(--text);
     }
 
+    /* Naver trademark feel */
+    .search.naver{
+      border-color: color-mix(in srgb, var(--naver) 35%, var(--line));
+      box-shadow: 0 10px 30px rgba(3,199,90,.10);
+    }
+    .search.naver .icon{
+      background: color-mix(in srgb, var(--naver) 18%, var(--chip));
+      border:1px solid color-mix(in srgb, var(--naver) 28%, var(--line));
+      color: color-mix(in srgb, var(--naver) 75%, var(--text));
+    }
+    .search.naver .btn.searchBtn{
+      border-color: color-mix(in srgb, var(--naver) 35%, var(--line));
+      background: color-mix(in srgb, var(--naver) 12%, var(--card));
+    }
+
+    /* Google trademark feel (subtle multi-color ring) */
+    .search.google{
+      position:relative;
+      border:1px solid var(--line);
+    }
+    .search.google::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius:14px;
+      padding:1px;
+      background: conic-gradient(
+        from 200deg,
+        var(--googleBlue),
+        var(--googleRed),
+        var(--googleYellow),
+        var(--googleGreen),
+        var(--googleBlue)
+      );
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events:none;
+      opacity:.55;
+    }
+    .search.google .icon{
+      background: color-mix(in srgb, var(--googleBlue) 10%, var(--chip));
+      border:1px solid color-mix(in srgb, var(--googleBlue) 22%, var(--line));
+      color: color-mix(in srgb, var(--googleBlue) 70%, var(--text));
+    }
+    .search.google .btn.searchBtn{
+      background: var(--chip);
+      border-color: var(--line);
+    }
+
+    .search .icon{
+      width:36px;height:36px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:950;
+      flex:0 0 auto;
+    }
+
     .hint{
       color:var(--muted);
       font-size:12px;
@@ -143,29 +360,74 @@
       line-height:1.5;
     }
 
-    /* Favorites */
-    .favBox{
-      margin-top:14px;
+    /* =========================
+       CATEGORIES + RIGHT FAVORITES
+       ========================= */
+    .bar{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin:16px 0 12px;
+    }
+    .cats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:0;
+      flex: 1 1 auto;
+      min-width:0;
+    }
+    .chipbtn{
+      border:1px solid var(--line);
+      background:var(--chip);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:950;
+      color:var(--text);
+      cursor:pointer;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .chipbtn:hover{background:var(--hover);}
+    .chipbtn.active{
+      background:var(--text);
+      color:var(--bg);
+      border-color:var(--text);
+    }
+    .count{
+      font-size:12px;
+      font-weight:950;
+      opacity:.75;
+    }
+
+    /* ✅ favorites on the right (compact) */
+    .favRight{
+      flex:0 0 330px;
+      max-width:330px;
       border:1px solid var(--line);
       border-radius:16px;
       background:var(--card);
       box-shadow: var(--shadow);
-      padding:14px;
+      padding:12px;
     }
     .favTop{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      margin-bottom:10px;
       flex-wrap:wrap;
+      margin-bottom:8px;
     }
     .favTitle{
-      font-weight:950;
+      font-weight:980;
       letter-spacing:-0.01em;
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:8px;
       min-width:0;
     }
     .pill{
@@ -181,24 +443,24 @@
     .favHelp{
       color:var(--muted);
       font-size:12px;
-      line-height:1.4;
+      line-height:1.35;
     }
-    .favGrid{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap:10px;
-      margin-top:10px;
+    .favList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:8px;
     }
     .favItem{
       border:1px solid var(--line);
       border-radius:14px;
-      padding:12px 12px;
-      background:var(--card);
+      padding:10px 10px;
+      background:var(--bg);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      min-height:54px;
+      min-height:48px;
     }
     .favItem[draggable="true"]{cursor:grab;}
     .favItem.dragging{opacity:.55;}
@@ -224,14 +486,14 @@
     }
     .favMeta{
       color:var(--muted);
-      font-size:12px;
+      font-size:11px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
       max-width:100%;
     }
     .iconBtn{
-      width:34px;height:34px;
+      width:32px;height:32px;
       border-radius:12px;
       border:1px solid var(--line);
       background:var(--chip);
@@ -247,51 +509,18 @@
     .iconBtn:hover{background:var(--hover);}
     .iconBtn.danger{color:var(--warn);}
 
-    /* Categories */
-    .cats{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin:16px 0 12px;
-    }
-    .chipbtn{
-      border:1px solid var(--line);
-      background:var(--chip);
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:950;
-      color:var(--text);
-      cursor:pointer;
-      user-select:none;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .chipbtn:hover{background:var(--hover);}
-    .chipbtn.active{
-      background:var(--text);
-      color:var(--bg);
-      border-color:var(--text);
-    }
-    .count{
-      font-size:12px;
-      font-weight:950;
-      opacity:.75;
-    }
-
-    /* Grid cards */
+    /* =========================
+       GRID CARDS
+       ========================= */
     .grid{
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap:14px;
       margin-top:12px;
     }
-
-    /* ✅ FIX: no absolute UI, use grid columns */
     .card{
       display:grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: auto 1fr auto auto;
       align-items:center;
       gap:10px;
       padding:16px;
@@ -303,17 +532,40 @@
       transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
       min-height:86px;
       box-shadow: 0 0 0 rgba(0,0,0,0);
+      min-width:0;
     }
     .card:hover{
       background:var(--hover);
       transform: translateY(-1px);
-      box-shadow: 0 14px 28px rgba(17,24,39,.08);
+      box-shadow: 0 14px 28px rgba(17,24,39,.10);
     }
     .card[draggable="true"]{cursor:grab;}
     .card.dragging{opacity:.55; transform:none;}
     .card.dragover{
       outline: 2px dashed rgba(16,185,129,.65);
       outline-offset: 2px;
+    }
+
+    /* ✅ badge on LEFT, 1-cell size */
+    .badgeIcon{
+      width:34px;height:34px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--chip);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:980;
+      font-size:14px;
+      color:var(--text);
+      flex:0 0 auto;
+      user-select:none;
+    }
+    .badgeIcon img{
+      width:18px;height:18px;
+      object-fit:contain;
+      display:block;
+      border-radius:4px;
     }
 
     .left{
@@ -336,30 +588,9 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .metaRow{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      min-width:0;
-    }
-    .badge{
-      flex:0 0 auto;
-      font-size:12px;
-      font-weight:950;
-      color:var(--text);
-      background:var(--chip);
-      border:1px solid var(--line);
-      padding:6px 10px;
-      border-radius:999px;
-      max-width: 100%;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
 
     .star,
     .menu{
-      position:static;
       width:34px;height:34px;
       border-radius:12px;
       border:1px solid var(--line);
@@ -371,6 +602,7 @@
       font-weight:980;
       user-select:none;
       color:var(--muted);
+      flex:0 0 auto;
     }
     .star:hover,.menu:hover{background:var(--hover);}
     .star.on{
@@ -379,7 +611,18 @@
     }
     .menu.hidden{display:none;}
 
-    /* Modal */
+    footer{
+      margin-top:34px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    /* =========================
+       MODAL
+       ========================= */
     .modalBack{
       position:fixed;
       inset:0;
@@ -459,23 +702,18 @@
       margin-top:8px;
     }
 
-    footer{
-      margin-top:34px;
-      padding-top:18px;
-      border-top:1px solid var(--line);
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.7;
+    @media (max-width:980px){
+      .bar{flex-direction:column;}
+      .favRight{flex:1 1 auto; max-width:none;}
     }
-
     @media (max-width:820px){
+      .utilRow{grid-template-columns:1fr;}
       .searchRow{grid-template-columns:1fr;}
       .row2{grid-template-columns:1fr;}
     }
     @media (max-width:520px){
       .brand h1{font-size:24px;}
       .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
-      .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
       .actions{gap:8px;}
     }
   </style>
@@ -489,7 +727,6 @@
         <p>무회원 · 무수집 · 개인화는 브라우저에만 저장됩니다. (공유는 URL로만 전달)</p>
       </div>
 
-      <!-- ✅ moved here (under title) -->
       <div class="actions">
         <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
         <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
@@ -499,21 +736,51 @@
         <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
         <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
         <button class="btn" type="button" id="resetBtn">초기화</button>
+
+        <!-- ✅ keep black/white toggle -->
+        <div class="toggle" id="themeToggle" title="블랙/화이트 전환">
+          <span class="dot"></span>
+          <span id="themeLabel">WHITE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weather + Calendar + Clock -->
+    <div class="utilRow">
+      <div class="panel">
+        <div class="panelTop">
+          <div class="panelTitle">날씨</div>
+          <div class="panelSub" id="wxPlace">위치 확인 중…</div>
+        </div>
+        <div class="weatherMain">
+          <div class="wxTemp" id="wxTemp">--°</div>
+          <div class="wxMeta" id="wxMeta">로딩 중…</div>
+          <div class="wxBadge" id="wxBadge">—</div>
+        </div>
+        <div class="small" id="wxSmall">브라우저 위치 허용 시 현재 위치 기준. 불가하면 서울 기준.</div>
+      </div>
+
+      <div class="panel">
+        <div class="panelTop">
+          <div class="panelTitle" id="calTitle">캘린더</div>
+          <div class="clock" id="clock">--:--:--</div>
+        </div>
+        <div class="calGrid" id="calGrid"></div>
       </div>
     </div>
 
     <!-- Two search bars -->
     <div class="searchRow">
-      <div class="search" title="네이버 검색 (Enter)">
+      <div class="search naver" title="네이버 검색 (Enter)">
         <div class="icon">N</div>
         <input id="naverQ" placeholder="네이버 검색 (Enter)" autocomplete="off" />
-        <button class="btn" type="button" id="naverGo">검색</button>
+        <button class="btn searchBtn" type="button" id="naverGo">검색</button>
       </div>
 
-      <div class="search" title="구글 검색 (Enter)">
+      <div class="search google" title="구글 검색 (Enter)">
         <div class="icon">G</div>
         <input id="googleQ" placeholder="구글 검색 (Enter)" autocomplete="off" />
-        <button class="btn" type="button" id="googleGo">검색</button>
+        <button class="btn searchBtn" type="button" id="googleGo">검색</button>
       </div>
     </div>
 
@@ -521,31 +788,33 @@
       • ⭐: 즐겨찾기(카테고리별 최대 5) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달(압축)
     </div>
 
-    <!-- Favorites -->
-    <div class="favBox">
-      <div class="favTop">
-        <div class="favTitle">
-          <span>즐겨찾기</span>
-          <span class="pill" id="favScope">전체</span>
-        </div>
-        <div class="favHelp">현재 카테고리 기준 저장 (드래그로 순서 변경)</div>
+    <!-- Categories + Favorites(right) -->
+    <div class="bar">
+      <div class="cats" id="cats">
+        <div class="chipbtn active" data-cat="all">전체 <span class="count" data-count="all">(0)</span></div>
+        <div class="chipbtn" data-cat="comm">커뮤니케이션 <span class="count" data-count="comm">(0)</span></div>
+        <div class="chipbtn" data-cat="prod">생산성 <span class="count" data-count="prod">(0)</span></div>
+        <div class="chipbtn" data-cat="media">미디어 <span class="count" data-count="media">(0)</span></div>
+        <div class="chipbtn" data-cat="finance">금융 <span class="count" data-count="finance">(0)</span></div>
+        <div class="chipbtn" data-cat="ai">AI <span class="count" data-count="ai">(0)</span></div>
+        <div class="chipbtn" data-cat="news">뉴스·리서치 <span class="count" data-count="news">(0)</span></div>
+        <div class="chipbtn" data-cat="shop">쇼핑 <span class="count" data-count="shop">(0)</span></div>
+        <div class="chipbtn" data-cat="community">커뮤니티 <span class="count" data-count="community">(0)</span></div>
+        <div class="chipbtn" data-cat="dev">개발·도구 <span class="count" data-count="dev">(0)</span></div>
+        <div class="chipbtn" data-cat="util">유틸리티 <span class="count" data-count="util">(0)</span></div>
       </div>
-      <div class="favGrid" id="favGrid"></div>
-    </div>
 
-    <!-- Categories -->
-    <div class="cats" id="cats">
-      <div class="chipbtn active" data-cat="all">전체 <span class="count" data-count="all">(0)</span></div>
-      <div class="chipbtn" data-cat="comm">커뮤니케이션 <span class="count" data-count="comm">(0)</span></div>
-      <div class="chipbtn" data-cat="prod">생산성 <span class="count" data-count="prod">(0)</span></div>
-      <div class="chipbtn" data-cat="media">미디어 <span class="count" data-count="media">(0)</span></div>
-      <div class="chipbtn" data-cat="finance">금융 <span class="count" data-count="finance">(0)</span></div>
-      <div class="chipbtn" data-cat="ai">AI <span class="count" data-count="ai">(0)</span></div>
-      <div class="chipbtn" data-cat="news">뉴스·리서치 <span class="count" data-count="news">(0)</span></div>
-      <div class="chipbtn" data-cat="shop">쇼핑 <span class="count" data-count="shop">(0)</span></div>
-      <div class="chipbtn" data-cat="community">커뮤니티 <span class="count" data-count="community">(0)</span></div>
-      <div class="chipbtn" data-cat="dev">개발·도구 <span class="count" data-count="dev">(0)</span></div>
-      <div class="chipbtn" data-cat="util">유틸리티 <span class="count" data-count="util">(0)</span></div>
+      <!-- ✅ Favorites moved to RIGHT -->
+      <div class="favRight">
+        <div class="favTop">
+          <div class="favTitle">
+            <span>즐겨찾기</span>
+            <span class="pill" id="favScope">전체</span>
+          </div>
+          <div class="favHelp">카테고리별 저장 · 드래그 정렬</div>
+        </div>
+        <div class="favList" id="favList"></div>
+      </div>
     </div>
 
     <!-- Grid -->
@@ -557,7 +826,7 @@
     </footer>
   </div>
 
-  <!-- Modal: add/edit OR import JSON -->
+  <!-- Modal -->
   <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modalHeader">
@@ -567,7 +836,6 @@
 
       <div class="small" id="modalDesc">현재 선택된 카테고리에 저장됩니다.</div>
 
-      <!-- Link form -->
       <div id="linkFormArea">
         <div class="form">
           <div class="row2">
@@ -586,9 +854,10 @@
                 <option value="util">유틸리티</option>
               </select>
             </div>
+
             <div class="field">
-              <label>뱃지(표시)</label>
-              <input id="fBadge" placeholder="예: ME / PRO / FIN" />
+              <label>심볼(1글자/이모지)</label>
+              <input id="fBadge" placeholder="예: N / G / 💬" />
             </div>
           </div>
 
@@ -606,6 +875,11 @@
             <label>URL</label>
             <input id="fHref" placeholder="https://..." />
           </div>
+
+          <div class="field">
+            <label>로고 이미지 URL(선택)</label>
+            <input id="fLogo" placeholder="https://... (있으면 심볼 대신 로고 표시)" />
+          </div>
         </div>
 
         <div class="modalActions">
@@ -615,7 +889,6 @@
         </div>
       </div>
 
-      <!-- Import area -->
       <div id="importArea" style="display:none;">
         <div class="form">
           <div class="field">
@@ -633,17 +906,18 @@
   </div>
 
   <script>
-    // ---------------------------
-    // Keys
-    // ---------------------------
-    const FAV_KEY = 'xbrand_favorites_v1';
-    const ORDER_KEY = 'xbrand_order_v1';
-    const CUSTOM_KEY = 'xbrand_custom_links_v1';
+    /* =========================
+       STORAGE KEYS
+       ========================= */
+    const FAV_KEY = 'xbrand_favorites_v2';
+    const ORDER_KEY = 'xbrand_order_v2';
+    const CUSTOM_KEY = 'xbrand_custom_links_v2';
+    const THEME_KEY = 'xbrand_theme_v1';
     const MAX_FAV = 5;
 
-    // ---------------------------
-    // Helpers
-    // ---------------------------
+    /* =========================
+       HELPERS
+       ========================= */
     function escapeHtml(str){
       return String(str)
         .replaceAll('&','&amp;')
@@ -677,10 +951,9 @@
       return map[cat] || cat;
     }
 
-    // ---------------------------
-    // URL-safe compression (LZ-based)
-    // compressToEncodedURIComponent / decompressFromEncodedURIComponent
-    // ---------------------------
+    /* =========================
+       URL-SAFE COMPRESSION (LZ)
+       ========================= */
     const _keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
     function _getBaseValue(alphabet, character) { return alphabet.indexOf(character); }
     function compressToEncodedURIComponent(input) {
@@ -876,7 +1149,6 @@
       }
       return context_data.join("");
     }
-
     function _decompress(length, resetValue, getNextValue) {
       const dictionary = [];
       let next;
@@ -993,135 +1265,136 @@
       }
     }
 
-    // ---------------------------
-    // Base links (추천)
-    // (✅ keyword-chatting removed)
-    // ---------------------------
+    /* =========================
+       BASE LINKS (with 1-char symbols + optional logo URL)
+       - badge: 1 char or emoji
+       - logo: optional image URL (for user links or future)
+       ========================= */
     const BASE = [
       // comm (10)
-      {id:'b_comm_1',cat:'comm',title:'Telegram Web',sub:'메신저',href:'https://web.telegram.org',badge:'COMM'},
-      {id:'b_comm_2',cat:'comm',title:'Discord',sub:'커뮤니티/채팅',href:'https://discord.com/app',badge:'COMM'},
-      {id:'b_comm_3',cat:'comm',title:'Slack',sub:'업무 메신저',href:'https://slack.com/signin',badge:'COMM'},
-      {id:'b_comm_4',cat:'comm',title:'Gmail',sub:'메일',href:'https://mail.google.com',badge:'COMM'},
-      {id:'b_comm_5',cat:'comm',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
-      {id:'b_comm_6',cat:'comm',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
-      {id:'b_comm_7',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'COMM'},
-      {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털',href:'https://www.naver.com',badge:'COMM'},
-      {id:'b_comm_9',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'COMM'},
-      {id:'b_comm_10',cat:'comm',title:'Facebook Messages',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
+      {id:'b_comm_1',cat:'comm',title:'Telegram Web',sub:'메신저',href:'https://web.telegram.org',badge:'T'},
+      {id:'b_comm_2',cat:'comm',title:'Discord',sub:'커뮤니티/채팅',href:'https://discord.com/app',badge:'D'},
+      {id:'b_comm_3',cat:'comm',title:'Slack',sub:'업무 메신저',href:'https://slack.com/signin',badge:'S'},
+      {id:'b_comm_4',cat:'comm',title:'Gmail',sub:'메일',href:'https://mail.google.com',badge:'M'},
+      {id:'b_comm_5',cat:'comm',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'B'},
+      {id:'b_comm_6',cat:'comm',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'ㄷ'},
+      {id:'b_comm_7',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'K'},
+      {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털',href:'https://www.naver.com',badge:'N'},
+      {id:'b_comm_9',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'G'},
+      {id:'b_comm_10',cat:'comm',title:'Facebook Messages',sub:'메신저',href:'https://www.facebook.com/messages',badge:'f'},
 
       // prod (10)
-      {id:'b_prod_1',cat:'prod',title:'Notion',sub:'문서 · 위키',href:'https://www.notion.so',badge:'PROD'},
-      {id:'b_prod_2',cat:'prod',title:'Google Docs',sub:'문서',href:'https://docs.google.com',badge:'PROD'},
-      {id:'b_prod_3',cat:'prod',title:'Google Sheets',sub:'스프레드시트',href:'https://sheets.google.com',badge:'PROD'},
-      {id:'b_prod_4',cat:'prod',title:'Google Drive',sub:'파일',href:'https://drive.google.com',badge:'PROD'},
-      {id:'b_prod_5',cat:'prod',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'PROD'},
-      {id:'b_prod_6',cat:'prod',title:'Microsoft Excel',sub:'엑셀',href:'https://www.microsoft.com/microsoft-365/excel',badge:'PROD'},
-      {id:'b_prod_7',cat:'prod',title:'Microsoft 365',sub:'오피스',href:'https://www.office.com',badge:'PROD'},
-      {id:'b_prod_8',cat:'prod',title:'Figma',sub:'디자인',href:'https://www.figma.com',badge:'PROD'},
-      {id:'b_prod_9',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'PROD'},
-      {id:'b_prod_10',cat:'prod',title:'Canva',sub:'템플릿',href:'https://www.canva.com',badge:'PROD'},
+      {id:'b_prod_1',cat:'prod',title:'Notion',sub:'문서 · 위키',href:'https://www.notion.so',badge:'N'},
+      {id:'b_prod_2',cat:'prod',title:'Google Docs',sub:'문서',href:'https://docs.google.com',badge:'D'},
+      {id:'b_prod_3',cat:'prod',title:'Google Sheets',sub:'스프레드시트',href:'https://sheets.google.com',badge:'S'},
+      {id:'b_prod_4',cat:'prod',title:'Google Drive',sub:'파일',href:'https://drive.google.com',badge:'△'},
+      {id:'b_prod_5',cat:'prod',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'C'},
+      {id:'b_prod_6',cat:'prod',title:'Microsoft Excel',sub:'엑셀',href:'https://www.microsoft.com/microsoft-365/excel',badge:'X'},
+      {id:'b_prod_7',cat:'prod',title:'Microsoft 365',sub:'오피스',href:'https://www.office.com',badge:'O'},
+      {id:'b_prod_8',cat:'prod',title:'Figma',sub:'디자인',href:'https://www.figma.com',badge:'F'},
+      {id:'b_prod_9',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'T'},
+      {id:'b_prod_10',cat:'prod',title:'Canva',sub:'템플릿',href:'https://www.canva.com',badge:'C'},
 
       // media (10)
-      {id:'b_media_1',cat:'media',title:'YouTube',sub:'동영상',href:'https://www.youtube.com',badge:'MEDIA'},
-      {id:'b_media_2',cat:'media',title:'YouTube Music',sub:'음악',href:'https://music.youtube.com',badge:'MEDIA'},
-      {id:'b_media_3',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'MEDIA'},
-      {id:'b_media_4',cat:'media',title:'Naver Webtoon',sub:'웹툰',href:'https://comic.naver.com',badge:'MEDIA'},
-      {id:'b_media_5',cat:'media',title:'Kakao Webtoon',sub:'웹툰',href:'https://webtoon.kakao.com',badge:'MEDIA'},
-      {id:'b_media_6',cat:'media',title:'TVING',sub:'국내 OTT',href:'https://www.tving.com',badge:'MEDIA'},
-      {id:'b_media_7',cat:'media',title:'Wavve',sub:'국내 OTT',href:'https://www.wavve.com',badge:'MEDIA'},
-      {id:'b_media_8',cat:'media',title:'Spotify',sub:'음악',href:'https://www.spotify.com',badge:'MEDIA'},
-      {id:'b_media_9',cat:'media',title:'Twitch',sub:'라이브',href:'https://www.twitch.tv',badge:'MEDIA'},
-      {id:'b_media_10',cat:'media',title:'Disney+',sub:'스트리밍',href:'https://www.disneyplus.com',badge:'MEDIA'},
+      {id:'b_media_1',cat:'media',title:'YouTube',sub:'동영상',href:'https://www.youtube.com',badge:'▶'},
+      {id:'b_media_2',cat:'media',title:'YouTube Music',sub:'음악',href:'https://music.youtube.com',badge:'♪'},
+      {id:'b_media_3',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'N'},
+      {id:'b_media_4',cat:'media',title:'Naver Webtoon',sub:'웹툰',href:'https://comic.naver.com',badge:'W'},
+      {id:'b_media_5',cat:'media',title:'Kakao Webtoon',sub:'웹툰',href:'https://webtoon.kakao.com',badge:'K'},
+      {id:'b_media_6',cat:'media',title:'TVING',sub:'국내 OTT',href:'https://www.tving.com',badge:'T'},
+      {id:'b_media_7',cat:'media',title:'Wavve',sub:'국내 OTT',href:'https://www.wavve.com',badge:'W'},
+      {id:'b_media_8',cat:'media',title:'Spotify',sub:'음악',href:'https://www.spotify.com',badge:'S'},
+      {id:'b_media_9',cat:'media',title:'Twitch',sub:'라이브',href:'https://www.twitch.tv',badge:'T'},
+      {id:'b_media_10',cat:'media',title:'Disney+',sub:'스트리밍',href:'https://www.disneyplus.com',badge:'D'},
 
       // finance (10)
-      {id:'b_fin_1',cat:'finance',title:'Naver Finance',sub:'국내 시세',href:'https://finance.naver.com',badge:'FIN'},
-      {id:'b_fin_2',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'FIN'},
-      {id:'b_fin_3',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'FIN'},
-      {id:'b_fin_4',cat:'finance',title:'Binance',sub:'거래소',href:'https://www.binance.com',badge:'FIN'},
-      {id:'b_fin_5',cat:'finance',title:'CoinMarketCap',sub:'시총',href:'https://www.coinmarketcap.com',badge:'FIN'},
-      {id:'b_fin_6',cat:'finance',title:'CoinGecko',sub:'데이터',href:'https://www.coingecko.com',badge:'FIN'},
-      {id:'b_fin_7',cat:'finance',title:'Google Finance',sub:'시장',href:'https://www.google.com/finance',badge:'FIN'},
-      {id:'b_fin_8',cat:'finance',title:'Investing',sub:'데이터',href:'https://www.investing.com',badge:'FIN'},
-      {id:'b_fin_9',cat:'finance',title:'Toss',sub:'금융',href:'https://www.toss.im',badge:'FIN'},
-      {id:'b_fin_10',cat:'finance',title:'KakaoBank',sub:'은행',href:'https://www.kakaobank.com',badge:'FIN'},
+      {id:'b_fin_1',cat:'finance',title:'Naver Finance',sub:'국내 시세',href:'https://finance.naver.com',badge:'₩'},
+      {id:'b_fin_2',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'TV'},
+      {id:'b_fin_3',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'B'},
+      {id:'b_fin_4',cat:'finance',title:'Binance',sub:'거래소',href:'https://www.binance.com',badge:'◇'},
+      {id:'b_fin_5',cat:'finance',title:'CoinMarketCap',sub:'시총',href:'https://www.coinmarketcap.com',badge:'C'},
+      {id:'b_fin_6',cat:'finance',title:'CoinGecko',sub:'데이터',href:'https://www.coingecko.com',badge:'🦎'},
+      {id:'b_fin_7',cat:'finance',title:'Google Finance',sub:'시장',href:'https://www.google.com/finance',badge:'G'},
+      {id:'b_fin_8',cat:'finance',title:'Investing',sub:'데이터',href:'https://www.investing.com',badge:'I'},
+      {id:'b_fin_9',cat:'finance',title:'Toss',sub:'금융',href:'https://www.toss.im',badge:'T'},
+      {id:'b_fin_10',cat:'finance',title:'KakaoBank',sub:'은행',href:'https://www.kakaobank.com',badge:'K'},
 
       // ai (10)
-      {id:'b_ai_1',cat:'ai',title:'ChatGPT',sub:'대화형 AI',href:'https://chat.openai.com',badge:'AI'},
-      {id:'b_ai_2',cat:'ai',title:'Claude',sub:'대화형 AI',href:'https://claude.ai',badge:'AI'},
-      {id:'b_ai_3',cat:'ai',title:'Gemini',sub:'구글 AI',href:'https://gemini.google.com',badge:'AI'},
-      {id:'b_ai_4',cat:'ai',title:'Perplexity',sub:'AI 검색',href:'https://www.perplexity.ai',badge:'AI'},
-      {id:'b_ai_5',cat:'ai',title:'OpenAI Platform',sub:'API',href:'https://platform.openai.com',badge:'AI'},
-      {id:'b_ai_6',cat:'ai',title:'Hugging Face',sub:'모델/데이터',href:'https://huggingface.co',badge:'AI'},
-      {id:'b_ai_7',cat:'ai',title:'GitHub Copilot',sub:'코딩',href:'https://copilot.github.com',badge:'AI'},
-      {id:'b_ai_8',cat:'ai',title:'Cursor',sub:'AI 에디터',href:'https://www.cursor.com',badge:'AI'},
-      {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지',href:'https://www.midjourney.com',badge:'AI'},
-      {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인',href:'https://recraft.ai',badge:'AI'},
+      {id:'b_ai_1',cat:'ai',title:'ChatGPT',sub:'대화형 AI',href:'https://chat.openai.com',badge:'C'},
+      {id:'b_ai_2',cat:'ai',title:'Claude',sub:'대화형 AI',href:'https://claude.ai',badge:'C'},
+      {id:'b_ai_3',cat:'ai',title:'Gemini',sub:'구글 AI',href:'https://gemini.google.com',badge:'G'},
+      {id:'b_ai_4',cat:'ai',title:'Perplexity',sub:'AI 검색',href:'https://www.perplexity.ai',badge:'P'},
+      {id:'b_ai_5',cat:'ai',title:'OpenAI Platform',sub:'API',href:'https://platform.openai.com',badge:'O'},
+      {id:'b_ai_6',cat:'ai',title:'Hugging Face',sub:'모델/데이터',href:'https://huggingface.co',badge:'🤗'},
+      {id:'b_ai_7',cat:'ai',title:'GitHub Copilot',sub:'코딩',href:'https://copilot.github.com',badge:'G'},
+      {id:'b_ai_8',cat:'ai',title:'Cursor',sub:'AI 에디터',href:'https://www.cursor.com',badge:'C'},
+      {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지',href:'https://www.midjourney.com',badge:'M'},
+      {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인',href:'https://recraft.ai',badge:'R'},
 
       // news (10)
-      {id:'b_news_1',cat:'news',title:'Naver News',sub:'뉴스',href:'https://news.naver.com',badge:'NEWS'},
-      {id:'b_news_2',cat:'news',title:'Google News',sub:'뉴스',href:'https://news.google.com',badge:'NEWS'},
-      {id:'b_news_3',cat:'news',title:'Bloomberg',sub:'금융뉴스',href:'https://www.bloomberg.com',badge:'NEWS'},
-      {id:'b_news_4',cat:'news',title:'Reuters',sub:'글로벌',href:'https://www.reuters.com',badge:'NEWS'},
-      {id:'b_news_5',cat:'news',title:'Financial Times',sub:'금융',href:'https://www.ft.com',badge:'NEWS'},
-      {id:'b_news_6',cat:'news',title:'WSJ',sub:'비즈니스',href:'https://www.wsj.com',badge:'NEWS'},
-      {id:'b_news_7',cat:'news',title:'The Economist',sub:'시사',href:'https://www.economist.com',badge:'NEWS'},
-      {id:'b_news_8',cat:'news',title:'arXiv',sub:'논문',href:'https://arxiv.org',badge:'NEWS'},
-      {id:'b_news_9',cat:'news',title:'The Information',sub:'리서치',href:'https://www.theinformation.com',badge:'NEWS'},
-      {id:'b_news_10',cat:'news',title:'NYTimes',sub:'뉴스',href:'https://www.nytimes.com',badge:'NEWS'},
+      {id:'b_news_1',cat:'news',title:'Naver News',sub:'뉴스',href:'https://news.naver.com',badge:'N'},
+      {id:'b_news_2',cat:'news',title:'Google News',sub:'뉴스',href:'https://news.google.com',badge:'G'},
+      {id:'b_news_3',cat:'news',title:'Bloomberg',sub:'금융뉴스',href:'https://www.bloomberg.com',badge:'B'},
+      {id:'b_news_4',cat:'news',title:'Reuters',sub:'글로벌',href:'https://www.reuters.com',badge:'R'},
+      {id:'b_news_5',cat:'news',title:'Financial Times',sub:'금융',href:'https://www.ft.com',badge:'FT'},
+      {id:'b_news_6',cat:'news',title:'WSJ',sub:'비즈니스',href:'https://www.wsj.com',badge:'W'},
+      {id:'b_news_7',cat:'news',title:'The Economist',sub:'시사',href:'https://www.economist.com',badge:'E'},
+      {id:'b_news_8',cat:'news',title:'arXiv',sub:'논문',href:'https://arxiv.org',badge:'a'},
+      {id:'b_news_9',cat:'news',title:'The Information',sub:'리서치',href:'https://www.theinformation.com',badge:'I'},
+      {id:'b_news_10',cat:'news',title:'NYTimes',sub:'뉴스',href:'https://www.nytimes.com',badge:'N'},
 
       // shop (10)
-      {id:'b_shop_1',cat:'shop',title:'Coupang',sub:'쇼핑',href:'https://www.coupang.com',badge:'SHOP'},
-      {id:'b_shop_2',cat:'shop',title:'Naver Shopping',sub:'가격비교',href:'https://shopping.naver.com',badge:'SHOP'},
-      {id:'b_shop_3',cat:'shop',title:'11st',sub:'쇼핑',href:'https://www.11st.co.kr',badge:'SHOP'},
-      {id:'b_shop_4',cat:'shop',title:'Gmarket',sub:'쇼핑',href:'https://www.gmarket.co.kr',badge:'SHOP'},
-      {id:'b_shop_5',cat:'shop',title:'Auction',sub:'쇼핑',href:'https://www.auction.co.kr',badge:'SHOP'},
-      {id:'b_shop_6',cat:'shop',title:'SSG',sub:'쇼핑',href:'https://www.ssg.com',badge:'SHOP'},
-      {id:'b_shop_7',cat:'shop',title:'오늘의집',sub:'리빙',href:'https://www.todayhouse.com',badge:'SHOP'},
-      {id:'b_shop_8',cat:'shop',title:'Amazon',sub:'해외',href:'https://www.amazon.com',badge:'SHOP'},
-      {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외',href:'https://www.aliexpress.com',badge:'SHOP'},
-      {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외',href:'https://www.temu.com',badge:'SHOP'},
+      {id:'b_shop_1',cat:'shop',title:'Coupang',sub:'쇼핑',href:'https://www.coupang.com',badge:'C'},
+      {id:'b_shop_2',cat:'shop',title:'Naver Shopping',sub:'가격비교',href:'https://shopping.naver.com',badge:'N'},
+      {id:'b_shop_3',cat:'shop',title:'11st',sub:'쇼핑',href:'https://www.11st.co.kr',badge:'11'},
+      {id:'b_shop_4',cat:'shop',title:'Gmarket',sub:'쇼핑',href:'https://www.gmarket.co.kr',badge:'G'},
+      {id:'b_shop_5',cat:'shop',title:'Auction',sub:'쇼핑',href:'https://www.auction.co.kr',badge:'A'},
+      {id:'b_shop_6',cat:'shop',title:'SSG',sub:'쇼핑',href:'https://www.ssg.com',badge:'S'},
+      {id:'b_shop_7',cat:'shop',title:'오늘의집',sub:'리빙',href:'https://www.todayhouse.com',badge:'O'},
+      {id:'b_shop_8',cat:'shop',title:'Amazon',sub:'해외',href:'https://www.amazon.com',badge:'a'},
+      {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외',href:'https://www.aliexpress.com',badge:'A'},
+      {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외',href:'https://www.temu.com',badge:'T'},
 
-      // community (10) - ✅ removed 키워드채팅
-      {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'COMM'},
-      {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'COMM'},
-      {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'COMM'},
-      {id:'b_comu_4',cat:'community',title:'Ruliweb',sub:'커뮤니티',href:'https://www.ruliweb.com',badge:'COMM'},
-      {id:'b_comu_5',cat:'community',title:'Inven',sub:'게임',href:'https://www.inven.co.kr',badge:'COMM'},
-      {id:'b_comu_6',cat:'community',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
-      {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
-      {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌',href:'https://www.reddit.com',badge:'COMM'},
-      {id:'b_comu_9',cat:'community',title:'Quora',sub:'Q&A',href:'https://www.quora.com',badge:'COMM'},
-      {id:'b_comu_10',cat:'community',title:'Namu Wiki',sub:'위키',href:'https://namu.wiki',badge:'COMM'},
+      // community (10)
+      {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'F'},
+      {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'C'},
+      {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'P'},
+      {id:'b_comu_4',cat:'community',title:'Ruliweb',sub:'커뮤니티',href:'https://www.ruliweb.com',badge:'R'},
+      {id:'b_comu_5',cat:'community',title:'Inven',sub:'게임',href:'https://www.inven.co.kr',badge:'I'},
+      {id:'b_comu_6',cat:'community',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'ㄷ'},
+      {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'B'},
+      {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌',href:'https://www.reddit.com',badge:'R'},
+      {id:'b_comu_9',cat:'community',title:'Quora',sub:'Q&A',href:'https://www.quora.com',badge:'Q'},
+      {id:'b_comu_10',cat:'community',title:'Namu Wiki',sub:'위키',href:'https://namu.wiki',badge:'N'},
 
       // dev (10)
-      {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드',href:'https://github.com',badge:'DEV'},
-      {id:'b_dev_2',cat:'dev',title:'Vercel',sub:'배포',href:'https://vercel.com',badge:'DEV'},
-      {id:'b_dev_3',cat:'dev',title:'Netlify',sub:'배포',href:'https://www.netlify.com',badge:'DEV'},
-      {id:'b_dev_4',cat:'dev',title:'Google Developers',sub:'문서',href:'https://developers.google.com',badge:'DEV'},
-      {id:'b_dev_5',cat:'dev',title:'Stack Overflow',sub:'Q&A',href:'https://stackoverflow.com',badge:'DEV'},
-      {id:'b_dev_6',cat:'dev',title:'CodePen',sub:'실험',href:'https://codepen.io',badge:'DEV'},
-      {id:'b_dev_7',cat:'dev',title:'Replit',sub:'코딩',href:'https://replit.com',badge:'DEV'},
-      {id:'b_dev_8',cat:'dev',title:'Postman',sub:'API',href:'https://www.postman.com',badge:'DEV'},
-      {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'CDN',href:'https://cloudflare.com',badge:'DEV'},
-      {id:'b_dev_10',cat:'dev',title:'Supabase',sub:'DB/Auth',href:'https://supabase.com',badge:'DEV'},
+      {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드',href:'https://github.com',badge:'G'},
+      {id:'b_dev_2',cat:'dev',title:'Vercel',sub:'배포',href:'https://vercel.com',badge:'V'},
+      {id:'b_dev_3',cat:'dev',title:'Netlify',sub:'배포',href:'https://www.netlify.com',badge:'N'},
+      {id:'b_dev_4',cat:'dev',title:'Google Developers',sub:'문서',href:'https://developers.google.com',badge:'G'},
+      {id:'b_dev_5',cat:'dev',title:'Stack Overflow',sub:'Q&A',href:'https://stackoverflow.com',badge:'S'},
+      {id:'b_dev_6',cat:'dev',title:'CodePen',sub:'실험',href:'https://codepen.io',badge:'C'},
+      {id:'b_dev_7',cat:'dev',title:'Replit',sub:'코딩',href:'https://replit.com',badge:'R'},
+      {id:'b_dev_8',cat:'dev',title:'Postman',sub:'API',href:'https://www.postman.com',badge:'P'},
+      {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'CDN',href:'https://cloudflare.com',badge:'C'},
+      {id:'b_dev_10',cat:'dev',title:'Supabase',sub:'DB/Auth',href:'https://supabase.com',badge:'S'},
 
       // util (10)
-      {id:'b_util_1',cat:'util',title:'Google Translate',sub:'번역',href:'https://translate.google.com',badge:'UTIL'},
-      {id:'b_util_2',cat:'util',title:'Google Keep',sub:'메모',href:'https://keep.google.com',badge:'UTIL'},
-      {id:'b_util_3',cat:'util',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'UTIL'},
-      {id:'b_util_4',cat:'util',title:'Naver Map',sub:'지도',href:'https://map.naver.com',badge:'UTIL'},
-      {id:'b_util_5',cat:'util',title:'Kakao Map',sub:'지도',href:'https://map.kakao.com',badge:'UTIL'},
-      {id:'b_util_6',cat:'util',title:'Naver Weather',sub:'날씨',href:'https://weather.naver.com',badge:'UTIL'},
-      {id:'b_util_7',cat:'util',title:'Speedtest',sub:'속도',href:'https://www.speedtest.net',badge:'UTIL'},
-      {id:'b_util_8',cat:'util',title:'Time & Date',sub:'시간',href:'https://www.timeanddate.com',badge:'UTIL'},
-      {id:'b_util_9',cat:'util',title:'remove.bg',sub:'배경 제거',href:'https://www.remove.bg',badge:'UTIL'},
-      {id:'b_util_10',cat:'util',title:'Google Drive',sub:'드라이브',href:'https://drive.google.com',badge:'UTIL'},
+      {id:'b_util_1',cat:'util',title:'Google Translate',sub:'번역',href:'https://translate.google.com',badge:'T'},
+      {id:'b_util_2',cat:'util',title:'Google Keep',sub:'메모',href:'https://keep.google.com',badge:'K'},
+      {id:'b_util_3',cat:'util',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'C'},
+      {id:'b_util_4',cat:'util',title:'Naver Map',sub:'지도',href:'https://map.naver.com',badge:'N'},
+      {id:'b_util_5',cat:'util',title:'Kakao Map',sub:'지도',href:'https://map.kakao.com',badge:'K'},
+      {id:'b_util_6',cat:'util',title:'Naver Weather',sub:'날씨',href:'https://weather.naver.com',badge:'N'},
+      {id:'b_util_7',cat:'util',title:'Speedtest',sub:'속도',href:'https://www.speedtest.net',badge:'S'},
+      {id:'b_util_8',cat:'util',title:'Time & Date',sub:'시간',href:'https://www.timeanddate.com',badge:'T'},
+      {id:'b_util_9',cat:'util',title:'remove.bg',sub:'배경 제거',href:'https://www.remove.bg',badge:'r'},
+      {id:'b_util_10',cat:'util',title:'Google Drive',sub:'드라이브',href:'https://drive.google.com',badge:'△'},
     ];
 
-    // ---------------------------
-    // DOM refs
-    // ---------------------------
+    /* =========================
+       DOM REFS
+       ========================= */
     const resetBtn = document.getElementById('resetBtn');
     const resetOrderBtn = document.getElementById('resetOrderBtn');
     const wipeBtn = document.getElementById('wipeBtn');
@@ -1131,6 +1404,9 @@
     const shareBtn = document.getElementById('shareBtn');
     const installBtn = document.getElementById('installBtn');
 
+    const themeToggle = document.getElementById('themeToggle');
+    const themeLabel = document.getElementById('themeLabel');
+
     const naverQ = document.getElementById('naverQ');
     const googleQ = document.getElementById('googleQ');
     const naverGo = document.getElementById('naverGo');
@@ -1138,10 +1414,20 @@
 
     const chips = Array.from(document.querySelectorAll('.chipbtn'));
     const grid = document.getElementById('grid');
-    const favGrid = document.getElementById('favGrid');
+
+    const favListEl = document.getElementById('favList');
     const favScope = document.getElementById('favScope');
 
-    // Modal refs
+    // Weather + calendar + clock
+    const wxPlace = document.getElementById('wxPlace');
+    const wxTemp = document.getElementById('wxTemp');
+    const wxMeta = document.getElementById('wxMeta');
+    const wxBadge = document.getElementById('wxBadge');
+    const clockEl = document.getElementById('clock');
+    const calTitle = document.getElementById('calTitle');
+    const calGrid = document.getElementById('calGrid');
+
+    // Modal
     const modalBack = document.getElementById('modalBack');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDesc');
@@ -1149,7 +1435,6 @@
     const cancelBtn = document.getElementById('cancelBtn');
     const saveBtn = document.getElementById('saveBtn');
     const deleteBtn = document.getElementById('deleteBtn');
-
     const linkFormArea = document.getElementById('linkFormArea');
     const importArea = document.getElementById('importArea');
     const importText = document.getElementById('importText');
@@ -1161,16 +1446,39 @@
     const fTitle = document.getElementById('fTitle');
     const fSub = document.getElementById('fSub');
     const fHref = document.getElementById('fHref');
+    const fLogo = document.getElementById('fLogo');
 
-    // ---------------------------
-    // State
-    // ---------------------------
+    /* =========================
+       STATE
+       ========================= */
     let currentCat = 'all';
     let editingId = null;
 
-    // ---------------------------
-    // Search
-    // ---------------------------
+    /* =========================
+       THEME TOGGLE
+       ========================= */
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme);
+      themeLabel.textContent = (theme === 'dark') ? 'BLACK' : 'WHITE';
+      localStorage.setItem(THEME_KEY, theme);
+      // update theme-color meta
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#ffffff');
+    }
+    function initTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if(saved === 'dark' || saved === 'light'){ applyTheme(saved); return; }
+      // default: light
+      applyTheme('light');
+    }
+    themeToggle.addEventListener('click', ()=>{
+      const now = document.documentElement.getAttribute('data-theme') || 'light';
+      applyTheme(now === 'dark' ? 'light' : 'dark');
+    });
+
+    /* =========================
+       SEARCH
+       ========================= */
     function openNaver(){
       const q = (naverQ.value || '').trim();
       if(!q) return;
@@ -1186,9 +1494,9 @@
     naverQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openNaver(); });
     googleQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openGoogle(); });
 
-    // ---------------------------
-    // Favorites
-    // ---------------------------
+    /* =========================
+       FAVORITES (per category)
+       ========================= */
     function getFavData(){ return loadJSON(FAV_KEY, {}); }
     function setFavData(data){ saveJSON(FAV_KEY, data); }
     function getFavList(cat){
@@ -1212,6 +1520,7 @@
         setFavList(cat, list);
       }else{
         list.unshift(item);
+        // dedupe
         const seen = new Set();
         const deduped = [];
         for(const x of list){
@@ -1222,18 +1531,18 @@
         while(deduped.length > MAX_FAV) deduped.pop();
         setFavList(cat, deduped);
       }
-      renderFav();
+      renderFavRight();
       syncStars();
     }
     function removeFav(cat, href){
       const list = getFavList(cat).filter(x => x.href !== href);
       setFavList(cat, list);
-      renderFav();
+      renderFavRight();
       syncStars();
     }
     function persistFavOrderFromDOM(){
       const cat = currentCat;
-      const hrefs = Array.from(favGrid.querySelectorAll('.favItem'))
+      const hrefs = Array.from(favListEl.querySelectorAll('.favItem'))
         .map(el => el.dataset.href)
         .filter(Boolean);
       const list = getFavList(cat);
@@ -1243,17 +1552,17 @@
       list.forEach(x => { if(!hrefs.includes(x.href)) ordered.push(x); });
       setFavList(cat, ordered);
     }
-    function renderFav(){
-      const cat = currentCat;
-      const list = getFavList(cat);
+    function renderFavRight(){
+      favScope.textContent = chipLabel(currentCat);
+      const list = getFavList(currentCat);
 
-      favGrid.innerHTML = '';
+      favListEl.innerHTML = '';
       if(list.length === 0){
-        favGrid.innerHTML = `
-          <div class="favItem" style="grid-column:1/-1; justify-content:flex-start;">
+        favListEl.innerHTML = `
+          <div class="favItem" style="justify-content:flex-start;">
             <div class="favLeft">
               <div class="favLink">비어있음</div>
-              <div class="favMeta">아래 카드의 ⭐를 눌러 즐겨찾기를 추가하세요. (카테고리별 최대 ${MAX_FAV}개)</div>
+              <div class="favMeta">아래 카드의 ⭐를 눌러 추가</div>
             </div>
           </div>
         `;
@@ -1272,14 +1581,14 @@
           </div>
           <button class="iconBtn danger" title="삭제">×</button>
         `;
-        div.querySelector('.iconBtn').addEventListener('click', () => removeFav(cat, item.href));
-        favGrid.appendChild(div);
+        div.querySelector('.iconBtn').addEventListener('click', () => removeFav(currentCat, item.href));
+        favListEl.appendChild(div);
       });
 
       enableFavDrag();
     }
     function enableFavDrag(){
-      const items = Array.from(favGrid.querySelectorAll('.favItem'));
+      const items = Array.from(favListEl.querySelectorAll('.favItem'));
       let draggingEl = null;
 
       items.forEach(el => {
@@ -1308,16 +1617,15 @@
 
           const rect = el.getBoundingClientRect();
           const after = (e.clientY - rect.top) > (rect.height / 2);
-
           if(after) el.insertAdjacentElement('afterend', draggingEl);
           else el.insertAdjacentElement('beforebegin', draggingEl);
         });
       });
     }
 
-    // ---------------------------
-    // Custom links
-    // ---------------------------
+    /* =========================
+       CUSTOM LINKS
+       ========================= */
     function loadCustom(){ return loadJSON(CUSTOM_KEY, []); }
     function saveCustom(arr){ saveJSON(CUSTOM_KEY, arr); }
     function upsertCustom(item){
@@ -1331,9 +1639,9 @@
       saveCustom(loadCustom().filter(x => x.id !== id));
     }
 
-    // ---------------------------
-    // Order per category
-    // ---------------------------
+    /* =========================
+       ORDER (per category)
+       ========================= */
     function getOrderData(){ return loadJSON(ORDER_KEY, {}); }
     function setOrderData(data){ saveJSON(ORDER_KEY, data); }
     function getOrder(cat){
@@ -1351,13 +1659,12 @@
       setOrderData(data);
     }
 
-    // ---------------------------
-    // Build items for category
-    // ---------------------------
+    /* =========================
+       BUILD ITEMS
+       ========================= */
     function getItemsForCat(cat){
       const custom = loadCustom().map(x => ({...x, custom:true}));
       const all = BASE.map(x => ({...x, custom:false})).concat(custom);
-
       let items = (cat === 'all') ? all : all.filter(x => x.cat === cat);
 
       const order = getOrder(cat);
@@ -1371,9 +1678,22 @@
       return items;
     }
 
-    // ---------------------------
-    // Render grid
-    // ---------------------------
+    function badgeHTML(item){
+      const logo = (item.logo || '').trim();
+      if(logo){
+        const safe = safeUrl(logo);
+        if(safe){
+          return `<div class="badgeIcon" title="logo"><img src="${safe}" alt="logo" loading="lazy" /></div>`;
+        }
+      }
+      const b = (item.badge || '').toString().trim();
+      const one = b ? b.slice(0,2) : '•';
+      return `<div class="badgeIcon" title="${escapeHtml(one)}">${escapeHtml(one)}</div>`;
+    }
+
+    /* =========================
+       RENDER GRID
+       ========================= */
     function renderGrid(){
       const items = getItemsForCat(currentCat);
 
@@ -1384,14 +1704,11 @@
         return `
           <a class="card" href="${item.href}" target="_blank" rel="noopener"
              data-id="${item.id}" data-cat="${item.cat}" draggable="${draggable}">
+            ${badgeHTML(item)}
             <div class="left">
               <div class="title">${escapeHtml(item.title)}</div>
-              <div class="metaRow">
-                <div class="sub">${escapeHtml(item.sub || '')}</div>
-                ${item.badge ? `<div class="badge" title="${escapeHtml(item.badge)}">${escapeHtml(item.badge)}</div>` : ``}
-              </div>
+              <div class="sub">${escapeHtml(item.sub || '')}</div>
             </div>
-
             <div class="star" title="즐겨찾기">☆</div>
             <div class="menu ${menuHidden}" title="내 링크 편집/삭제">⋯</div>
           </a>
@@ -1490,9 +1807,9 @@
       setOrder(currentCat, ids);
     }
 
-    // ---------------------------
-    // Counts
-    // ---------------------------
+    /* =========================
+       COUNTS
+       ========================= */
     function updateCounts(){
       const cats = ['all','comm','prod','media','finance','ai','news','shop','community','dev','util'];
       const allItems = getItemsForCat('all');
@@ -1510,9 +1827,9 @@
       });
     }
 
-    // ---------------------------
-    // URL state
-    // ---------------------------
+    /* =========================
+       CATEGORY SWITCH
+       ========================= */
     function updateUrlStateOnly(){
       const params = new URLSearchParams(location.search);
       if(currentCat === 'all') params.delete('cat');
@@ -1521,22 +1838,18 @@
       history.replaceState(null,'', base + (location.hash || ''));
     }
 
-    // ---------------------------
-    // Category switch
-    // ---------------------------
     function setActiveChip(cat){
       chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
       currentCat = cat;
-      favScope.textContent = chipLabel(cat);
       updateUrlStateOnly();
       renderGrid();
-      renderFav();
+      renderFavRight();
     }
     chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
 
-    // ---------------------------
-    // Buttons
-    // ---------------------------
+    /* =========================
+       BUTTONS
+       ========================= */
     function resetAll(){
       naverQ.value = '';
       googleQ.value = '';
@@ -1556,20 +1869,22 @@
       localStorage.removeItem(ORDER_KEY);
       localStorage.removeItem(CUSTOM_KEY);
       history.replaceState(null,'', location.pathname + location.search);
-      renderGrid(); renderFav(); syncStars();
+      renderGrid();
+      renderFavRight();
+      syncStars();
     });
 
     addBtn.addEventListener('click', () => {
       if(currentCat === 'all'){
-        openLinkModal('add', {cat:'comm',badge:'ME',title:'',sub:'',href:''});
+        openLinkModal('add', {cat:'comm',badge:'•',title:'',sub:'',href:'',logo:''});
       }else{
-        openLinkModal('add', {cat:currentCat,badge:'ME',title:'',sub:'',href:''});
+        openLinkModal('add', {cat:currentCat,badge:'•',title:'',sub:'',href:'',logo:''});
       }
     });
 
-    // ---------------------------
-    // Export / Import
-    // ---------------------------
+    /* =========================
+       EXPORT / IMPORT
+       ========================= */
     exportBtn.addEventListener('click', () => {
       const payload = buildPersonalizationPayload();
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -1587,11 +1902,12 @@
 
     function buildPersonalizationPayload(){
       return {
-        v: 1,
+        v: 2,
         exportedAt: new Date().toISOString(),
         favorites: loadJSON(FAV_KEY, {}),
         order: loadJSON(ORDER_KEY, {}),
         customLinks: loadCustom(),
+        theme: localStorage.getItem(THEME_KEY) || 'light'
       };
     }
 
@@ -1599,6 +1915,7 @@
       const favorites = obj.favorites ?? {};
       const order = obj.order ?? {};
       const customLinks = obj.customLinks ?? [];
+      const theme = obj.theme ?? null;
 
       if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)) return false;
 
@@ -1607,15 +1924,17 @@
         .map(x => ({
           id: String(x.id || uid()),
           cat: String(x.cat || 'comm'),
-          badge: String(x.badge || 'ME').slice(0,10),
+          badge: String(x.badge || '•').slice(0,2),
           title: String(x.title || '').slice(0,60),
           sub: String(x.sub || '').slice(0,80),
-          href: safeUrl(String(x.href || '')) || 'https://example.com'
+          href: safeUrl(String(x.href || '')) || 'https://example.com',
+          logo: safeUrl(String(x.logo || '')) || ''
         }));
 
       saveJSON(FAV_KEY, favorites);
       saveJSON(ORDER_KEY, order);
       saveJSON(CUSTOM_KEY, sanitizedCustom);
+      if(theme === 'dark' || theme === 'light') applyTheme(theme);
       return true;
     }
 
@@ -1633,7 +1952,6 @@
       let obj;
       try{ obj = JSON.parse(jsonText); }
       catch{ alert('JSON 파싱 실패'); return false; }
-
       const ok = applyPersonalizationPayload(obj);
       if(!ok){ alert('JSON 구조가 올바르지 않습니다.'); return false; }
       return true;
@@ -1647,14 +1965,14 @@
       const ok = applyImport(text);
       if(ok){
         closeModal();
-        renderGrid(); renderFav(); syncStars();
+        renderGrid(); renderFavRight(); syncStars();
       }
     });
     importCancelBtn.addEventListener('click', () => closeModal());
 
-    // ---------------------------
-    // Share link (✅ compressed)
-    // ---------------------------
+    /* =========================
+       SHARE LINK (COMPRESSED)
+       ========================= */
     shareBtn.addEventListener('click', async () => {
       const payload = buildPersonalizationPayload();
       const json = JSON.stringify(payload);
@@ -1695,13 +2013,13 @@
       }
 
       history.replaceState(null,'', location.pathname + location.search);
-      renderGrid(); renderFav(); syncStars();
+      renderGrid(); renderFavRight(); syncStars();
       alert('적용 완료');
     }
 
-    // ---------------------------
-    // Link modal (add/edit)
-    // ---------------------------
+    /* =========================
+       MODAL: ADD/EDIT LINK
+       ========================= */
     function openLinkModal(mode, item){
       modalBack.style.display = 'flex';
       linkFormArea.style.display = 'block';
@@ -1720,10 +2038,11 @@
       }
 
       fCat.value = item.cat || 'comm';
-      fBadge.value = item.badge || 'ME';
+      fBadge.value = (item.badge || '•').toString().slice(0,2);
       fTitle.value = item.title || '';
       fSub.value = item.sub || '';
       fHref.value = item.href || '';
+      fLogo.value = item.logo || '';
 
       if(currentCat !== 'all') fCat.value = currentCat;
     }
@@ -1735,21 +2054,24 @@
       fSub.value = '';
       fHref.value = '';
       fBadge.value = '';
+      fLogo.value = '';
       importText.value = '';
     }
 
     function validateForm(){
       const cat = fCat.value;
-      const badge = (fBadge.value || '').trim().slice(0,10);
+      const badge = (fBadge.value || '•').trim().slice(0,2) || '•';
       const title = (fTitle.value || '').trim().slice(0,60);
       const sub = (fSub.value || '').trim().slice(0,80);
       const hrefRaw = (fHref.value || '').trim();
+      const logoRaw = (fLogo.value || '').trim();
 
       if(!title) return {ok:false, msg:'이름을 입력하세요.'};
       const href = safeUrl(hrefRaw);
       if(!href) return {ok:false, msg:'URL은 http/https 형식만 허용됩니다.'};
 
-      return {ok:true, data:{cat, badge, title, sub, href}};
+      const logo = logoRaw ? safeUrl(logoRaw) : '';
+      return {ok:true, data:{cat, badge, title, sub, href, logo: logo || ''}};
     }
 
     saveBtn.addEventListener('click', () => {
@@ -1778,16 +2100,15 @@
     cancelBtn.addEventListener('click', closeModal);
     modalBack.addEventListener('click', (e) => { if(e.target === modalBack) closeModal(); });
 
-    // ---------------------------
-    // PWA install button
-    // ---------------------------
+    /* =========================
+       PWA INSTALL
+       ========================= */
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installBtn.style.display = 'inline-flex';
     });
-
     installBtn.addEventListener('click', async () => {
       if(!deferredPrompt) return;
       deferredPrompt.prompt();
@@ -1796,17 +2117,173 @@
       installBtn.style.display = 'none';
     });
 
-    // ---------------------------
-    // Service Worker register
-    // ---------------------------
     async function registerSW(){
       if(!('serviceWorker' in navigator)) return;
       try{ await navigator.serviceWorker.register('./sw.js'); } catch {}
     }
 
-    // ---------------------------
-    // Init
-    // ---------------------------
+    /* =========================
+       WEATHER (Open-Meteo)
+       - no key required
+       - uses geolocation if allowed
+       - fallback: Seoul
+       ========================= */
+    function wxCodeToText(code){
+      // Open-Meteo WMO weather codes (simplified)
+      const map = {
+        0:'맑음',
+        1:'대체로 맑음',
+        2:'부분적으로 흐림',
+        3:'흐림',
+        45:'안개',
+        48:'서리 안개',
+        51:'이슬비(약)',
+        53:'이슬비(중)',
+        55:'이슬비(강)',
+        61:'비(약)',
+        63:'비(중)',
+        65:'비(강)',
+        71:'눈(약)',
+        73:'눈(중)',
+        75:'눈(강)',
+        80:'소나기(약)',
+        81:'소나기(중)',
+        82:'소나기(강)',
+        95:'뇌우',
+        96:'뇌우+우박(약)',
+        99:'뇌우+우박(강)'
+      };
+      return map[code] || `코드 ${code}`;
+    }
+
+    async function fetchWeather(lat, lon){
+      const url =
+        `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`;
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) throw new Error('weather fetch failed');
+      return await res.json();
+    }
+
+    async function reverseGeocode(lat, lon){
+      // Nominatim (no key) - best effort, not critical
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+      const res = await fetch(url, {headers:{'Accept':'application/json'}});
+      if(!res.ok) return null;
+      const j = await res.json();
+      return j?.address?.city || j?.address?.town || j?.address?.village || j?.address?.state || null;
+    }
+
+    async function initWeather(){
+      const fallback = {lat:37.5665, lon:126.9780, place:'서울'};
+      let lat = fallback.lat, lon = fallback.lon, place = fallback.place;
+
+      if('geolocation' in navigator){
+        try{
+          const pos = await new Promise((resolve, reject)=>{
+            navigator.geolocation.getCurrentPosition(resolve, reject, {enableHighAccuracy:false, timeout:4000, maximumAge:600000});
+          });
+          lat = pos.coords.latitude;
+          lon = pos.coords.longitude;
+          const p = await reverseGeocode(lat, lon);
+          place = p || '현재 위치';
+        }catch{
+          // keep fallback
+        }
+      }
+
+      wxPlace.textContent = place;
+
+      try{
+        const data = await fetchWeather(lat, lon);
+        const c = data.current;
+        const t = Math.round(c.temperature_2m);
+        const feels = Math.round(c.apparent_temperature);
+        const hum = Math.round(c.relative_humidity_2m);
+        const wind = Math.round(c.wind_speed_10m);
+
+        wxTemp.textContent = `${t}°`;
+        wxMeta.textContent = `체감 ${feels}° · 습도 ${hum}% · 바람 ${wind}`;
+        wxBadge.textContent = wxCodeToText(c.weather_code);
+      }catch{
+        wxTemp.textContent = `--°`;
+        wxMeta.textContent = `날씨 로드 실패`;
+        wxBadge.textContent = `—`;
+      }
+    }
+
+    /* =========================
+       CLOCK (seconds)
+       ========================= */
+    function pad2(n){ return String(n).padStart(2,'0'); }
+    function tickClock(){
+      const d = new Date();
+      const hh = pad2(d.getHours());
+      const mm = pad2(d.getMinutes());
+      const ss = pad2(d.getSeconds());
+      clockEl.textContent = `${hh}:${mm}:${ss}`;
+    }
+
+    /* =========================
+       SMALL CALENDAR (month)
+       - today circled
+       ========================= */
+    function buildCalendar(){
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth(); // 0-based
+      const today = now.getDate();
+
+      const monthName = `${y}.${pad2(m+1)}`;
+      calTitle.textContent = `캘린더 · ${monthName}`;
+
+      const first = new Date(y, m, 1);
+      const last = new Date(y, m+1, 0);
+      const firstDow = first.getDay(); // 0 Sun
+      const daysInMonth = last.getDate();
+
+      const week = ['일','월','화','수','목','금','토'];
+
+      calGrid.innerHTML = '';
+      week.forEach(w=>{
+        const h = document.createElement('div');
+        h.className = 'calHead';
+        h.textContent = w;
+        calGrid.appendChild(h);
+      });
+
+      // 6 rows * 7 = 42 cells
+      // lead days from prev month
+      const prevLast = new Date(y, m, 0).getDate();
+      let dayNum = 1;
+      for(let i=0;i<42;i++){
+        const cell = document.createElement('div');
+        cell.className = 'calCell';
+
+        const idx = i; // 0..41
+        const gridPos = idx; // after headers already appended
+        // compute date number for this cell
+        if(idx < firstDow){
+          const d = prevLast - (firstDow - 1 - idx);
+          cell.textContent = d;
+          cell.classList.add('muted');
+        }else if(dayNum <= daysInMonth){
+          cell.textContent = dayNum;
+          if(dayNum === today) cell.classList.add('today');
+          dayNum++;
+        }else{
+          // next month
+          const d = dayNum - daysInMonth;
+          cell.textContent = d;
+          cell.classList.add('muted');
+          dayNum++;
+        }
+        calGrid.appendChild(cell);
+      }
+    }
+
+    /* =========================
+       INIT CHIP
+       ========================= */
     function initChips(){
       const params = new URLSearchParams(location.search);
       const cat = params.get('cat') || 'all';
@@ -1814,8 +2291,22 @@
       setActiveChip(exists ? cat : 'all');
     }
 
-    resetBtn.addEventListener('click', resetAll);
+    /* =========================
+       EXPORT/IMPORT + SHARE APPLY
+       ========================= */
+    function openImportModal(){
+      modalBack.style.display = 'flex';
+      editingId = null;
+      linkFormArea.style.display = 'none';
+      importArea.style.display = 'block';
+      modalTitle.textContent = '개인화 가져오기';
+      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
+      importText.value = '';
+    }
 
+    /* =========================
+       GLOBAL KEYS
+       ========================= */
     window.addEventListener('keydown', (e) => {
       if(e.key === 'Escape'){
         if(modalBack.style.display === 'flex') closeModal();
@@ -1823,11 +2314,21 @@
       }
     });
 
+    /* =========================
+       INIT
+       ========================= */
+    initTheme();
     registerSW();
     initChips();
-    renderFav();
+    renderFavRight();
     renderGrid();
     tryApplyFromHash();
+
+    // weather + calendar + clock
+    initWeather();
+    buildCalendar();
+    tickClock();
+    setInterval(tickClock, 250); // smooth seconds update
   </script>
 </body>
 </html>
