@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>나만의 시작 화면</title>
-  <meta name="description" content="로그인 없이 자주 쓰는 웹서비스를 한 곳에서. 개인 설정은 브라우저에만 저장됩니다." />
 
   <style>
     :root{
@@ -19,8 +18,9 @@
       --radius:16px;
       --max:1100px;
       --accent:#111827;
+      --warn:#ef4444;
+      --gold:#f59e0b;
     }
-
     [data-theme="dark"]{
       --bg:#0b0f14;
       --text:#e5e7eb;
@@ -31,6 +31,8 @@
       --chip:#0f1724;
       --shadow: 0 18px 40px rgba(0,0,0,.35);
       --accent:#e5e7eb;
+      --warn:#f87171;
+      --gold:#fbbf24;
     }
 
     *{box-sizing:border-box}
@@ -54,7 +56,7 @@
       align-items:flex-start;
       justify-content:space-between;
       gap:16px;
-      margin-bottom:18px;
+      margin-bottom:16px;
     }
     .brand{min-width:0}
     .brand h1{
@@ -84,7 +86,7 @@
       background:var(--card);
       padding:10px 12px;
       border-radius:12px;
-      font-weight:800;
+      font-weight:900;
       font-size:13px;
       cursor:pointer;
       color:var(--text);
@@ -100,7 +102,7 @@
       background:var(--card);
       cursor:pointer;
       user-select:none;
-      font-weight:900;
+      font-weight:950;
       font-size:13px;
       color:var(--text);
     }
@@ -108,7 +110,6 @@
       width:14px;height:14px;border-radius:999px;
       border:1px solid var(--line);
       background:var(--chip);
-      box-shadow: inset 0 0 0 3px rgba(0,0,0,0);
     }
     [data-theme="dark"] .dot{
       background: #111827;
@@ -137,7 +138,7 @@
       background:var(--chip);
       display:flex;align-items:center;justify-content:center;
       color:var(--muted);
-      font-weight:900;
+      font-weight:950;
       flex:0 0 auto;
     }
     .search input{
@@ -156,12 +157,114 @@
       line-height:1.4;
     }
 
+    /* Favorites (per category) */
+    .favBox{
+      margin-top:16px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--card);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .favTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .favTitle{
+      font-weight:950;
+      letter-spacing:-0.01em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .pill{
+      font-size:12px;
+      font-weight:950;
+      border:1px solid var(--line);
+      background:var(--chip);
+      padding:6px 10px;
+      border-radius:999px;
+      color:var(--text);
+      flex:0 0 auto;
+    }
+    .favHelp{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+    .favGrid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .favItem{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      background:var(--card);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-height:54px;
+    }
+    .favLink{
+      text-decoration:none;
+      color:var(--text);
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+      display:block;
+    }
+    .favMeta{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .favLeft{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .favActions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex:0 0 auto;
+    }
+    .iconBtn{
+      width:34px;height:34px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--chip);
+      cursor:pointer;
+      font-weight:950;
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+    }
+    .iconBtn:hover{background:var(--hover);}
+    .iconBtn.danger{color:var(--warn);}
+
     /* Categories */
     .cats{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin:20px 0 12px;
+      margin:18px 0 12px;
     }
     .chipbtn{
       border:1px solid var(--line);
@@ -169,7 +272,7 @@
       padding:8px 12px;
       border-radius:999px;
       font-size:13px;
-      font-weight:900;
+      font-weight:950;
       color:var(--text);
       cursor:pointer;
       user-select:none;
@@ -185,7 +288,7 @@
     }
     .count{
       font-size:12px;
-      font-weight:900;
+      font-weight:950;
       opacity:.75;
     }
 
@@ -208,6 +311,8 @@
       text-decoration:none;
       color:var(--text);
       transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+      position:relative;
+      min-height:78px;
     }
     a.card:hover{
       background:var(--hover);
@@ -220,9 +325,10 @@
     .left{
       display:flex; flex-direction:column; gap:6px;
       min-width:0;
+      padding-right:44px; /* space for star button */
     }
     .title{
-      font-weight:950;
+      font-weight:980;
       letter-spacing:-0.01em;
       white-space:nowrap;
       overflow:hidden;
@@ -238,12 +344,35 @@
     .badge{
       flex:0 0 auto;
       font-size:12px;
-      font-weight:950;
+      font-weight:980;
       color:var(--text);
       background:var(--chip);
       border:1px solid var(--line);
       padding:8px 10px;
       border-radius:12px;
+    }
+
+    /* Star on cards */
+    .star{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:34px;height:34px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--chip);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:980;
+      user-select:none;
+      color:var(--muted);
+    }
+    .star:hover{background:var(--hover);}
+    .star.on{
+      color:var(--gold);
+      border-color: rgba(245, 158, 11, .35);
     }
 
     footer{
@@ -261,6 +390,7 @@
     @media (max-width:520px){
       .brand h1{font-size:24px;}
       .grid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
+      .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
     }
   </style>
 </head>
@@ -270,7 +400,7 @@
     <div class="top">
       <div class="brand">
         <h1>북마크보다 빠른, 나만의 시작 화면</h1>
-        <p>회원가입 없이 · 추적 없이 · 자주 쓰는 서비스를 한 화면에서. (설정은 브라우저에만 저장)</p>
+        <p>회원가입 없이 · 추적 없이 · 자주 쓰는 서비스를 한 화면에서. (즐겨찾기/다크모드는 브라우저에만 저장)</p>
       </div>
 
       <div class="right">
@@ -278,7 +408,7 @@
           <span class="dot"></span>
           <span id="themeLabel">라이트</span>
         </div>
-        <button class="btn" type="button" id="resetBtn" title="검색/필터 초기화">초기화</button>
+        <button class="btn" type="button" id="resetBtn" title="필터/검색 초기화">초기화</button>
       </div>
     </div>
 
@@ -298,10 +428,22 @@
     </div>
 
     <div class="hint">
-      • 링크 클릭은 외부 서비스로 이동합니다. • 개인정보를 수집/저장하지 않습니다. • Enter: 검색 실행 / Esc: 전체 초기화
+      • 외부 서비스로 이동합니다 • 개인정보 수집/저장 없음 • ⭐: 현재 카테고리에 즐겨찾기 저장(토글) • Esc: 초기화
     </div>
 
-    <!-- Categories: Top 10 -->
+    <!-- Favorites per category -->
+    <div class="favBox">
+      <div class="favTop">
+        <div class="favTitle">
+          <span>즐겨찾기</span>
+          <span class="pill" id="favScope">전체</span>
+        </div>
+        <div class="favHelp">아래 카드의 ⭐를 눌러 현재 카테고리에 저장하세요 (최대 5개).</div>
+      </div>
+      <div class="favGrid" id="favGrid"></div>
+    </div>
+
+    <!-- Categories -->
     <div class="cats" id="cats">
       <div class="chipbtn active" data-cat="all">전체 <span class="count" data-count="all">(0)</span></div>
       <div class="chipbtn" data-cat="comm">커뮤니케이션 <span class="count" data-count="comm">(0)</span></div>
@@ -319,131 +461,129 @@
     <!-- Grid -->
     <div class="grid" id="grid">
       <!-- 커뮤니케이션 10 -->
-      <a class="card" data-cat="comm" href="https://web.telegram.org" target="_blank" rel="noopener"><div class="left"><div class="title">Telegram Web</div><div class="sub">메신저</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://www.kakaocorp.com/page/service/service/KakaoTalk" target="_blank" rel="noopener"><div class="left"><div class="title">KakaoTalk</div><div class="sub">카카오톡 안내</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://discord.com/app" target="_blank" rel="noopener"><div class="left"><div class="title">Discord</div><div class="sub">커뮤니티/채팅</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://slack.com/signin" target="_blank" rel="noopener"><div class="left"><div class="title">Slack</div><div class="sub">업무 메신저</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://accounts.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Account</div><div class="sub">구글 계정</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://www.blind.com" target="_blank" rel="noopener"><div class="left"><div class="title">Blind</div><div class="sub">직장인 커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://www.dcinside.com" target="_blank" rel="noopener"><div class="left"><div class="title">DCInside</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://open.kakao.com" target="_blank" rel="noopener"><div class="left"><div class="title">Kakao OpenChat</div><div class="sub">오픈채팅</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://mail.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Gmail</div><div class="sub">메일</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="comm" href="https://www.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver Mail/Portal</div><div class="sub">포털/메일 진입</div></div><div class="badge">COMM</div></a>
+      <a class="card" data-cat="comm" href="https://web.telegram.org" target="_blank" rel="noopener" data-title="Telegram Web" data-sub="메신저"><div class="left"><div class="title">Telegram Web</div><div class="sub">메신저</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://discord.com/app" target="_blank" rel="noopener" data-title="Discord" data-sub="커뮤니티/채팅"><div class="left"><div class="title">Discord</div><div class="sub">커뮤니티/채팅</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://slack.com/signin" target="_blank" rel="noopener" data-title="Slack" data-sub="업무 메신저"><div class="left"><div class="title">Slack</div><div class="sub">업무 메신저</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://mail.google.com" target="_blank" rel="noopener" data-title="Gmail" data-sub="메일"><div class="left"><div class="title">Gmail</div><div class="sub">메일</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://www.blind.com" target="_blank" rel="noopener" data-title="Blind" data-sub="직장인 커뮤니티"><div class="left"><div class="title">Blind</div><div class="sub">직장인 커뮤니티</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://www.dcinside.com" target="_blank" rel="noopener" data-title="DCInside" data-sub="커뮤니티"><div class="left"><div class="title">DCInside</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://open.kakao.com" target="_blank" rel="noopener" data-title="Kakao OpenChat" data-sub="오픈채팅"><div class="left"><div class="title">Kakao OpenChat</div><div class="sub">오픈채팅</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://www.naver.com" target="_blank" rel="noopener" data-title="Naver" data-sub="포털/메일 진입"><div class="left"><div class="title">Naver</div><div class="sub">포털/메일 진입</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://accounts.google.com" target="_blank" rel="noopener" data-title="Google Account" data-sub="계정"><div class="left"><div class="title">Google Account</div><div class="sub">계정</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
+      <a class="card" data-cat="comm" href="https://www.facebook.com/messages" target="_blank" rel="noopener" data-title="Facebook Messenger" data-sub="메신저"><div class="left"><div class="title">Messenger</div><div class="sub">메신저</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
 
       <!-- 생산성 10 -->
-      <a class="card" data-cat="prod" href="https://www.notion.so" target="_blank" rel="noopener"><div class="left"><div class="title">Notion</div><div class="sub">문서 · 위키</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://docs.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Docs</div><div class="sub">문서</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://sheets.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Sheets</div><div class="sub">스프레드시트</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://drive.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Drive</div><div class="sub">파일</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://calendar.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Calendar</div><div class="sub">일정</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://www.microsoft.com/microsoft-365/excel" target="_blank" rel="noopener"><div class="left"><div class="title">Microsoft Excel</div><div class="sub">엑셀</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://www.office.com" target="_blank" rel="noopener"><div class="left"><div class="title">Microsoft 365</div><div class="sub">오피스</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://www.figma.com" target="_blank" rel="noopener"><div class="left"><div class="title">Figma</div><div class="sub">디자인</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://trello.com" target="_blank" rel="noopener"><div class="left"><div class="title">Trello</div><div class="sub">칸반</div></div><div class="badge">PROD</div></a>
-      <a class="card" data-cat="prod" href="https://www.canva.com" target="_blank" rel="noopener"><div class="left"><div class="title">Canva</div><div class="sub">디자인/템플릿</div></div><div class="badge">PROD</div></a>
+      <a class="card" data-cat="prod" href="https://www.notion.so" target="_blank" rel="noopener" data-title="Notion" data-sub="문서 · 위키"><div class="left"><div class="title">Notion</div><div class="sub">문서 · 위키</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://docs.google.com" target="_blank" rel="noopener" data-title="Google Docs" data-sub="문서"><div class="left"><div class="title">Google Docs</div><div class="sub">문서</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://sheets.google.com" target="_blank" rel="noopener" data-title="Google Sheets" data-sub="스프레드시트"><div class="left"><div class="title">Google Sheets</div><div class="sub">스프레드시트</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://drive.google.com" target="_blank" rel="noopener" data-title="Google Drive" data-sub="파일"><div class="left"><div class="title">Google Drive</div><div class="sub">파일</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://calendar.google.com" target="_blank" rel="noopener" data-title="Google Calendar" data-sub="일정"><div class="left"><div class="title">Google Calendar</div><div class="sub">일정</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://www.microsoft.com/microsoft-365/excel" target="_blank" rel="noopener" data-title="Microsoft Excel" data-sub="엑셀"><div class="left"><div class="title">Microsoft Excel</div><div class="sub">엑셀</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://www.office.com" target="_blank" rel="noopener" data-title="Microsoft 365" data-sub="오피스"><div class="left"><div class="title">Microsoft 365</div><div class="sub">오피스</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://www.figma.com" target="_blank" rel="noopener" data-title="Figma" data-sub="디자인"><div class="left"><div class="title">Figma</div><div class="sub">디자인</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://trello.com" target="_blank" rel="noopener" data-title="Trello" data-sub="칸반"><div class="left"><div class="title">Trello</div><div class="sub">칸반</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
+      <a class="card" data-cat="prod" href="https://www.canva.com" target="_blank" rel="noopener" data-title="Canva" data-sub="디자인/템플릿"><div class="left"><div class="title">Canva</div><div class="sub">디자인/템플릿</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
 
       <!-- 미디어 10 -->
-      <a class="card" data-cat="media" href="https://www.youtube.com" target="_blank" rel="noopener"><div class="left"><div class="title">YouTube</div><div class="sub">동영상</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://music.youtube.com" target="_blank" rel="noopener"><div class="left"><div class="title">YouTube Music</div><div class="sub">음악</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://www.netflix.com" target="_blank" rel="noopener"><div class="left"><div class="title">Netflix</div><div class="sub">스트리밍</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://www.tving.com" target="_blank" rel="noopener"><div class="left"><div class="title">TVING</div><div class="sub">국내 OTT</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://www.wavve.com" target="_blank" rel="noopener"><div class="left"><div class="title">Wavve</div><div class="sub">국내 OTT</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://comic.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver Webtoon</div><div class="sub">웹툰</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://webtoon.kakao.com" target="_blank" rel="noopener"><div class="left"><div class="title">Kakao Webtoon</div><div class="sub">웹툰</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://www.spotify.com" target="_blank" rel="noopener"><div class="left"><div class="title">Spotify</div><div class="sub">음악</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://www.twitch.tv" target="_blank" rel="noopener"><div class="left"><div class="title">Twitch</div><div class="sub">라이브</div></div><div class="badge">MEDIA</div></a>
-      <a class="card" data-cat="media" href="https://www.disneyplus.com" target="_blank" rel="noopener"><div class="left"><div class="title">Disney+</div><div class="sub">스트리밍</div></div><div class="badge">MEDIA</div></a>
+      <a class="card" data-cat="media" href="https://www.youtube.com" target="_blank" rel="noopener" data-title="YouTube" data-sub="동영상"><div class="left"><div class="title">YouTube</div><div class="sub">동영상</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://music.youtube.com" target="_blank" rel="noopener" data-title="YouTube Music" data-sub="음악"><div class="left"><div class="title">YouTube Music</div><div class="sub">음악</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://www.netflix.com" target="_blank" rel="noopener" data-title="Netflix" data-sub="스트리밍"><div class="left"><div class="title">Netflix</div><div class="sub">스트리밍</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://comic.naver.com" target="_blank" rel="noopener" data-title="Naver Webtoon" data-sub="웹툰"><div class="left"><div class="title">Naver Webtoon</div><div class="sub">웹툰</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://webtoon.kakao.com" target="_blank" rel="noopener" data-title="Kakao Webtoon" data-sub="웹툰"><div class="left"><div class="title">Kakao Webtoon</div><div class="sub">웹툰</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://www.tving.com" target="_blank" rel="noopener" data-title="TVING" data-sub="국내 OTT"><div class="left"><div class="title">TVING</div><div class="sub">국내 OTT</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://www.wavve.com" target="_blank" rel="noopener" data-title="Wavve" data-sub="국내 OTT"><div class="left"><div class="title">Wavve</div><div class="sub">국내 OTT</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://www.spotify.com" target="_blank" rel="noopener" data-title="Spotify" data-sub="음악"><div class="left"><div class="title">Spotify</div><div class="sub">음악</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://www.twitch.tv" target="_blank" rel="noopener" data-title="Twitch" data-sub="라이브"><div class="left"><div class="title">Twitch</div><div class="sub">라이브</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
+      <a class="card" data-cat="media" href="https://www.disneyplus.com" target="_blank" rel="noopener" data-title="Disney+" data-sub="스트리밍"><div class="left"><div class="title">Disney+</div><div class="sub">스트리밍</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
 
       <!-- 금융 10 -->
-      <a class="card" data-cat="finance" href="https://www.google.com/finance" target="_blank" rel="noopener"><div class="left"><div class="title">Google Finance</div><div class="sub">시장 요약</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.investing.com" target="_blank" rel="noopener"><div class="left"><div class="title">Investing</div><div class="sub">시장 데이터</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://finance.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver Finance</div><div class="sub">국내 시세</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.tradingview.com" target="_blank" rel="noopener"><div class="left"><div class="title">TradingView</div><div class="sub">차트</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.bitget.com" target="_blank" rel="noopener"><div class="left"><div class="title">Bitget</div><div class="sub">거래소</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.binance.com" target="_blank" rel="noopener"><div class="left"><div class="title">Binance</div><div class="sub">거래소</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.coinmarketcap.com" target="_blank" rel="noopener"><div class="left"><div class="title">CoinMarketCap</div><div class="sub">시가총액</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.coingecko.com" target="_blank" rel="noopener"><div class="left"><div class="title">CoinGecko</div><div class="sub">코인 데이터</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.toss.im" target="_blank" rel="noopener"><div class="left"><div class="title">Toss</div><div class="sub">금융</div></div><div class="badge">FIN</div></a>
-      <a class="card" data-cat="finance" href="https://www.kakaobank.com" target="_blank" rel="noopener"><div class="left"><div class="title">KakaoBank</div><div class="sub">은행</div></div><div class="badge">FIN</div></a>
+      <a class="card" data-cat="finance" href="https://finance.naver.com" target="_blank" rel="noopener" data-title="Naver Finance" data-sub="국내 시세"><div class="left"><div class="title">Naver Finance</div><div class="sub">국내 시세</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.tradingview.com" target="_blank" rel="noopener" data-title="TradingView" data-sub="차트"><div class="left"><div class="title">TradingView</div><div class="sub">차트</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.bitget.com" target="_blank" rel="noopener" data-title="Bitget" data-sub="거래소"><div class="left"><div class="title">Bitget</div><div class="sub">거래소</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.binance.com" target="_blank" rel="noopener" data-title="Binance" data-sub="거래소"><div class="left"><div class="title">Binance</div><div class="sub">거래소</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.coinmarketcap.com" target="_blank" rel="noopener" data-title="CoinMarketCap" data-sub="시가총액"><div class="left"><div class="title">CoinMarketCap</div><div class="sub">시가총액</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.coingecko.com" target="_blank" rel="noopener" data-title="CoinGecko" data-sub="코인 데이터"><div class="left"><div class="title">CoinGecko</div><div class="sub">코인 데이터</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.google.com/finance" target="_blank" rel="noopener" data-title="Google Finance" data-sub="시장 요약"><div class="left"><div class="title">Google Finance</div><div class="sub">시장 요약</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.investing.com" target="_blank" rel="noopener" data-title="Investing" data-sub="시장 데이터"><div class="left"><div class="title">Investing</div><div class="sub">시장 데이터</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.toss.im" target="_blank" rel="noopener" data-title="Toss" data-sub="금융"><div class="left"><div class="title">Toss</div><div class="sub">금융</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
+      <a class="card" data-cat="finance" href="https://www.kakaobank.com" target="_blank" rel="noopener" data-title="KakaoBank" data-sub="은행"><div class="left"><div class="title">KakaoBank</div><div class="sub">은행</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
 
       <!-- AI 10 -->
-      <a class="card" data-cat="ai" href="https://chat.openai.com" target="_blank" rel="noopener"><div class="left"><div class="title">ChatGPT</div><div class="sub">대화형 AI</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://claude.ai" target="_blank" rel="noopener"><div class="left"><div class="title">Claude</div><div class="sub">대화형 AI</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://gemini.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Gemini</div><div class="sub">AI</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://www.perplexity.ai" target="_blank" rel="noopener"><div class="left"><div class="title">Perplexity</div><div class="sub">AI 검색</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://www.midjourney.com" target="_blank" rel="noopener"><div class="left"><div class="title">Midjourney</div><div class="sub">이미지 생성</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://platform.openai.com" target="_blank" rel="noopener"><div class="left"><div class="title">OpenAI Platform</div><div class="sub">API</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://bard.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">AI (Google)</div><div class="sub">구글 AI</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://huggingface.co" target="_blank" rel="noopener"><div class="left"><div class="title">Hugging Face</div><div class="sub">모델/데이터</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://www.cursor.com" target="_blank" rel="noopener"><div class="left"><div class="title">Cursor</div><div class="sub">AI 코드 에디터</div></div><div class="badge">AI</div></a>
-      <a class="card" data-cat="ai" href="https://copilot.github.com" target="_blank" rel="noopener"><div class="left"><div class="title">GitHub Copilot</div><div class="sub">코딩 보조</div></div><div class="badge">AI</div></a>
+      <a class="card" data-cat="ai" href="https://chat.openai.com" target="_blank" rel="noopener" data-title="ChatGPT" data-sub="대화형 AI"><div class="left"><div class="title">ChatGPT</div><div class="sub">대화형 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://claude.ai" target="_blank" rel="noopener" data-title="Claude" data-sub="대화형 AI"><div class="left"><div class="title">Claude</div><div class="sub">대화형 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://gemini.google.com" target="_blank" rel="noopener" data-title="Gemini" data-sub="구글 AI"><div class="left"><div class="title">Gemini</div><div class="sub">구글 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://www.perplexity.ai" target="_blank" rel="noopener" data-title="Perplexity" data-sub="AI 검색"><div class="left"><div class="title">Perplexity</div><div class="sub">AI 검색</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://platform.openai.com" target="_blank" rel="noopener" data-title="OpenAI Platform" data-sub="API"><div class="left"><div class="title">OpenAI Platform</div><div class="sub">API</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://huggingface.co" target="_blank" rel="noopener" data-title="Hugging Face" data-sub="모델/데이터"><div class="left"><div class="title">Hugging Face</div><div class="sub">모델/데이터</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://copilot.github.com" target="_blank" rel="noopener" data-title="GitHub Copilot" data-sub="코딩 보조"><div class="left"><div class="title">GitHub Copilot</div><div class="sub">코딩 보조</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://www.cursor.com" target="_blank" rel="noopener" data-title="Cursor" data-sub="AI 에디터"><div class="left"><div class="title">Cursor</div><div class="sub">AI 에디터</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://www.midjourney.com" target="_blank" rel="noopener" data-title="Midjourney" data-sub="이미지 생성"><div class="left"><div class="title">Midjourney</div><div class="sub">이미지 생성</div></div><div class="badge">AI</div><div class="star">☆</div></a>
+      <a class="card" data-cat="ai" href="https://recraft.ai" target="_blank" rel="noopener" data-title="Recraft" data-sub="디자인 AI"><div class="left"><div class="title">Recraft</div><div class="sub">디자인 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
 
-      <!-- 뉴스·리서치 10 -->
-      <a class="card" data-cat="news" href="https://news.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver News</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://news.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google News</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.bloomberg.com" target="_blank" rel="noopener"><div class="left"><div class="title">Bloomberg</div><div class="sub">금융뉴스</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.reuters.com" target="_blank" rel="noopener"><div class="left"><div class="title">Reuters</div><div class="sub">글로벌뉴스</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.wsj.com" target="_blank" rel="noopener"><div class="left"><div class="title">WSJ</div><div class="sub">비즈니스</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.economist.com" target="_blank" rel="noopener"><div class="left"><div class="title">The Economist</div><div class="sub">시사</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.ft.com" target="_blank" rel="noopener"><div class="left"><div class="title">Financial Times</div><div class="sub">금융</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.nytimes.com" target="_blank" rel="noopener"><div class="left"><div class="title">NYTimes</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://www.theinformation.com" target="_blank" rel="noopener"><div class="left"><div class="title">The Information</div><div class="sub">테크 리서치</div></div><div class="badge">NEWS</div></a>
-      <a class="card" data-cat="news" href="https://arxiv.org" target="_blank" rel="noopener"><div class="left"><div class="title">arXiv</div><div class="sub">논문</div></div><div class="badge">NEWS</div></a>
+      <!-- 뉴스 10 -->
+      <a class="card" data-cat="news" href="https://news.naver.com" target="_blank" rel="noopener" data-title="Naver News" data-sub="뉴스"><div class="left"><div class="title">Naver News</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://news.google.com" target="_blank" rel="noopener" data-title="Google News" data-sub="뉴스"><div class="left"><div class="title">Google News</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.bloomberg.com" target="_blank" rel="noopener" data-title="Bloomberg" data-sub="금융뉴스"><div class="left"><div class="title">Bloomberg</div><div class="sub">금융뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.reuters.com" target="_blank" rel="noopener" data-title="Reuters" data-sub="글로벌뉴스"><div class="left"><div class="title">Reuters</div><div class="sub">글로벌뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.ft.com" target="_blank" rel="noopener" data-title="Financial Times" data-sub="금융"><div class="left"><div class="title">Financial Times</div><div class="sub">금융</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.wsj.com" target="_blank" rel="noopener" data-title="WSJ" data-sub="비즈니스"><div class="left"><div class="title">WSJ</div><div class="sub">비즈니스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.economist.com" target="_blank" rel="noopener" data-title="The Economist" data-sub="시사"><div class="left"><div class="title">The Economist</div><div class="sub">시사</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://arxiv.org" target="_blank" rel="noopener" data-title="arXiv" data-sub="논문"><div class="left"><div class="title">arXiv</div><div class="sub">논문</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.theinformation.com" target="_blank" rel="noopener" data-title="The Information" data-sub="테크 리서치"><div class="left"><div class="title">The Information</div><div class="sub">테크 리서치</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
+      <a class="card" data-cat="news" href="https://www.nytimes.com" target="_blank" rel="noopener" data-title="NYTimes" data-sub="뉴스"><div class="left"><div class="title">NYTimes</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
 
       <!-- 쇼핑 10 -->
-      <a class="card" data-cat="shop" href="https://www.coupang.com" target="_blank" rel="noopener"><div class="left"><div class="title">Coupang</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://shopping.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver Shopping</div><div class="sub">가격비교</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.11st.co.kr" target="_blank" rel="noopener"><div class="left"><div class="title">11st</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.gmarket.co.kr" target="_blank" rel="noopener"><div class="left"><div class="title">Gmarket</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.auction.co.kr" target="_blank" rel="noopener"><div class="left"><div class="title">Auction</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.ssg.com" target="_blank" rel="noopener"><div class="left"><div class="title">SSG</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.todayhouse.com" target="_blank" rel="noopener"><div class="left"><div class="title">오늘의집</div><div class="sub">리빙</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.amazon.com" target="_blank" rel="noopener"><div class="left"><div class="title">Amazon</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.aliexpress.com" target="_blank" rel="noopener"><div class="left"><div class="title">AliExpress</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div></a>
-      <a class="card" data-cat="shop" href="https://www.temu.com" target="_blank" rel="noopener"><div class="left"><div class="title">Temu</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div></a>
+      <a class="card" data-cat="shop" href="https://www.coupang.com" target="_blank" rel="noopener" data-title="Coupang" data-sub="쇼핑"><div class="left"><div class="title">Coupang</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://shopping.naver.com" target="_blank" rel="noopener" data-title="Naver Shopping" data-sub="가격비교"><div class="left"><div class="title">Naver Shopping</div><div class="sub">가격비교</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.11st.co.kr" target="_blank" rel="noopener" data-title="11st" data-sub="쇼핑"><div class="left"><div class="title">11st</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.gmarket.co.kr" target="_blank" rel="noopener" data-title="Gmarket" data-sub="쇼핑"><div class="left"><div class="title">Gmarket</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.auction.co.kr" target="_blank" rel="noopener" data-title="Auction" data-sub="쇼핑"><div class="left"><div class="title">Auction</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.ssg.com" target="_blank" rel="noopener" data-title="SSG" data-sub="쇼핑"><div class="left"><div class="title">SSG</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.todayhouse.com" target="_blank" rel="noopener" data-title="오늘의집" data-sub="리빙"><div class="left"><div class="title">오늘의집</div><div class="sub">리빙</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.amazon.com" target="_blank" rel="noopener" data-title="Amazon" data-sub="해외 쇼핑"><div class="left"><div class="title">Amazon</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.aliexpress.com" target="_blank" rel="noopener" data-title="AliExpress" data-sub="해외 쇼핑"><div class="left"><div class="title">AliExpress</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
+      <a class="card" data-cat="shop" href="https://www.temu.com" target="_blank" rel="noopener" data-title="Temu" data-sub="해외 쇼핑"><div class="left"><div class="title">Temu</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
 
-      <!-- 커뮤니티 10 (요청: 키워드채팅 포함) -->
-      <a class="card" data-cat="community" href="https://www.fmkorea.com" target="_blank" rel="noopener"><div class="left"><div class="title">FMKOREA</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.clien.net" target="_blank" rel="noopener"><div class="left"><div class="title">Clien</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.ppomppu.co.kr" target="_blank" rel="noopener"><div class="left"><div class="title">Ppomppu</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.ruliweb.com" target="_blank" rel="noopener"><div class="left"><div class="title">Ruliweb</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.inven.co.kr" target="_blank" rel="noopener"><div class="left"><div class="title">Inven</div><div class="sub">게임 커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.dcinside.com" target="_blank" rel="noopener"><div class="left"><div class="title">DCInside</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.blind.com" target="_blank" rel="noopener"><div class="left"><div class="title">Blind</div><div class="sub">직장인 커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.reddit.com" target="_blank" rel="noopener"><div class="left"><div class="title">Reddit</div><div class="sub">글로벌 커뮤니티</div></div><div class="badge">COMM</div></a>
-      <a class="card" data-cat="community" href="https://www.quora.com" target="_blank" rel="noopener"><div class="left"><div class="title">Quora</div><div class="sub">Q&A</div></div><div class="badge">COMM</div></a>
-      <!-- 키워드채팅: 실제 주소로 바꿔라 -->
-      <a class="card" data-cat="community" href="https://example.com/keyword-chatting" target="_blank" rel="noopener"><div class="left"><div class="title">키워드채팅</div><div class="sub">내 프로젝트(링크 교체)</div></div><div class="badge">ME</div></a>
+      <!-- 커뮤니티 10 (키워드채팅 포함: URL 바꿔라) -->
+      <a class="card" data-cat="community" href="https://www.fmkorea.com" target="_blank" rel="noopener" data-title="FMKOREA" data-sub="커뮤니티"><div class="left"><div class="title">FMKOREA</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.clien.net" target="_blank" rel="noopener" data-title="Clien" data-sub="커뮤니티"><div class="left"><div class="title">Clien</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.ppomppu.co.kr" target="_blank" rel="noopener" data-title="Ppomppu" data-sub="커뮤니티"><div class="left"><div class="title">Ppomppu</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.ruliweb.com" target="_blank" rel="noopener" data-title="Ruliweb" data-sub="커뮤니티"><div class="left"><div class="title">Ruliweb</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.inven.co.kr" target="_blank" rel="noopener" data-title="Inven" data-sub="게임 커뮤니티"><div class="left"><div class="title">Inven</div><div class="sub">게임 커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.dcinside.com" target="_blank" rel="noopener" data-title="DCInside" data-sub="커뮤니티"><div class="left"><div class="title">DCInside</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.blind.com" target="_blank" rel="noopener" data-title="Blind" data-sub="직장인 커뮤니티"><div class="left"><div class="title">Blind</div><div class="sub">직장인 커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.reddit.com" target="_blank" rel="noopener" data-title="Reddit" data-sub="글로벌 커뮤니티"><div class="left"><div class="title">Reddit</div><div class="sub">글로벌 커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://www.quora.com" target="_blank" rel="noopener" data-title="Quora" data-sub="Q&A"><div class="left"><div class="title">Quora</div><div class="sub">Q&A</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
+      <a class="card" data-cat="community" href="https://example.com/keyword-chatting" target="_blank" rel="noopener" data-title="키워드채팅" data-sub="내 프로젝트 (링크 교체)"><div class="left"><div class="title">키워드채팅</div><div class="sub">내 프로젝트 (링크 교체)</div></div><div class="badge">ME</div><div class="star">☆</div></a>
 
       <!-- 개발·도구 10 -->
-      <a class="card" data-cat="dev" href="https://github.com" target="_blank" rel="noopener"><div class="left"><div class="title">GitHub</div><div class="sub">코드/프로젝트</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://vercel.com" target="_blank" rel="noopener"><div class="left"><div class="title">Vercel</div><div class="sub">배포</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://www.netlify.com" target="_blank" rel="noopener"><div class="left"><div class="title">Netlify</div><div class="sub">배포</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://developers.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Developers</div><div class="sub">문서</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://stackoverflow.com" target="_blank" rel="noopener"><div class="left"><div class="title">Stack Overflow</div><div class="sub">Q&A</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://codepen.io" target="_blank" rel="noopener"><div class="left"><div class="title">CodePen</div><div class="sub">프론트 실험</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://replit.com" target="_blank" rel="noopener"><div class="left"><div class="title">Replit</div><div class="sub">코딩</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://www.postman.com" target="_blank" rel="noopener"><div class="left"><div class="title">Postman</div><div class="sub">API 테스트</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://cloudflare.com" target="_blank" rel="noopener"><div class="left"><div class="title">Cloudflare</div><div class="sub">보안/CDN</div></div><div class="badge">DEV</div></a>
-      <a class="card" data-cat="dev" href="https://supabase.com" target="_blank" rel="noopener"><div class="left"><div class="title">Supabase</div><div class="sub">DB/Auth</div></div><div class="badge">DEV</div></a>
+      <a class="card" data-cat="dev" href="https://github.com" target="_blank" rel="noopener" data-title="GitHub" data-sub="코드/프로젝트"><div class="left"><div class="title">GitHub</div><div class="sub">코드/프로젝트</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://vercel.com" target="_blank" rel="noopener" data-title="Vercel" data-sub="배포"><div class="left"><div class="title">Vercel</div><div class="sub">배포</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://www.netlify.com" target="_blank" rel="noopener" data-title="Netlify" data-sub="배포"><div class="left"><div class="title">Netlify</div><div class="sub">배포</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://developers.google.com" target="_blank" rel="noopener" data-title="Google Developers" data-sub="문서"><div class="left"><div class="title">Google Developers</div><div class="sub">문서</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://stackoverflow.com" target="_blank" rel="noopener" data-title="Stack Overflow" data-sub="Q&A"><div class="left"><div class="title">Stack Overflow</div><div class="sub">Q&A</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://codepen.io" target="_blank" rel="noopener" data-title="CodePen" data-sub="프론트 실험"><div class="left"><div class="title">CodePen</div><div class="sub">프론트 실험</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://replit.com" target="_blank" rel="noopener" data-title="Replit" data-sub="코딩"><div class="left"><div class="title">Replit</div><div class="sub">코딩</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://www.postman.com" target="_blank" rel="noopener" data-title="Postman" data-sub="API 테스트"><div class="left"><div class="title">Postman</div><div class="sub">API 테스트</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://cloudflare.com" target="_blank" rel="noopener" data-title="Cloudflare" data-sub="보안/CDN"><div class="left"><div class="title">Cloudflare</div><div class="sub">보안/CDN</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
+      <a class="card" data-cat="dev" href="https://supabase.com" target="_blank" rel="noopener" data-title="Supabase" data-sub="DB/Auth"><div class="left"><div class="title">Supabase</div><div class="sub">DB/Auth</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
 
       <!-- 유틸리티 10 -->
-      <a class="card" data-cat="util" href="https://translate.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Translate</div><div class="sub">번역</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://drive.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Drive</div><div class="sub">파일</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://keep.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Keep</div><div class="sub">메모</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://calendar.google.com" target="_blank" rel="noopener"><div class="left"><div class="title">Google Calendar</div><div class="sub">일정</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://map.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver Map</div><div class="sub">지도</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://map.kakao.com" target="_blank" rel="noopener"><div class="left"><div class="title">Kakao Map</div><div class="sub">지도</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://weather.naver.com" target="_blank" rel="noopener"><div class="left"><div class="title">Naver Weather</div><div class="sub">날씨</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://www.speedtest.net" target="_blank" rel="noopener"><div class="left"><div class="title">Speedtest</div><div class="sub">인터넷 속도</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://www.timeanddate.com" target="_blank" rel="noopener"><div class="left"><div class="title">Time & Date</div><div class="sub">시간/캘린더</div></div><div class="badge">UTIL</div></a>
-      <a class="card" data-cat="util" href="https://www.remove.bg" target="_blank" rel="noopener"><div class="left"><div class="title">remove.bg</div><div class="sub">배경 제거</div></div><div class="badge">UTIL</div></a>
+      <a class="card" data-cat="util" href="https://translate.google.com" target="_blank" rel="noopener" data-title="Google Translate" data-sub="번역"><div class="left"><div class="title">Google Translate</div><div class="sub">번역</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://keep.google.com" target="_blank" rel="noopener" data-title="Google Keep" data-sub="메모"><div class="left"><div class="title">Google Keep</div><div class="sub">메모</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://calendar.google.com" target="_blank" rel="noopener" data-title="Google Calendar" data-sub="일정"><div class="left"><div class="title">Google Calendar</div><div class="sub">일정</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://map.naver.com" target="_blank" rel="noopener" data-title="Naver Map" data-sub="지도"><div class="left"><div class="title">Naver Map</div><div class="sub">지도</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://map.kakao.com" target="_blank" rel="noopener" data-title="Kakao Map" data-sub="지도"><div class="left"><div class="title">Kakao Map</div><div class="sub">지도</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://weather.naver.com" target="_blank" rel="noopener" data-title="Naver Weather" data-sub="날씨"><div class="left"><div class="title">Naver Weather</div><div class="sub">날씨</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://www.speedtest.net" target="_blank" rel="noopener" data-title="Speedtest" data-sub="인터넷 속도"><div class="left"><div class="title">Speedtest</div><div class="sub">인터넷 속도</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://www.timeanddate.com" target="_blank" rel="noopener" data-title="Time & Date" data-sub="시간/달력"><div class="left"><div class="title">Time & Date</div><div class="sub">시간/달력</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://www.remove.bg" target="_blank" rel="noopener" data-title="remove.bg" data-sub="배경 제거"><div class="left"><div class="title">remove.bg</div><div class="sub">배경 제거</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
+      <a class="card" data-cat="util" href="https://www.google.com/drive/" target="_blank" rel="noopener" data-title="Drive (Quick)" data-sub="드라이브"><div class="left"><div class="title">Drive (Quick)</div><div class="sub">드라이브</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
     </div>
 
     <footer>
       본 사이트는 외부 서비스의 공식 링크를 정리·제공하는 정보성 페이지입니다. 각 서비스의 상표 및 운영 권한은 해당 회사에 귀속됩니다.<br/>
-      회원가입을 받지 않으며, 개인정보를 수집/저장하지 않습니다. (다크모드 설정만 브라우저(LocalStorage)에 저장)
-      비즈니스 문의 unnamedaxe@gmail.com
+      회원가입을 받지 않으며, 개인정보를 수집/저장하지 않습니다. (다크모드/즐겨찾기만 브라우저(LocalStorage)에 저장)
     </footer>
   </div>
 
@@ -489,43 +629,51 @@
     function openNaver(){
       const q = (naverQ.value || '').trim();
       if(!q) return;
-      const url = `https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`;
-      window.open(url, '_blank', 'noopener');
+      window.open(`https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`, '_blank', 'noopener');
     }
     function openGoogle(){
       const q = (googleQ.value || '').trim();
       if(!q) return;
-      const url = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
-      window.open(url, '_blank', 'noopener');
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener');
     }
-
     naverGo.addEventListener('click', openNaver);
     googleGo.addEventListener('click', openGoogle);
-
     naverQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openNaver(); });
     googleQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openGoogle(); });
 
     // ---------------------------
-    // Filter + URL state
+    // Categories + counts + URL
     // ---------------------------
     const resetBtn = document.getElementById('resetBtn');
     const chips = Array.from(document.querySelectorAll('.chipbtn'));
     const cards = Array.from(document.querySelectorAll('.card'));
+    const favGrid = document.getElementById('favGrid');
+    const favScope = document.getElementById('favScope');
+
     let currentCat = 'all';
 
     function setActiveChip(cat){
       chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
       currentCat = cat;
+      favScope.textContent = chipLabel(cat);
       filterCards();
       updateUrl();
+      renderFav();
+      syncStars();
+    }
+
+    function chipLabel(cat){
+      const map = {
+        all:'전체', comm:'커뮤니케이션', prod:'생산성', media:'미디어', finance:'금융', ai:'AI',
+        news:'뉴스·리서치', shop:'쇼핑', community:'커뮤니티', dev:'개발·도구', util:'유틸리티'
+      };
+      return map[cat] || cat;
     }
 
     function filterCards(){
-      // no internal keyword search now; category filter only
       cards.forEach(card => {
         const cat = card.dataset.cat;
-        const catOk = (currentCat === 'all') || (cat === currentCat);
-        card.style.display = catOk ? 'flex' : 'none';
+        card.style.display = (currentCat === 'all' || cat === currentCat) ? 'flex' : 'none';
       });
       updateCounts();
     }
@@ -562,24 +710,159 @@
     }
 
     function resetAll(){
-      setActiveChip('all');
       naverQ.value = '';
       googleQ.value = '';
+      setActiveChip('all');
     }
 
     chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
     resetBtn.addEventListener('click', resetAll);
+    window.addEventListener('keydown', (e) => { if(e.key === 'Escape') resetAll(); });
 
-    window.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape'){
-        resetAll();
+    // ---------------------------
+    // Favorites per category (LocalStorage)
+    // ---------------------------
+    const FAV_KEY = 'xbrand_favorites_v1';
+    const MAX_FAV = 5;
+
+    function loadFav(){
+      try{ return JSON.parse(localStorage.getItem(FAV_KEY) || '{}'); }
+      catch{ return {}; }
+    }
+    function saveFav(data){
+      localStorage.setItem(FAV_KEY, JSON.stringify(data));
+    }
+
+    function getFavList(cat){
+      const data = loadFav();
+      return Array.isArray(data[cat]) ? data[cat] : [];
+    }
+
+    function setFavList(cat, list){
+      const data = loadFav();
+      data[cat] = list;
+      saveFav(data);
+    }
+
+    function isFav(cat, href){
+      return getFavList(cat).some(x => x.href === href);
+    }
+
+    function toggleFav(cat, item){
+      // cat: currentCat 기준으로 저장 (all도 허용)
+      const list = getFavList(cat);
+      const idx = list.findIndex(x => x.href === item.href);
+
+      if(idx >= 0){
+        list.splice(idx, 1);
+      }else{
+        // prepend newest
+        list.unshift(item);
+        // dedupe by href
+        const seen = new Set();
+        const deduped = [];
+        for(const x of list){
+          if(seen.has(x.href)) continue;
+          seen.add(x.href);
+          deduped.push(x);
+        }
+        while(deduped.length > MAX_FAV) deduped.pop();
+        setFavList(cat, deduped);
+        renderFav();
+        syncStars();
+        return;
       }
+      setFavList(cat, list);
+      renderFav();
+      syncStars();
+    }
+
+    function removeFav(cat, href){
+      const list = getFavList(cat).filter(x => x.href !== href);
+      setFavList(cat, list);
+      renderFav();
+      syncStars();
+    }
+
+    function renderFav(){
+      const cat = currentCat;
+      const list = getFavList(cat);
+
+      favGrid.innerHTML = '';
+      if(list.length === 0){
+        favGrid.innerHTML = `
+          <div class="favItem" style="grid-column:1/-1; justify-content:flex-start;">
+            <div class="favLeft">
+              <div class="favLink">비어있음</div>
+              <div class="favMeta">아래 카드의 ⭐를 눌러 즐겨찾기를 추가하세요. (카테고리별 최대 ${MAX_FAV}개)</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'favItem';
+        div.innerHTML = `
+          <div class="favLeft">
+            <a class="favLink" href="${item.href}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a>
+            <div class="favMeta">${escapeHtml(item.sub || '')}</div>
+          </div>
+          <div class="favActions">
+            <button class="iconBtn danger" title="삭제">×</button>
+          </div>
+        `;
+        div.querySelector('.iconBtn').addEventListener('click', () => removeFav(cat, item.href));
+        favGrid.appendChild(div);
+      });
+    }
+
+    function syncStars(){
+      // 현재 카테고리에서만 별 표시 동기화 (필요하면 all에도 적용 가능)
+      cards.forEach(card => {
+        const star = card.querySelector('.star');
+        if(!star) return;
+        const href = card.getAttribute('href');
+        const on = isFav(currentCat, href);
+        star.classList.toggle('on', on);
+        star.textContent = on ? '★' : '☆';
+      });
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+
+    // Attach star handlers (prevent link click)
+    cards.forEach(card => {
+      const star = card.querySelector('.star');
+      if(!star) return;
+
+      star.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const item = {
+          title: card.dataset.title || card.querySelector('.title')?.innerText || '즐겨찾기',
+          sub: card.dataset.sub || card.querySelector('.sub')?.innerText || '',
+          href: card.getAttribute('href')
+        };
+        toggleFav(currentCat, item);
+      });
     });
 
     // Init
     initTheme();
     readUrl();
     filterCards();
+    renderFav();
+    syncStars();
   </script>
 </body>
 </html>
