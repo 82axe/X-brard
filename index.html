@@ -33,6 +33,23 @@
       --ok:#10b981;
     }
 
+    /* ✅ Dark mode variables (body.dark overrides) */
+    body.dark{
+      --bg:#0b1220;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#1f2937;
+      --card:#0f172a;
+      --hover:#111c33;
+      --chip:#111827;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+
+      --warn:#f87171;
+      --gold:#fbbf24;
+      --ok:#34d399;
+    }
+    body.dark .modalBack{ background: rgba(0,0,0,.55); }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -61,7 +78,6 @@
       margin:0 0 6px 0;
       line-height:1.15;
 
-      /* ✅ title not cut */
       white-space:normal;
       overflow:visible;
       text-overflow:clip;
@@ -74,7 +90,7 @@
       font-size:14px;
     }
 
-    /* ✅ moved buttons under title */
+    /* actions */
     .actions{
       display:flex;
       align-items:center;
@@ -100,6 +116,11 @@
     .btn.danger{
       border-color: rgba(239,68,68,.35);
       background: rgba(239,68,68,.08);
+    }
+    /* ✅ theme toggle pinned to right edge of actions row */
+    .btn.themeToggle{
+      margin-left:auto;
+      font-weight:950;
     }
 
     /* Search rows */
@@ -288,7 +309,6 @@
       margin-top:12px;
     }
 
-    /* ✅ FIX: no absolute UI, use grid columns */
     .card{
       display:grid;
       grid-template-columns: 1fr auto auto;
@@ -471,6 +491,7 @@
     @media (max-width:820px){
       .searchRow{grid-template-columns:1fr;}
       .row2{grid-template-columns:1fr;}
+      .btn.themeToggle{ margin-left:0; } /* wrap 시 자연스럽게 */
     }
     @media (max-width:520px){
       .brand h1{font-size:24px;}
@@ -489,7 +510,6 @@
         <p>무회원 · 무수집 · 개인화는 브라우저에만 저장됩니다. (공유는 URL로만 전달)</p>
       </div>
 
-      <!-- ✅ moved here (under title) -->
       <div class="actions">
         <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
         <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
@@ -499,6 +519,9 @@
         <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
         <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
         <button class="btn" type="button" id="resetBtn">초기화</button>
+
+        <!-- ✅ 우측 상단(액션 영역 오른쪽)에 테마 토글 -->
+        <button class="btn themeToggle" id="themeToggle" type="button" title="화이트/블랙 전환">🌙 다크</button>
       </div>
     </div>
 
@@ -634,6 +657,40 @@
 
   <script>
     // ---------------------------
+    // Theme (✅ White/Black toggle)
+    // ---------------------------
+    const THEME_KEY = 'xbrand_theme_v1';
+    const themeToggle = document.getElementById('themeToggle');
+
+    function applyTheme(mode){
+      const isDark = mode === 'dark';
+      document.body.classList.toggle('dark', isDark);
+
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute('content', isDark ? '#0b1220' : '#ffffff');
+
+      if(themeToggle){
+        themeToggle.textContent = isDark ? '☀️ 라이트' : '🌙 다크';
+      }
+    }
+    function loadTheme(){
+      const saved = localStorage.getItem(THEME_KEY);
+      if(saved === 'dark' || saved === 'light') return saved;
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return prefersDark ? 'dark' : 'light';
+    }
+    function toggleTheme(){
+      const nowDark = document.body.classList.contains('dark');
+      const next = nowDark ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+    }
+    if(themeToggle) themeToggle.addEventListener('click', toggleTheme);
+
+    // ✅ 초기 테마 적용 (페이지 로드 즉시)
+    applyTheme(loadTheme());
+
+    // ---------------------------
     // Keys
     // ---------------------------
     const FAV_KEY = 'xbrand_favorites_v1';
@@ -679,7 +736,6 @@
 
     // ---------------------------
     // URL-safe compression (LZ-based)
-    // compressToEncodedURIComponent / decompressFromEncodedURIComponent
     // ---------------------------
     const _keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
     function _getBaseValue(alphabet, character) { return alphabet.indexOf(character); }
@@ -995,7 +1051,6 @@
 
     // ---------------------------
     // Base links (추천)
-    // (✅ keyword-chatting removed)
     // ---------------------------
     const BASE = [
       // comm (10)
@@ -1082,7 +1137,7 @@
       {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외',href:'https://www.aliexpress.com',badge:'SHOP'},
       {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외',href:'https://www.temu.com',badge:'SHOP'},
 
-      // community (10) - ✅ removed 키워드채팅
+      // community (10)
       {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'COMM'},
       {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'COMM'},
       {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'COMM'},
@@ -1555,7 +1610,9 @@
       localStorage.removeItem(FAV_KEY);
       localStorage.removeItem(ORDER_KEY);
       localStorage.removeItem(CUSTOM_KEY);
+      localStorage.removeItem(THEME_KEY);
       history.replaceState(null,'', location.pathname + location.search);
+      applyTheme('light');
       renderGrid(); renderFav(); syncStars();
     });
 
@@ -1589,6 +1646,7 @@
       return {
         v: 1,
         exportedAt: new Date().toISOString(),
+        theme: localStorage.getItem(THEME_KEY) || null,
         favorites: loadJSON(FAV_KEY, {}),
         order: loadJSON(ORDER_KEY, {}),
         customLinks: loadCustom(),
@@ -1599,6 +1657,7 @@
       const favorites = obj.favorites ?? {};
       const order = obj.order ?? {};
       const customLinks = obj.customLinks ?? [];
+      const theme = obj.theme ?? null;
 
       if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)) return false;
 
@@ -1616,6 +1675,11 @@
       saveJSON(FAV_KEY, favorites);
       saveJSON(ORDER_KEY, order);
       saveJSON(CUSTOM_KEY, sanitizedCustom);
+
+      if(theme === 'dark' || theme === 'light'){
+        localStorage.setItem(THEME_KEY, theme);
+        applyTheme(theme);
+      }
       return true;
     }
 
@@ -1653,7 +1717,7 @@
     importCancelBtn.addEventListener('click', () => closeModal());
 
     // ---------------------------
-    // Share link (✅ compressed)
+    // Share link (compressed)
     // ---------------------------
     shareBtn.addEventListener('click', async () => {
       const payload = buildPersonalizationPayload();
@@ -1813,8 +1877,6 @@
       const exists = chips.some(c => c.dataset.cat === cat);
       setActiveChip(exists ? cat : 'all');
     }
-
-    resetBtn.addEventListener('click', resetAll);
 
     window.addEventListener('keydown', (e) => {
       if(e.key === 'Escape'){
