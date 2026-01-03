@@ -1,2218 +1,797 @@
-<!DOCTYPE html>
-<html lang="ko" data-theme="light">
+<!doctype html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>미니멀 링크 대시보드</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
-  <link rel="icon" type="image/svg+xml"
-    href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="128" height="128"%3E%3Crect width="128" height="128" rx="28" fill="%23ffffff"/%3E%3Cpath d="M36 40h56v10H36zM36 59h40v10H36zM36 78h56v10H36z" fill="%23111827"/%3E%3C/svg%3E' />
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>X-Board (Local Demo)</title>
   <style>
     :root{
-      --bg:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --card:#ffffff;
-      --hover:#f9fafb;
-      --chip:#f3f4f6;
-      --shadow: 0 10px 30px rgba(17,24,39,.06);
-      --radius:16px;
-      --max:1180px;
-
-      --warn:#ef4444;
-      --gold:#f59e0b;
-      --ok:#10b981;
-
-      --naver:#03C75A;
-      --googleBlue:#4285F4;
-      --googleRed:#EA4335;
-      --googleYellow:#FBBC05;
-      --googleGreen:#34A853;
+      --bg:#0b0f17; --panel:#121a26; --panel2:#0f1622;
+      --text:#e7eefc; --muted:#9bb0d1; --line:#223049;
+      --accent:#7aa6ff; --danger:#ff6b7a; --ok:#59d39a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
     }
-
-    html[data-theme="dark"]{
-      --bg:#0b0f19;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --line:#1f2937;
-      --card:#0f1627;
-      --hover:#121c31;
-      --chip:#111b30;
-      --shadow: 0 14px 34px rgba(0,0,0,.35);
-      --gold:#fbbf24;
-    }
-
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background:var(--bg);
+      font-family:var(--sans);
       color:var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(122,166,255,.20), transparent 50%),
+                  radial-gradient(900px 500px at 80% 0%, rgba(89,211,154,.14), transparent 55%),
+                  linear-gradient(180deg, var(--bg), #070a10);
+      min-height:100vh;
     }
-    a{color:inherit}
-
-    .wrap{
-      max-width:var(--max);
-      margin:0 auto;
-      padding:26px 18px 56px;
-    }
-
-    /* ===== Layout (main + right sidebar) ===== */
-    .layout{
-      display:grid;
-      grid-template-columns: 1fr 320px;
-      gap:16px;
-      align-items:start;
-    }
-
-    /* Header */
-    .top{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .brand{min-width:0}
-    .brand h1{
-      font-size:30px;
-      letter-spacing:-0.02em;
-      margin:0 0 6px 0;
-      line-height:1.15;
-
-      /* ✅ prevent left text cut */
-      white-space:normal;
-      overflow:visible;
-      text-overflow:clip;
-      word-break:keep-all;
-    }
-    .brand p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.5;
-      font-size:14px;
-    }
-
-    /* actions under title */
-    .actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .btn{
-      border:1px solid var(--line);
-      background:var(--card);
-      padding:10px 12px;
-      border-radius:12px;
-      font-weight:900;
-      font-size:13px;
-      cursor:pointer;
-      color:var(--text);
-      white-space:nowrap;
-    }
-    .btn:hover{background:var(--hover);}
-    .btn.primary{
-      border-color: rgba(16,185,129,.35);
-      background: rgba(16,185,129,.10);
-    }
-    .btn.danger{
-      border-color: rgba(239,68,68,.35);
-      background: rgba(239,68,68,.08);
-    }
-
-    /* ✅ black/white toggle back */
-    .toggle{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      border:1px solid var(--line);
-      background:var(--card);
-      padding:10px 12px;
-      border-radius:999px;
-      font-weight:950;
-      font-size:12px;
-      cursor:pointer;
-      user-select:none;
-    }
-    .dot{
-      width:10px;height:10px;border-radius:999px;background:var(--text); opacity:.85
-    }
-
-    /* ===== Search (naver/google styled) ===== */
-    .searchRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin-top:12px;
-    }
-    .search{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:10px 12px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      background:var(--card);
-      box-shadow: var(--shadow);
-      position:relative;
-      min-width:0;
-    }
-    .search .icon{
-      width:34px;height:34px;border-radius:12px;
-      background:var(--chip);
-      display:flex;align-items:center;justify-content:center;
-      color:var(--muted);
-      font-weight:950;
-      flex:0 0 auto;
-      border:1px solid var(--line);
-    }
-    .search input{
-      border:0;
-      outline:none;
-      width:100%;
-      font-size:14px;
-      font-weight:850;
-      background:transparent;
-      color:var(--text);
-      min-width:0;
-    }
-    .search .go{
-      border:1px solid var(--line);
-      background:var(--chip);
-      padding:8px 10px;
-      border-radius:12px;
-      font-weight:950;
-      font-size:12px;
-      cursor:pointer;
-      flex:0 0 auto;
-    }
-    .search .go:hover{background:var(--hover);}
-
-    .search.naver{
-      border-color: color-mix(in srgb, var(--naver) 35%, var(--line));
-      background: color-mix(in srgb, var(--naver) 8%, var(--card));
-    }
-    .search.naver .icon{
-      color: color-mix(in srgb, var(--naver) 78%, var(--text));
-      background: color-mix(in srgb, var(--naver) 16%, var(--chip));
-      border-color: color-mix(in srgb, var(--naver) 35%, var(--line));
-    }
-
-    .search.google::before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      border-radius:14px;
-      padding:1px;
-      background: conic-gradient(from 200deg,
-        var(--googleBlue), var(--googleRed), var(--googleYellow), var(--googleGreen), var(--googleBlue));
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events:none;
-      opacity:.55;
-    }
-    .search.google .icon{
-      color: color-mix(in srgb, var(--googleBlue) 75%, var(--text));
-      background: color-mix(in srgb, var(--googleBlue) 12%, var(--chip));
-      border-color: color-mix(in srgb, var(--googleBlue) 30%, var(--line));
-    }
-
-    .hint{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:10px;
-      line-height:1.5;
-    }
-
-    /* Favorites */
-    .favBox{
-      margin-top:14px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:var(--card);
-      box-shadow: var(--shadow);
-      padding:14px;
-    }
-    .favTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
-    .favTitle{
-      font-weight:950;
-      letter-spacing:-0.01em;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .pill{
-      font-size:12px;
-      font-weight:950;
-      border:1px solid var(--line);
-      background:var(--chip);
-      padding:6px 10px;
-      border-radius:999px;
-      color:var(--text);
-      flex:0 0 auto;
-    }
-    .favHelp{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
-    .favGrid{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap:10px;
-      margin-top:10px;
-    }
-    .favItem{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px 12px;
-      background:var(--card);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      min-height:54px;
-    }
-    .favItem[draggable="true"]{cursor:grab;}
-    .favItem.dragging{opacity:.55;}
-    .favItem.dragover{
-      outline: 2px dashed rgba(16,185,129,.65);
-      outline-offset: 2px;
-    }
-    .favLeft{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .favLink{
-      text-decoration:none;
-      color:var(--text);
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:100%;
-      display:block;
-    }
-    .favMeta{
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:100%;
-    }
-    .iconBtn{
-      width:34px;height:34px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--chip);
-      cursor:pointer;
-      font-weight:950;
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      user-select:none;
-      flex:0 0 auto;
-    }
-    .iconBtn:hover{background:var(--hover);}
-    .iconBtn.danger{color:var(--warn);}
-
-    /* ✅ Categories: force 2 rows 느낌 (grid) */
-    .cats{
-      display:grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap:10px;
-      margin:16px 0 12px;
-    }
-    .chipbtn{
-      border:1px solid var(--line);
-      background:var(--chip);
-      padding:9px 12px;
-      border-radius:999px;
-      font-size:13px;
-      font-weight:950;
-      color:var(--text);
-      cursor:pointer;
-      user-select:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      min-width:0;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .chipbtn:hover{background:var(--hover);}
-    .chipbtn.active{
-      background:var(--text);
-      color:var(--bg);
-      border-color:var(--text);
-    }
-    .count{
-      font-size:12px;
-      font-weight:950;
-      opacity:.75;
-      flex:0 0 auto;
-    }
-
-    /* Grid cards */
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap:14px;
-      margin-top:12px;
-    }
-    .card{
-      display:grid;
-      grid-template-columns: 1fr auto auto;
-      align-items:center;
-      gap:10px;
-      padding:16px;
-      border-radius:var(--radius);
-      border:1px solid var(--line);
-      background:var(--card);
-      text-decoration:none;
-      color:var(--text);
-      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
-      min-height:86px;
-      box-shadow: 0 0 0 rgba(0,0,0,0);
-      min-width:0;
-    }
-    .card:hover{
-      background:var(--hover);
-      transform: translateY(-1px);
-      box-shadow: 0 14px 28px rgba(17,24,39,.08);
-    }
-    .card[draggable="true"]{cursor:grab;}
-    .card.dragging{opacity:.55; transform:none;}
-    .card.dragover{
-      outline: 2px dashed rgba(16,185,129,.65);
-      outline-offset: 2px;
-    }
-    .left{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      min-width:0;
-    }
-    .title{
-      font-weight:980;
-      letter-spacing:-0.01em;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .sub{
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .metaRow{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      min-width:0;
-    }
-    .badge{
-      flex:0 0 auto;
-      font-size:12px;
-      font-weight:950;
-      color:var(--text);
-      background:var(--chip);
-      border:1px solid var(--line);
-      padding:6px 10px;
-      border-radius:999px;
-      max-width: 100%;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .star,
-    .menu{
-      position:static;
-      width:34px;height:34px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--chip);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:980;
-      user-select:none;
-      color:var(--muted);
-    }
-    .star:hover,.menu:hover{background:var(--hover);}
-    .star.on{
-      color:var(--gold);
-      border-color: rgba(245, 158, 11, .35);
-    }
-    .menu.hidden{display:none;}
-
-    footer{
-      margin-top:34px;
-      padding-top:18px;
-      border-top:1px solid var(--line);
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.7;
-    }
-
-    /* ===== Right sidebar widgets ===== */
-    .side{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      position:sticky;
-      top:14px;
-      align-self:start;
-    }
-    .panel{
-      border:1px solid var(--line);
-      background:var(--card);
-      border-radius:16px;
-      padding:12px;
-      box-shadow:var(--shadow);
-    }
-    .panelTop{
+    a{color:inherit; text-decoration:none}
+    button{font:inherit}
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 40px}
+    .topbar{
       display:flex; align-items:center; justify-content:space-between;
-      gap:10px; margin-bottom:8px;
+      gap:12px; margin-bottom:18px;
     }
-    .panelTitle{
-      font-weight:980;
-      font-size:13px;
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(122,166,255,.95), rgba(89,211,154,.85));
+      box-shadow: var(--shadow);
+    }
+    .brand h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .brand .sub{margin:2px 0 0; color:var(--muted); font-size:12px}
+    .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .pill{
+      padding:8px 10px; border:1px solid var(--line); border-radius:999px;
+      background: rgba(18,26,38,.6);
       display:flex; align-items:center; gap:8px;
     }
-    .panelSub{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:850;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    .pill input{
+      border:0; outline:0; background:transparent; color:var(--text);
+      width:220px;
     }
-
-    .wxRow{display:flex; align-items:center; gap:10px;}
-    .wxIcon{
-      width:42px;height:42px;border-radius:14px;
-      border:1px solid var(--line);
-      background:var(--chip);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:980;
-      flex:0 0 auto;
-    }
-    .wxTemp{
-      font-size:26px; font-weight:980;
-      letter-spacing:-0.02em;
-      font-variant-numeric:tabular-nums;
-    }
-    .wxDesc{color:var(--muted); font-size:12px; font-weight:850; line-height:1.4;}
-
-    .clock{font-weight:980; font-size:12px; font-variant-numeric:tabular-nums; white-space:nowrap;}
-
-    .calGrid{display:grid; grid-template-columns:repeat(7, 1fr); gap:6px;}
-    .calHead{color:var(--muted); font-size:10px; font-weight:950; text-align:center; padding:2px 0;}
-    .calCell{
-      border:1px solid var(--line);
-      background:var(--bg);
-      border-radius:10px;
-      height:28px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:11px; font-weight:900;
-      position:relative;
-      font-variant-numeric:tabular-nums;
-    }
-    .calCell.muted{opacity:.35}
-    .calCell.today::after{
-      content:"";
-      position:absolute;
-      width:18px;height:18px;
-      border-radius:999px;
-      border:2px solid color-mix(in srgb, var(--naver) 55%, var(--text));
-      pointer-events:none;
-    }
-
-    /* ToDo */
-    .todoRow{
-      display:flex; gap:8px;
-    }
-    .todoRow input{
-      flex:1 1 auto;
-      border:1px solid var(--line);
-      background:var(--bg);
+    .btn{
+      padding:9px 12px; border:1px solid var(--line);
+      background: rgba(18,26,38,.85);
       color:var(--text);
       border-radius:12px;
-      padding:10px 12px;
-      font-weight:800;
-      outline:none;
-      min-width:0;
-    }
-    .todoRow button{
-      border:1px solid var(--line);
-      background:var(--chip);
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      font-weight:950;
       cursor:pointer;
-      flex:0 0 auto;
+      transition:.15s transform ease, .15s background ease, .15s border-color ease;
     }
-    .todoRow button:hover{background:var(--hover);}
-    .todoList{margin-top:10px; display:flex; flex-direction:column; gap:8px;}
-    .todoItem{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      border:1px solid var(--line);
-      background:var(--bg);
-      border-radius:14px;
-      padding:10px;
-      min-width:0;
+    .btn:hover{transform: translateY(-1px); border-color: rgba(122,166,255,.45)}
+    .btn.primary{
+      border-color: rgba(122,166,255,.55);
+      background: rgba(122,166,255,.12);
     }
-    .todoLeft{display:flex; align-items:center; gap:10px; min-width:0;}
-    .todoLeft input[type="checkbox"]{width:16px; height:16px;}
-    .todoText{
-      font-weight:900;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      min-width:0;
+    .btn.danger{
+      border-color: rgba(255,107,122,.55);
+      background: rgba(255,107,122,.10);
+      color: #ffd7dc;
     }
-    .todoText.done{opacity:.55; text-decoration:line-through;}
-    .todoDel{
-      width:30px;height:30px;border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--chip);
-      cursor:pointer;
-      font-weight:980;
-      color:var(--warn);
-      display:flex; align-items:center; justify-content:center;
-      user-select:none;
-      flex:0 0 auto;
-    }
-    .todoDel:hover{background:var(--hover);}
-
-    /* Modal */
-    .modalBack{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.35);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:50;
-    }
-    .modal{
-      width:min(560px, 100%);
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow: var(--shadow);
-      padding:16px;
-    }
-    .modalHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
-    }
-    .modalTitle{font-weight:980; letter-spacing:-0.01em;}
-    .form{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-top:10px;
-    }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .field label{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-    }
-    .field input, .field select, .field textarea{
-      border:1px solid var(--line);
-      background:var(--bg);
-      color:var(--text);
-      border-radius:12px;
-      padding:12px 12px;
-      outline:none;
-      font-weight:800;
-      font-size:14px;
-    }
-    .field textarea{
-      min-height:140px;
-      resize:vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:12px;
-      font-weight:700;
-      line-height:1.45;
-    }
-    .row2{
+    .grid{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
+      grid-template-columns: 300px 1fr;
+      gap:16px;
     }
-    .modalActions{
-      display:flex;
-      gap:10px;
-      justify-content:flex-end;
-      margin-top:12px;
-      flex-wrap:wrap;
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      .pill input{width:160px}
     }
-    .small{
-      font-size:12px;
+    .card{
+      background: linear-gradient(180deg, rgba(18,26,38,.92), rgba(12,18,29,.92));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 12px;
+      border-bottom:1px solid rgba(34,48,73,.7);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background: rgba(15,22,34,.6);
+    }
+    .hd .title{
+      display:flex; flex-direction:column;
+      gap:3px;
+    }
+    .hd .title strong{font-size:13px; letter-spacing:.2px}
+    .hd .title span{color:var(--muted); font-size:12px}
+    .body{padding:12px 14px 14px}
+    .list{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .item{
+      padding:12px;
+      border:1px solid rgba(34,48,73,.75);
+      border-radius:14px;
+      background: rgba(18,26,38,.55);
+      cursor:pointer;
+      transition:.12s transform ease, .12s border-color ease;
+    }
+    .item:hover{transform: translateY(-1px); border-color: rgba(122,166,255,.35)}
+    .item.active{border-color: rgba(122,166,255,.65); background: rgba(122,166,255,.10)}
+    .item .row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .item .name{font-weight:700; font-size:13px}
+    .item .meta{color:var(--muted); font-size:12px}
+    .badge{
+      font-size:11px;
+      padding:4px 8px;
+      border:1px solid rgba(34,48,73,.9);
+      border-radius:999px;
       color:var(--muted);
-      line-height:1.4;
-      margin-top:8px;
+      background: rgba(15,22,34,.6);
+      white-space:nowrap;
     }
 
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:16px;
+    }
     @media (max-width: 980px){
-      .layout{grid-template-columns:1fr;}
-      .side{position:static;}
-      .searchRow{grid-template-columns:1fr;}
-      .cats{grid-template-columns: repeat(2, minmax(0, 1fr));} /* 모바일은 2열 */
+      .split{grid-template-columns: 1fr}
     }
-    @media (max-width: 860px){
-      .cats{grid-template-columns: repeat(3, minmax(0, 1fr));} /* 중간은 3열 */
+
+    .thread{
+      display:flex; flex-direction:column; gap:10px;
     }
-    @media (max-width: 520px){
-      .brand h1{font-size:24px;}
-      .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
-      .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
-      .actions{gap:8px;}
-      .cats{grid-template-columns: repeat(2, minmax(0, 1fr));}
+    .post{
+      display:grid;
+      grid-template-columns: 60px 1fr;
+      gap:10px;
+      padding:12px;
+      border:1px solid rgba(34,48,73,.75);
+      border-radius: 16px;
+      background: rgba(18,26,38,.55);
     }
+    .avatar{
+      width:60px; height:60px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(122,166,255,.25), rgba(89,211,154,.18));
+      border:1px solid rgba(34,48,73,.85);
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--mono);
+      color: var(--muted);
+    }
+    .phead{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px}
+    .phead .who{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .phead .who b{font-size:12px}
+    .phead .who small{font-size:11px; color:var(--muted); font-family:var(--mono)}
+    .pbody{font-size:13px; line-height:1.45; white-space:pre-wrap; word-break:break-word}
+    .pimg{
+      margin-top:8px;
+      border-radius:14px;
+      border:1px solid rgba(34,48,73,.85);
+      overflow:hidden;
+    }
+    .pimg img{display:block; width:100%; height:auto}
+    .muted{color:var(--muted)}
+    .empty{
+      padding:18px;
+      border:1px dashed rgba(34,48,73,.9);
+      border-radius: 16px;
+      color: var(--muted);
+      background: rgba(18,26,38,.35);
+      line-height:1.5;
+    }
+
+    form{display:flex; flex-direction:column; gap:10px}
+    .field{display:flex; flex-direction:column; gap:6px}
+    label{font-size:12px; color:var(--muted)}
+    input[type="text"], textarea, select{
+      width:100%;
+      padding:10px 11px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,73,.85);
+      background: rgba(15,22,34,.6);
+      color: var(--text);
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+    .row2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .help{font-size:11px; color: var(--muted); line-height:1.4}
+    .hr{height:1px; background: rgba(34,48,73,.75); margin:8px 0}
+    .kpi{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    .kpi .box{
+      border:1px solid rgba(34,48,73,.75);
+      background: rgba(18,26,38,.55);
+      border-radius: 14px;
+      padding:10px;
+    }
+    .kpi .box b{display:block; font-size:12px}
+    .kpi .box span{display:block; font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:4px}
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div class="top">
+    <div class="topbar">
       <div class="brand">
-        <h1>미니멀 링크 대시보드</h1>
-        <p>무회원 · 무수집 · 개인화는 브라우저에만 저장됩니다. (공유는 URL로만 전달)</p>
+        <div class="logo"></div>
+        <div>
+          <h1>X-Board</h1>
+          <div class="sub">로컬 저장(LocalStorage) 기반 이미지보드 데모</div>
+        </div>
       </div>
 
       <div class="actions">
-        <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
-        <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
-        <button class="btn" id="exportBtn" type="button">내보내기</button>
-        <button class="btn" id="importBtn" type="button">가져오기</button>
-        <button class="btn danger" id="wipeBtn" type="button">개인화 초기화</button>
-        <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
-        <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
-        <button class="btn" type="button" id="resetBtn">초기화</button>
-
-        <!-- ✅ theme toggle -->
-        <div class="toggle" id="themeToggle" title="블랙/화이트 전환">
-          <span class="dot"></span>
-          <span id="themeLabel">WHITE</span>
+        <div class="pill">
+          <span class="muted" style="font-size:12px">검색</span>
+          <input id="search" type="text" placeholder="보드 / 스레드 / 본문 검색" />
         </div>
+        <button class="btn" id="exportBtn">데이터 내보내기</button>
+        <button class="btn" id="importBtn">데이터 가져오기</button>
+        <button class="btn danger" id="resetBtn">초기화</button>
       </div>
     </div>
 
-    <div class="layout">
-      <!-- LEFT MAIN -->
-      <div>
-        <div class="searchRow">
-          <div class="search naver" title="네이버 검색 (Enter)">
-            <div class="icon">N</div>
-            <input id="naverQ" placeholder="네이버 검색 (Enter)" autocomplete="off" />
-            <button class="go" type="button" id="naverGo">검색</button>
+    <div class="grid">
+      <!-- Left: Boards -->
+      <div class="card">
+        <div class="hd">
+          <div class="title">
+            <strong>Boards</strong>
+            <span>주제별 보드</span>
           </div>
-
-          <div class="search google" title="구글 검색 (Enter)">
-            <div class="icon">G</div>
-            <input id="googleQ" placeholder="구글 검색 (Enter)" autocomplete="off" />
-            <button class="go" type="button" id="googleGo">검색</button>
-          </div>
+          <button class="btn primary" id="newBoardBtn">+ 보드</button>
         </div>
-
-        <div class="hint">
-          • ⭐: 즐겨찾기(카테고리별 최대 5) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달(압축)
-        </div>
-
-        <div class="favBox">
-          <div class="favTop">
-            <div class="favTitle">
-              <span>즐겨찾기</span>
-              <span class="pill" id="favScope">전체</span>
-            </div>
-            <div class="favHelp">현재 카테고리 기준 저장 (드래그로 순서 변경)</div>
+        <div class="body">
+          <div id="boards" class="list"></div>
+          <div class="hr"></div>
+          <div class="help">
+            · 이 페이지는 서버 없이 동작합니다. (브라우저 LocalStorage)<br/>
+            · 실제 서비스화 시: 인증/권한, 파일 업로드, 모더레이션, 스팸 방지(레이트리밋) 등을 추가하세요.
           </div>
-          <div class="favGrid" id="favGrid"></div>
-        </div>
-
-        <!-- ✅ categories now in 2-row grid -->
-        <div class="cats" id="cats">
-          <div class="chipbtn active" data-cat="all">전체 <span class="count" data-count="all">(0)</span></div>
-          <div class="chipbtn" data-cat="comm">커뮤니케이션 <span class="count" data-count="comm">(0)</span></div>
-          <div class="chipbtn" data-cat="prod">생산성 <span class="count" data-count="prod">(0)</span></div>
-          <div class="chipbtn" data-cat="media">미디어 <span class="count" data-count="media">(0)</span></div>
-          <div class="chipbtn" data-cat="finance">금융 <span class="count" data-count="finance">(0)</span></div>
-          <div class="chipbtn" data-cat="ai">AI <span class="count" data-count="ai">(0)</span></div>
-          <div class="chipbtn" data-cat="news">뉴스·리서치 <span class="count" data-count="news">(0)</span></div>
-          <div class="chipbtn" data-cat="shop">쇼핑 <span class="count" data-count="shop">(0)</span></div>
-          <div class="chipbtn" data-cat="community">커뮤니티 <span class="count" data-count="community">(0)</span></div>
-          <div class="chipbtn" data-cat="dev">개발·도구 <span class="count" data-count="dev">(0)</span></div>
-          <div class="chipbtn" data-cat="util">유틸리티 <span class="count" data-count="util">(0)</span></div>
-        </div>
-
-        <div class="grid" id="grid"></div>
-
-        <footer>
-          본 사이트는 링크 허브(북마크 대체)입니다. 외부 서비스의 상표/운영 권한은 각 소유자에게 있습니다.<br/>
-          회원가입/로그인 없음, 개인정보 수집/저장 없음. 개인화(즐겨찾기/정렬/내 링크)는 브라우저(LocalStorage)에만 저장됩니다.
-        </footer>
-      </div>
-
-      <!-- RIGHT SIDEBAR -->
-      <aside class="side">
-        <div class="panel">
-          <div class="panelTop">
-            <div class="panelTitle">날씨</div>
-            <div class="panelSub" id="wxPlace">—</div>
-          </div>
-          <div class="wxRow">
-            <div class="wxIcon" id="wxIcon">☁</div>
-            <div>
-              <div class="wxTemp" id="wxTemp">--°</div>
-              <div class="wxDesc" id="wxDesc">로딩 중…</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panelTop">
-            <div class="panelTitle" id="calTitle">캘린더</div>
-            <div class="clock" id="clock">--:--:--</div>
-          </div>
-          <div class="calGrid" id="calGrid"></div>
-        </div>
-
-        <div class="panel">
-          <div class="panelTop">
-            <div class="panelTitle">To Do</div>
-            <div class="panelSub">브라우저 저장</div>
-          </div>
-          <div class="todoRow">
-            <input id="todoInput" placeholder="할 일 입력…" />
-            <button id="todoAdd" type="button">추가</button>
-          </div>
-          <div class="todoList" id="todoList"></div>
-        </div>
-      </aside>
-    </div>
-  </div>
-
-  <!-- Modal: add/edit OR import JSON -->
-  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modalHeader">
-        <div class="modalTitle" id="modalTitle">내 링크 추가</div>
-        <button class="iconBtn" id="modalClose" type="button" title="닫기">×</button>
-      </div>
-
-      <div class="small" id="modalDesc">현재 선택된 카테고리에 저장됩니다.</div>
-
-      <div id="linkFormArea">
-        <div class="form">
-          <div class="row2">
-            <div class="field">
-              <label>카테고리</label>
-              <select id="fCat">
-                <option value="comm">커뮤니케이션</option>
-                <option value="prod">생산성</option>
-                <option value="media">미디어</option>
-                <option value="finance">금융</option>
-                <option value="ai">AI</option>
-                <option value="news">뉴스·리서치</option>
-                <option value="shop">쇼핑</option>
-                <option value="community">커뮤니티</option>
-                <option value="dev">개발·도구</option>
-                <option value="util">유틸리티</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>뱃지(표시)</label>
-              <input id="fBadge" placeholder="예: ME / PRO / FIN" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label>이름</label>
-            <input id="fTitle" placeholder="예: 내 서비스" />
-          </div>
-
-          <div class="field">
-            <label>설명</label>
-            <input id="fSub" placeholder="예: 메모" />
-          </div>
-
-          <div class="field">
-            <label>URL</label>
-            <input id="fHref" placeholder="https://..." />
-          </div>
-        </div>
-
-        <div class="modalActions">
-          <button class="btn danger" id="deleteBtn" type="button" style="display:none;">삭제</button>
-          <button class="btn" id="cancelBtn" type="button">취소</button>
-          <button class="btn primary" id="saveBtn" type="button">저장</button>
         </div>
       </div>
 
-      <div id="importArea" style="display:none;">
-        <div class="form">
-          <div class="field">
-            <label>가져오기 JSON</label>
-            <textarea id="importText" placeholder='여기에 JSON을 붙여넣고 "가져오기 적용"을 누르세요.'></textarea>
+      <!-- Right: Threads + Composer -->
+      <div class="split">
+        <div class="card">
+          <div class="hd">
+            <div class="title">
+              <strong id="mainTitle">Threads</strong>
+              <span id="mainSub">보드를 선택하세요</span>
+            </div>
+            <button class="btn primary" id="newThreadBtn" disabled>+ 스레드</button>
           </div>
-        </div>
-        <div class="modalActions">
-          <button class="btn" id="importCancelBtn" type="button">취소</button>
-          <button class="btn primary" id="applyImportBtn" type="button">가져오기 적용</button>
-        </div>
-        <div class="small">주의: 기존 개인화(내 링크/정렬/즐겨찾기)를 덮어씁니다.</div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ---------------------------
-    // Keys
-    // ---------------------------
-    const FAV_KEY = 'xbrand_favorites_v1';
-    const ORDER_KEY = 'xbrand_order_v1';
-    const CUSTOM_KEY = 'xbrand_custom_links_v1';
-    const TODO_KEY = 'xbrand_todo_v1';
-    const THEME_KEY = 'xbrand_theme_v1';
-    const MAX_FAV = 5;
-
-    // ---------------------------
-    // Helpers
-    // ---------------------------
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
-    }
-    function safeUrl(url){
-      try{
-        const u = new URL(url);
-        if(u.protocol !== 'http:' && u.protocol !== 'https:') return null;
-        return u.toString();
-      }catch{ return null; }
-    }
-    function loadJSON(key, fallback){
-      try{ return JSON.parse(localStorage.getItem(key) || '') ?? fallback; }
-      catch{ return fallback; }
-    }
-    function saveJSON(key, val){
-      localStorage.setItem(key, JSON.stringify(val));
-    }
-    function uid(){
-      return 'id_' + Math.random().toString(16).slice(2) + Date.now().toString(16);
-    }
-    function chipLabel(cat){
-      const map = {
-        all:'전체', comm:'커뮤니케이션', prod:'생산성', media:'미디어', finance:'금융', ai:'AI',
-        news:'뉴스·리서치', shop:'쇼핑', community:'커뮤니티', dev:'개발·도구', util:'유틸리티'
-      };
-      return map[cat] || cat;
-    }
-
-    // ---------------------------
-    // Theme toggle (BLACK/WHITE)
-    // ---------------------------
-    const themeToggle = document.getElementById('themeToggle');
-    const themeLabel = document.getElementById('themeLabel');
-
-    function applyTheme(theme){
-      document.documentElement.setAttribute('data-theme', theme);
-      themeLabel.textContent = theme === 'dark' ? 'BLACK' : 'WHITE';
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#ffffff');
-      localStorage.setItem(THEME_KEY, theme);
-    }
-    applyTheme(localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light');
-    themeToggle.addEventListener('click', ()=>{
-      const now = document.documentElement.getAttribute('data-theme') || 'light';
-      applyTheme(now === 'dark' ? 'light' : 'dark');
-    });
-
-    // ---------------------------
-    // URL-safe compression (LZ-based)
-    // ---------------------------
-    const _keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
-    function _getBaseValue(alphabet, character) { return alphabet.indexOf(character); }
-    function compressToEncodedURIComponent(input) {
-      if (input == null) return "";
-      return _compress(input, 6, (a) => _keyStrUriSafe.charAt(a));
-    }
-    function decompressFromEncodedURIComponent(input) {
-      if (input == null) return "";
-      if (input === "") return null;
-      return _decompress(input.length, 32, (index) => _getBaseValue(_keyStrUriSafe, input.charAt(index)));
-    }
-    function _compress(uncompressed, bitsPerChar, getCharFromInt) {
-      if (uncompressed == null) return "";
-      let i, value;
-      const context_dictionary = {};
-      const context_dictionaryToCreate = {};
-      let context_c = "";
-      let context_wc = "";
-      let context_w = "";
-      let context_enlargeIn = 2;
-      let context_dictSize = 3;
-      let context_numBits = 2;
-      const context_data = [];
-      let context_data_val = 0;
-      let context_data_position = 0;
-
-      for (let ii = 0; ii < uncompressed.length; ii += 1) {
-        context_c = uncompressed.charAt(ii);
-        if (!Object.prototype.hasOwnProperty.call(context_dictionary, context_c)) {
-          context_dictionary[context_c] = context_dictSize++;
-          context_dictionaryToCreate[context_c] = true;
-        }
-
-        context_wc = context_w + context_c;
-        if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
-          context_w = context_wc;
-        } else {
-          if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
-            if (context_w.charCodeAt(0) < 256) {
-              for (i = 0; i < context_numBits; i++) {
-                context_data_val = (context_data_val << 1);
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-              }
-              value = context_w.charCodeAt(0);
-              for (i = 0; i < 8; i++) {
-                context_data_val = (context_data_val << 1) | (value & 1);
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-                value = value >> 1;
-              }
-            } else {
-              value = 1;
-              for (i = 0; i < context_numBits; i++) {
-                context_data_val = (context_data_val << 1) | value;
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-                value = 0;
-              }
-              value = context_w.charCodeAt(0);
-              for (i = 0; i < 16; i++) {
-                context_data_val = (context_data_val << 1) | (value & 1);
-                if (context_data_position == bitsPerChar - 1) {
-                  context_data_position = 0;
-                  context_data.push(getCharFromInt(context_data_val));
-                  context_data_val = 0;
-                } else context_data_position++;
-                value = value >> 1;
-              }
-            }
-            context_enlargeIn--;
-            if (context_enlargeIn == 0) {
-              context_enlargeIn = Math.pow(2, context_numBits);
-              context_numBits++;
-            }
-            delete context_dictionaryToCreate[context_w];
-          } else {
-            value = context_dictionary[context_w];
-            for (i = 0; i < context_numBits; i++) {
-              context_data_val = (context_data_val << 1) | (value & 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = value >> 1;
-            }
-          }
-          context_enlargeIn--;
-          if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
-            context_numBits++;
-          }
-          context_dictionary[context_wc] = context_dictSize++;
-          context_w = String(context_c);
-        }
-      }
-
-      if (context_w !== "") {
-        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
-          if (context_w.charCodeAt(0) < 256) {
-            for (i = 0; i < context_numBits; i++) {
-              context_data_val = (context_data_val << 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-            }
-            value = context_w.charCodeAt(0);
-            for (i = 0; i < 8; i++) {
-              context_data_val = (context_data_val << 1) | (value & 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = value >> 1;
-            }
-          } else {
-            value = 1;
-            for (i = 0; i < context_numBits; i++) {
-              context_data_val = (context_data_val << 1) | value;
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = 0;
-            }
-            value = context_w.charCodeAt(0);
-            for (i = 0; i < 16; i++) {
-              context_data_val = (context_data_val << 1) | (value & 1);
-              if (context_data_position == bitsPerChar - 1) {
-                context_data_position = 0;
-                context_data.push(getCharFromInt(context_data_val));
-                context_data_val = 0;
-              } else context_data_position++;
-              value = value >> 1;
-            }
-          }
-          context_enlargeIn--;
-          if (context_enlargeIn == 0) {
-            context_enlargeIn = Math.pow(2, context_numBits);
-            context_numBits++;
-          }
-          delete context_dictionaryToCreate[context_w];
-        } else {
-          value = context_dictionary[context_w];
-          for (i = 0; i < context_numBits; i++) {
-            context_data_val = (context_data_val << 1) | (value & 1);
-            if (context_data_position == bitsPerChar - 1) {
-              context_data_position = 0;
-              context_data.push(getCharFromInt(context_data_val));
-              context_data_val = 0;
-            } else context_data_position++;
-            value = value >> 1;
-          }
-        }
-        context_enlargeIn--;
-        if (context_enlargeIn == 0) {
-          context_enlargeIn = Math.pow(2, context_numBits);
-          context_numBits++;
-        }
-      }
-
-      value = 2;
-      for (i = 0; i < context_numBits; i++) {
-        context_data_val = (context_data_val << 1) | (value & 1);
-        if (context_data_position == bitsPerChar - 1) {
-          context_data_position = 0;
-          context_data.push(getCharFromInt(context_data_val));
-          context_data_val = 0;
-        } else context_data_position++;
-        value = value >> 1;
-      }
-
-      while (true) {
-        context_data_val = (context_data_val << 1);
-        if (context_data_position == bitsPerChar - 1) {
-          context_data.push(getCharFromInt(context_data_val));
-          break;
-        } else context_data_position++;
-      }
-      return context_data.join("");
-    }
-
-    function _decompress(length, resetValue, getNextValue) {
-      const dictionary = [];
-      let next;
-      let enlargeIn = 4;
-      let dictSize = 4;
-      let numBits = 3;
-      let entry = "";
-      const result = [];
-      let i;
-      let w;
-      let bits, resb, maxpower, power;
-      let c;
-      const data = { val: getNextValue(0), position: resetValue, index: 1 };
-
-      for (i = 0; i < 3; i += 1) dictionary[i] = i;
-
-      bits = 0; maxpower = Math.pow(2, 2); power = 1;
-      while (power != maxpower) {
-        resb = data.val & data.position;
-        data.position >>= 1;
-        if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-        bits |= (resb > 0 ? 1 : 0) * power;
-        power <<= 1;
-      }
-
-      switch (next = bits) {
-        case 0:
-          bits = 0; maxpower = Math.pow(2, 8); power = 1;
-          while (power != maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-            bits |= (resb > 0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-          c = String.fromCharCode(bits);
-          break;
-        case 1:
-          bits = 0; maxpower = Math.pow(2, 16); power = 1;
-          while (power != maxpower) {
-            resb = data.val & data.position;
-            data.position >>= 1;
-            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-            bits |= (resb > 0 ? 1 : 0) * power;
-            power <<= 1;
-          }
-          c = String.fromCharCode(bits);
-          break;
-        case 2:
-          return "";
-      }
-
-      dictionary[3] = c;
-      w = c;
-      result.push(c);
-
-      while (true) {
-        if (data.index > length) return "";
-
-        bits = 0; maxpower = Math.pow(2, numBits); power = 1;
-        while (power != maxpower) {
-          resb = data.val & data.position;
-          data.position >>= 1;
-          if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-          bits |= (resb > 0 ? 1 : 0) * power;
-          power <<= 1;
-        }
-
-        switch (c = bits) {
-          case 0:
-            bits = 0; maxpower = Math.pow(2, 8); power = 1;
-            while (power != maxpower) {
-              resb = data.val & data.position;
-              data.position >>= 1;
-              if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-              bits |= (resb > 0 ? 1 : 0) * power;
-              power <<= 1;
-            }
-            dictionary[dictSize++] = String.fromCharCode(bits);
-            c = dictSize - 1;
-            enlargeIn--;
-            break;
-          case 1:
-            bits = 0; maxpower = Math.pow(2, 16); power = 1;
-            while (power != maxpower) {
-              resb = data.val & data.position;
-              data.position >>= 1;
-              if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
-              bits |= (resb > 0 ? 1 : 0) * power;
-              power <<= 1;
-            }
-            dictionary[dictSize++] = String.fromCharCode(bits);
-            c = dictSize - 1;
-            enlargeIn--;
-            break;
-          case 2:
-            return result.join("");
-        }
-
-        if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
-
-        if (dictionary[c]) entry = dictionary[c];
-        else {
-          if (c === dictSize) entry = w + w.charAt(0);
-          else return null;
-        }
-        result.push(entry);
-
-        dictionary[dictSize++] = w + entry.charAt(0);
-        enlargeIn--;
-        w = entry;
-
-        if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
-      }
-    }
-
-    // ---------------------------
-    // Base links (추천) - 동일 (사용자 제공 코드 유지)
-    // ---------------------------
-    const BASE = (function(){
-      // 사용자가 올린 BASE 그대로 붙여넣기 (길어서 생략하지 않고 그대로 사용)
-      return window.__BASE_LINKS__ || [];
-    })();
-
-    // ✅ 위 BASE가 비어있으면(실수 방지) 최소 안전 기본값
-    if(!BASE.length){
-      console.warn("BASE links are empty. Paste your BASE array into window.__BASE_LINKS__ or replace this block.");
-    }
-
-    // ---------------------------
-    // DOM refs
-    // ---------------------------
-    const resetBtn = document.getElementById('resetBtn');
-    const resetOrderBtn = document.getElementById('resetOrderBtn');
-    const wipeBtn = document.getElementById('wipeBtn');
-    const addBtn = document.getElementById('addBtn');
-    const exportBtn = document.getElementById('exportBtn');
-    const importBtn = document.getElementById('importBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    const installBtn = document.getElementById('installBtn');
-
-    const naverQ = document.getElementById('naverQ');
-    const googleQ = document.getElementById('googleQ');
-    const naverGo = document.getElementById('naverGo');
-    const googleGo = document.getElementById('googleGo');
-
-    const chips = Array.from(document.querySelectorAll('.chipbtn'));
-    const grid = document.getElementById('grid');
-    const favGrid = document.getElementById('favGrid');
-    const favScope = document.getElementById('favScope');
-
-    // Modal refs
-    const modalBack = document.getElementById('modalBack');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDesc = document.getElementById('modalDesc');
-    const modalClose = document.getElementById('modalClose');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const deleteBtn = document.getElementById('deleteBtn');
-
-    const linkFormArea = document.getElementById('linkFormArea');
-    const importArea = document.getElementById('importArea');
-    const importText = document.getElementById('importText');
-    const importCancelBtn = document.getElementById('importCancelBtn');
-    const applyImportBtn = document.getElementById('applyImportBtn');
-
-    const fCat = document.getElementById('fCat');
-    const fBadge = document.getElementById('fBadge');
-    const fTitle = document.getElementById('fTitle');
-    const fSub = document.getElementById('fSub');
-    const fHref = document.getElementById('fHref');
-
-    // Sidebar widgets refs
-    const wxPlace = document.getElementById("wxPlace");
-    const wxTemp = document.getElementById("wxTemp");
-    const wxDesc = document.getElementById("wxDesc");
-    const wxIcon = document.getElementById("wxIcon");
-    const calTitleEl = document.getElementById("calTitle");
-    const clockEl = document.getElementById("clock");
-    const calGridEl = document.getElementById("calGrid");
-
-    const todoInput = document.getElementById("todoInput");
-    const todoAdd = document.getElementById("todoAdd");
-    const todoList = document.getElementById("todoList");
-
-    // ---------------------------
-    // State
-    // ---------------------------
-    let currentCat = 'all';
-    let editingId = null;
-
-    // ---------------------------
-    // Search
-    // ---------------------------
-    function openNaver(){
-      const q = (naverQ.value || '').trim();
-      if(!q) return;
-      window.open(`https://search.naver.com/search.naver?query=${encodeURIComponent(q)}`, '_blank', 'noopener');
-    }
-    function openGoogle(){
-      const q = (googleQ.value || '').trim();
-      if(!q) return;
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank', 'noopener');
-    }
-    naverGo.addEventListener('click', openNaver);
-    googleGo.addEventListener('click', openGoogle);
-    naverQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openNaver(); });
-    googleQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openGoogle(); });
-
-    // ---------------------------
-    // Favorites
-    // ---------------------------
-    function getFavData(){ return loadJSON(FAV_KEY, {}); }
-    function setFavData(data){ saveJSON(FAV_KEY, data); }
-    function getFavList(cat){
-      const data = getFavData();
-      return Array.isArray(data[cat]) ? data[cat] : [];
-    }
-    function setFavList(cat, list){
-      const data = getFavData();
-      data[cat] = list;
-      setFavData(data);
-    }
-    function isFav(cat, href){
-      return getFavList(cat).some(x => x.href === href);
-    }
-    function toggleFav(cat, item){
-      const list = getFavList(cat);
-      const idx = list.findIndex(x => x.href === item.href);
-
-      if(idx >= 0){
-        list.splice(idx, 1);
-        setFavList(cat, list);
-      }else{
-        list.unshift(item);
-        const seen = new Set();
-        const deduped = [];
-        for(const x of list){
-          if(seen.has(x.href)) continue;
-          seen.add(x.href);
-          deduped.push(x);
-        }
-        while(deduped.length > MAX_FAV) deduped.pop();
-        setFavList(cat, deduped);
-      }
-      renderFav();
-      syncStars();
-    }
-    function removeFav(cat, href){
-      const list = getFavList(cat).filter(x => x.href !== href);
-      setFavList(cat, list);
-      renderFav();
-      syncStars();
-    }
-    function persistFavOrderFromDOM(){
-      const cat = currentCat;
-      const hrefs = Array.from(favGrid.querySelectorAll('.favItem'))
-        .map(el => el.dataset.href)
-        .filter(Boolean);
-      const list = getFavList(cat);
-      const map = new Map(list.map(x => [x.href, x]));
-      const ordered = [];
-      hrefs.forEach(h => { if(map.has(h)) ordered.push(map.get(h)); });
-      list.forEach(x => { if(!hrefs.includes(x.href)) ordered.push(x); });
-      setFavList(cat, ordered);
-    }
-    function renderFav(){
-      const cat = currentCat;
-      const list = getFavList(cat);
-
-      favGrid.innerHTML = '';
-      if(list.length === 0){
-        favGrid.innerHTML = `
-          <div class="favItem" style="grid-column:1/-1; justify-content:flex-start;">
-            <div class="favLeft">
-              <div class="favLink">비어있음</div>
-              <div class="favMeta">아래 카드의 ⭐를 눌러 즐겨찾기를 추가하세요. (카테고리별 최대 ${MAX_FAV}개)</div>
+          <div class="body">
+            <div id="threads" class="list"></div>
+            <div id="threadEmpty" class="empty" style="display:none">
+              선택한 보드에 스레드가 없습니다.<br/>
+              우측 상단 <b>+ 스레드</b>로 첫 스레드를 생성하세요.
             </div>
           </div>
-        `;
-        return;
-      }
+        </div>
 
-      list.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'favItem';
-        div.setAttribute('draggable','true');
-        div.dataset.href = item.href;
-        div.innerHTML = `
-          <div class="favLeft">
-            <a class="favLink" href="${item.href}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a>
-            <div class="favMeta">${escapeHtml(item.sub || '')}</div>
+        <div class="card">
+          <div class="hd">
+            <div class="title">
+              <strong>Post</strong>
+              <span id="composerSub">스레드를 선택하세요</span>
+            </div>
           </div>
-          <button class="iconBtn danger" title="삭제">×</button>
-        `;
-        div.querySelector('.iconBtn').addEventListener('click', () => removeFav(cat, item.href));
-        favGrid.appendChild(div);
-      });
-
-      enableFavDrag();
-    }
-    function enableFavDrag(){
-      const items = Array.from(favGrid.querySelectorAll('.favItem'));
-      let draggingEl = null;
-
-      items.forEach(el => {
-        el.addEventListener('dragstart', (e) => {
-          draggingEl = el;
-          el.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/plain', el.dataset.href || '');
-        });
-        el.addEventListener('dragend', () => {
-          el.classList.remove('dragging');
-          items.forEach(x => x.classList.remove('dragover'));
-          draggingEl = null;
-          persistFavOrderFromDOM();
-        });
-        el.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          if(!draggingEl || draggingEl === el) return;
-          el.classList.add('dragover');
-        });
-        el.addEventListener('dragleave', () => el.classList.remove('dragover'));
-        el.addEventListener('drop', (e) => {
-          e.preventDefault();
-          el.classList.remove('dragover');
-          if(!draggingEl || draggingEl === el) return;
-
-          const rect = el.getBoundingClientRect();
-          const after = (e.clientY - rect.top) > (rect.height / 2);
-
-          if(after) el.insertAdjacentElement('afterend', draggingEl);
-          else el.insertAdjacentElement('beforebegin', draggingEl);
-        });
-      });
-    }
-
-    // ---------------------------
-    // Custom links
-    // ---------------------------
-    function loadCustom(){ return loadJSON(CUSTOM_KEY, []); }
-    function saveCustom(arr){ saveJSON(CUSTOM_KEY, arr); }
-    function upsertCustom(item){
-      const arr = loadCustom();
-      const idx = arr.findIndex(x => x.id === item.id);
-      if(idx >= 0) arr[idx] = item;
-      else arr.unshift(item);
-      saveCustom(arr);
-    }
-    function deleteCustom(id){
-      saveCustom(loadCustom().filter(x => x.id !== id));
-    }
-
-    // ---------------------------
-    // Order per category
-    // ---------------------------
-    function getOrderData(){ return loadJSON(ORDER_KEY, {}); }
-    function setOrderData(data){ saveJSON(ORDER_KEY, data); }
-    function getOrder(cat){
-      const data = getOrderData();
-      return Array.isArray(data[cat]) ? data[cat] : null;
-    }
-    function setOrder(cat, ids){
-      const data = getOrderData();
-      data[cat] = ids;
-      setOrderData(data);
-    }
-    function clearOrder(cat){
-      const data = getOrderData();
-      delete data[cat];
-      setOrderData(data);
-    }
-
-    // ---------------------------
-    // Build items for category
-    // ---------------------------
-    function getItemsForCat(cat){
-      const custom = loadCustom().map(x => ({...x, custom:true}));
-      const all = BASE.map(x => ({...x, custom:false})).concat(custom);
-      let items = (cat === 'all') ? all : all.filter(x => x.cat === cat);
-
-      const order = getOrder(cat);
-      if(order && order.length){
-        const map = new Map(items.map(x => [x.id, x]));
-        const ordered = [];
-        order.forEach(id => { if(map.has(id)) ordered.push(map.get(id)); });
-        items.forEach(x => { if(!order.includes(x.id)) ordered.push(x); });
-        items = ordered;
-      }
-      return items;
-    }
-
-    // ---------------------------
-    // Render grid
-    // ---------------------------
-    function renderGrid(){
-      const items = getItemsForCat(currentCat);
-
-      grid.innerHTML = items.map(item => {
-        const menuHidden = item.custom ? '' : 'hidden';
-        const draggable = (currentCat === 'all') ? 'false' : 'true';
-
-        return `
-          <a class="card" href="${item.href}" target="_blank" rel="noopener"
-             data-id="${item.id}" data-cat="${item.cat}" draggable="${draggable}">
-            <div class="left">
-              <div class="title">${escapeHtml(item.title)}</div>
-              <div class="metaRow">
-                <div class="sub">${escapeHtml(item.sub || '')}</div>
-                ${item.badge ? `<div class="badge" title="${escapeHtml(item.badge)}">${escapeHtml(item.badge)}</div>` : ``}
+          <div class="body">
+            <div class="kpi">
+              <div class="box">
+                <b>선택 보드</b>
+                <span id="kpiBoard">-</span>
+              </div>
+              <div class="box">
+                <b>선택 스레드</b>
+                <span id="kpiThread">-</span>
               </div>
             </div>
 
-            <div class="star" title="즐겨찾기">☆</div>
-            <div class="menu ${menuHidden}" title="내 링크 편집/삭제">⋯</div>
-          </a>
-        `;
-      }).join('');
+            <div class="hr"></div>
 
-      attachCardHandlers();
-      syncStars();
-      updateCounts();
+            <form id="postForm">
+              <div class="field row2">
+                <div>
+                  <label>닉네임(옵션)</label>
+                  <input id="name" type="text" placeholder="Anonymous" />
+                </div>
+                <div>
+                  <label>이미지 URL(옵션)</label>
+                  <input id="imgUrl" type="text" placeholder="https://..." />
+                </div>
+              </div>
+
+              <div class="field">
+                <label>내용</label>
+                <textarea id="content" placeholder="내용을 입력하세요 (Enter 허용)"></textarea>
+              </div>
+
+              <button class="btn primary" id="submitPost" type="submit" disabled>등록</button>
+              <div class="help">
+                · 이미지 업로드는 미구현. URL로만 미리보기합니다.<br/>
+                · 운영에선 파일 업로드/리사이징/바이러스 스캔/CDN을 붙이세요.
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Full thread viewer -->
+        <div class="card" style="grid-column:1 / -1;">
+          <div class="hd">
+            <div class="title">
+              <strong id="threadTitle">Thread</strong>
+              <span id="threadSub">게시글이 여기 표시됩니다</span>
+            </div>
+            <button class="btn danger" id="deleteThreadBtn" disabled>스레드 삭제</button>
+          </div>
+          <div class="body">
+            <div id="posts" class="thread"></div>
+            <div id="postsEmpty" class="empty" style="display:none">
+              아직 게시글이 없습니다. 우측 Post 폼으로 첫 글을 등록하세요.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <input id="fileInput" type="file" accept="application/json" style="display:none" />
+  </div>
+
+  <script>
+    /**
+     * X-Board (Local Demo)
+     * - Boards -> Threads -> Posts
+     * - Persist to localStorage
+     */
+
+    const LS_KEY = "xboard_v1";
+
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      data: null,
+      selectedBoardId: null,
+      selectedThreadId: null,
+      search: ""
+    };
+
+    const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+    const nowISO = () => new Date().toISOString();
+
+    function defaultData(){
+      const b1 = { id: uid(), slug: "biz", name: "사업/전략", createdAt: nowISO() };
+      const b2 = { id: uid(), slug: "trading", name: "트레이딩", createdAt: nowISO() };
+      const t1 = { id: uid(), boardId: b1.id, title: "첫 스레드: X-Board 설계", createdAt: nowISO(), bumpedAt: nowISO() };
+      const p1 = {
+        id: uid(),
+        threadId: t1.id,
+        name: "Anonymous",
+        content: "이건 로컬 데모입니다. 실제로는 서버/DB/스토리지/모더레이션이 필요합니다.",
+        imgUrl: "",
+        createdAt: nowISO()
+      };
+      return {
+        version: 1,
+        boards: [b1, b2],
+        threads: [t1],
+        posts: [p1]
+      };
     }
 
-    function attachCardHandlers(){
-      const cards = Array.from(grid.querySelectorAll('.card'));
-
-      cards.forEach(card => {
-        const star = card.querySelector('.star');
-        star.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const item = {
-            title: card.querySelector('.title')?.innerText || '즐겨찾기',
-            sub: card.querySelector('.sub')?.innerText || '',
-            href: card.getAttribute('href')
-          };
-          toggleFav(currentCat, item);
-        });
-
-        const menu = card.querySelector('.menu');
-        if(!menu.classList.contains('hidden')){
-          menu.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const id = card.dataset.id;
-            const item = loadCustom().find(x => x.id === id);
-            if(item) openLinkModal('edit', item);
-          });
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw){
+          state.data = defaultData();
+          save();
+        } else {
+          state.data = JSON.parse(raw);
         }
-      });
-
-      if(currentCat !== 'all') enableCardDrag(cards);
-    }
-
-    function syncStars(){
-      const anchors = Array.from(grid.querySelectorAll('.card'));
-      anchors.forEach(card => {
-        const star = card.querySelector('.star');
-        const href = card.getAttribute('href');
-        const on = isFav(currentCat, href);
-        star.classList.toggle('on', on);
-        star.textContent = on ? '★' : '☆';
-      });
-    }
-
-    function enableCardDrag(cards){
-      let draggingEl = null;
-
-      cards.forEach(el => {
-        el.addEventListener('dragstart', (e) => {
-          draggingEl = el;
-          el.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/plain', el.dataset.id);
-        });
-
-        el.addEventListener('dragend', () => {
-          el.classList.remove('dragging');
-          cards.forEach(x => x.classList.remove('dragover'));
-          draggingEl = null;
-          persistOrderFromDOM();
-        });
-
-        el.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          if(!draggingEl || draggingEl === el) return;
-          el.classList.add('dragover');
-        });
-
-        el.addEventListener('dragleave', () => el.classList.remove('dragover'));
-
-        el.addEventListener('drop', (e) => {
-          e.preventDefault();
-          el.classList.remove('dragover');
-          if(!draggingEl || draggingEl === el) return;
-
-          const rect = el.getBoundingClientRect();
-          const after = (e.clientY - rect.top) > (rect.height / 2);
-          if(after) el.insertAdjacentElement('afterend', draggingEl);
-          else el.insertAdjacentElement('beforebegin', draggingEl);
-        });
-      });
-    }
-
-    function persistOrderFromDOM(){
-      if(currentCat === 'all') return;
-      const ids = Array.from(grid.querySelectorAll('.card')).map(x => x.dataset.id);
-      setOrder(currentCat, ids);
-    }
-
-    // ---------------------------
-    // Counts
-    // ---------------------------
-    function updateCounts(){
-      const cats = ['all','comm','prod','media','finance','ai','news','shop','community','dev','util'];
-      const allItems = getItemsForCat('all');
-      const counts = {};
-      cats.forEach(c => counts[c] = 0);
-
-      allItems.forEach(item => {
-        counts['all'] += 1;
-        if(counts[item.cat] !== undefined) counts[item.cat] += 1;
-      });
-
-      cats.forEach(c => {
-        const el = document.querySelector(`[data-count="${c}"]`);
-        if(el) el.textContent = `(${counts[c]})`;
-      });
-    }
-
-    // ---------------------------
-    // URL state
-    // ---------------------------
-    function updateUrlStateOnly(){
-      const params = new URLSearchParams(location.search);
-      if(currentCat === 'all') params.delete('cat');
-      else params.set('cat', currentCat);
-      const base = location.pathname + (params.toString() ? '?' + params.toString() : '');
-      history.replaceState(null,'', base + (location.hash || ''));
-    }
-
-    // ---------------------------
-    // Category switch
-    // ---------------------------
-    function setActiveChip(cat){
-      chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
-      currentCat = cat;
-      favScope.textContent = chipLabel(cat);
-      updateUrlStateOnly();
-      renderGrid();
-      renderFav();
-    }
-    chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
-
-    // ---------------------------
-    // Buttons
-    // ---------------------------
-    function resetAll(){
-      naverQ.value = '';
-      googleQ.value = '';
-      setActiveChip('all');
-    }
-    resetBtn.addEventListener('click', resetAll);
-
-    resetOrderBtn.addEventListener('click', () => {
-      if(currentCat === 'all') return;
-      clearOrder(currentCat);
-      renderGrid();
-    });
-
-    wipeBtn.addEventListener('click', () => {
-      if(!confirm('개인화(즐겨찾기/정렬/내 링크/투두/테마)를 전부 초기화할까요?')) return;
-      localStorage.removeItem(FAV_KEY);
-      localStorage.removeItem(ORDER_KEY);
-      localStorage.removeItem(CUSTOM_KEY);
-      localStorage.removeItem(TODO_KEY);
-      localStorage.removeItem(THEME_KEY);
-      applyTheme('light');
-      history.replaceState(null,'', location.pathname + location.search);
-      renderGrid(); renderFav(); syncStars();
-      renderTodo();
-    });
-
-    addBtn.addEventListener('click', () => {
-      if(currentCat === 'all'){
-        openLinkModal('add', {cat:'comm',badge:'ME',title:'',sub:'',href:''});
-      }else{
-        openLinkModal('add', {cat:currentCat,badge:'ME',title:'',sub:'',href:''});
+      }catch(e){
+        state.data = defaultData();
+        save();
       }
-    });
+      // set defaults
+      if(state.data.boards.length){
+        state.selectedBoardId = state.data.boards[0].id;
+      }
+      const firstThread = state.data.threads.find(t => t.boardId === state.selectedBoardId);
+      state.selectedThreadId = firstThread ? firstThread.id : null;
+    }
 
-    // ---------------------------
-    // Export / Import
-    // ---------------------------
-    exportBtn.addEventListener('click', () => {
-      const payload = buildPersonalizationPayload();
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    function save(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state.data));
+    }
+
+    function fmtTime(iso){
+      const d = new Date(iso);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    function getSelectedBoard(){
+      return state.data.boards.find(b => b.id === state.selectedBoardId) || null;
+    }
+
+    function getSelectedThread(){
+      return state.data.threads.find(t => t.id === state.selectedThreadId) || null;
+    }
+
+    function threadsForBoard(boardId){
+      return state.data.threads
+        .filter(t => t.boardId === boardId)
+        .sort((a,b) => new Date(b.bumpedAt) - new Date(a.bumpedAt));
+    }
+
+    function postsForThread(threadId){
+      return state.data.posts
+        .filter(p => p.threadId === threadId)
+        .sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+
+    function applySearchBoards(boards){
+      const q = state.search.trim().toLowerCase();
+      if(!q) return boards;
+      return boards.filter(b => (b.name+" "+b.slug).toLowerCase().includes(q));
+    }
+
+    function applySearchThreads(threads){
+      const q = state.search.trim().toLowerCase();
+      if(!q) return threads;
+      // thread title + any post content
+      return threads.filter(t => {
+        const inTitle = (t.title||"").toLowerCase().includes(q);
+        const hasPost = state.data.posts.some(p => p.threadId === t.id && (p.content||"").toLowerCase().includes(q));
+        return inTitle || hasPost;
+      });
+    }
+
+    function renderBoards(){
+      const el = $("boards");
+      el.innerHTML = "";
+
+      const boards = applySearchBoards(state.data.boards)
+        .slice()
+        .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      if(!boards.length){
+        el.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+        return;
+      }
+
+      for(const b of boards){
+        const threadCount = state.data.threads.filter(t => t.boardId === b.id).length;
+        const div = document.createElement("div");
+        div.className = "item" + (b.id === state.selectedBoardId ? " active" : "");
+        div.onclick = () => {
+          state.selectedBoardId = b.id;
+          const first = threadsForBoard(b.id)[0];
+          state.selectedThreadId = first ? first.id : null;
+          renderAll();
+        };
+
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <div class="name">/${escapeHtml(b.slug)}/</div>
+              <div class="meta">${escapeHtml(b.name)}</div>
+            </div>
+            <div class="badge">${threadCount} threads</div>
+          </div>
+        `;
+        el.appendChild(div);
+      }
+    }
+
+    function renderThreads(){
+      const board = getSelectedBoard();
+      const el = $("threads");
+      const empty = $("threadEmpty");
+      el.innerHTML = "";
+
+      if(!board){
+        $("mainTitle").textContent = "Threads";
+        $("mainSub").textContent = "보드를 선택하세요";
+        $("newThreadBtn").disabled = true;
+        empty.style.display = "none";
+        return;
+      }
+
+      $("mainTitle").textContent = `Threads · /${board.slug}/`;
+      $("mainSub").textContent = board.name;
+      $("newThreadBtn").disabled = false;
+
+      let threads = threadsForBoard(board.id);
+      threads = applySearchThreads(threads);
+
+      if(!threads.length){
+        empty.style.display = "block";
+        return;
+      } else {
+        empty.style.display = "none";
+      }
+
+      for(const t of threads){
+        const posts = postsForThread(t.id);
+        const last = posts[posts.length-1];
+        const div = document.createElement("div");
+        div.className = "item" + (t.id === state.selectedThreadId ? " active" : "");
+        div.onclick = () => {
+          state.selectedThreadId = t.id;
+          renderAll();
+        };
+        div.innerHTML = `
+          <div class="row">
+            <div style="min-width:0">
+              <div class="name" title="${escapeAttr(t.title)}">${escapeHtml(t.title)}</div>
+              <div class="meta">${posts.length} posts · last ${last ? fmtTime(last.createdAt) : fmtTime(t.createdAt)}</div>
+            </div>
+            <div class="badge">bumped ${fmtTime(t.bumpedAt)}</div>
+          </div>
+        `;
+        el.appendChild(div);
+      }
+    }
+
+    function renderPosts(){
+      const board = getSelectedBoard();
+      const thread = getSelectedThread();
+
+      $("kpiBoard").textContent = board ? `/${board.slug}/` : "-";
+      $("kpiThread").textContent = thread ? short(thread.title, 26) : "-";
+
+      $("composerSub").textContent = thread ? "게시글 작성" : "스레드를 선택하세요";
+      $("submitPost").disabled = !thread;
+
+      $("deleteThreadBtn").disabled = !thread;
+
+      const postsEl = $("posts");
+      const emptyEl = $("postsEmpty");
+      postsEl.innerHTML = "";
+
+      if(!thread){
+        $("threadTitle").textContent = "Thread";
+        $("threadSub").textContent = "게시글이 여기 표시됩니다";
+        emptyEl.style.display = "none";
+        return;
+      }
+
+      $("threadTitle").textContent = thread.title;
+      $("threadSub").textContent = `/${board.slug}/ · created ${fmtTime(thread.createdAt)} · posts ${postsForThread(thread.id).length}`;
+
+      const posts = postsForThread(thread.id);
+      if(!posts.length){
+        emptyEl.style.display = "block";
+        return;
+      }
+      emptyEl.style.display = "none";
+
+      for(const p of posts){
+        const div = document.createElement("div");
+        div.className = "post";
+        const initials = (p.name && p.name.trim()) ? p.name.trim().slice(0,2) : "AN";
+        div.innerHTML = `
+          <div class="avatar">${escapeHtml(initials.toUpperCase())}</div>
+          <div>
+            <div class="phead">
+              <div class="who">
+                <b>${escapeHtml(p.name && p.name.trim() ? p.name.trim() : "Anonymous")}</b>
+                <small>${fmtTime(p.createdAt)} · #${escapeHtml(p.id.slice(-6))}</small>
+              </div>
+              <button class="btn danger" data-delpost="${escapeAttr(p.id)}" title="삭제">삭제</button>
+            </div>
+            <div class="pbody">${escapeHtml(p.content || "")}</div>
+            ${p.imgUrl ? `
+              <div class="pimg">
+                <img src="${escapeAttr(p.imgUrl)}" alt="image" onerror="this.closest('.pimg').remove()" />
+              </div>
+            ` : ""}
+          </div>
+        `;
+        postsEl.appendChild(div);
+      }
+
+      // bind delete post buttons
+      postsEl.querySelectorAll("[data-delpost]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute("data-delpost");
+          deletePost(id);
+        });
+      });
+    }
+
+    function renderAll(){
+      renderBoards();
+      renderThreads();
+      renderPosts();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){
+      // minimal attribute escape
+      return escapeHtml(str).replaceAll("\n"," ");
+    }
+    function short(str, n){
+      const s = String(str||"");
+      return s.length > n ? s.slice(0, n-1) + "…" : s;
+    }
+
+    function createBoard(){
+      const slug = prompt("보드 슬러그(slug) 입력 예: trading");
+      if(!slug) return;
+      const name = prompt("보드 이름 입력 예: 트레이딩") || slug;
+      const clean = slug.trim().toLowerCase().replace(/[^a-z0-9_-]/g,"");
+      if(!clean){
+        alert("slug가 비었습니다.");
+        return;
+      }
+      if(state.data.boards.some(b => b.slug === clean)){
+        alert("이미 존재하는 slug 입니다.");
+        return;
+      }
+      const b = { id: uid(), slug: clean, name: name.trim(), createdAt: nowISO() };
+      state.data.boards.unshift(b);
+      state.selectedBoardId = b.id;
+      state.selectedThreadId = null;
+      save();
+      renderAll();
+    }
+
+    function createThread(){
+      const board = getSelectedBoard();
+      if(!board) return;
+      const title = prompt(`/${board.slug}/ 새 스레드 제목`);
+      if(!title) return;
+      const t = { id: uid(), boardId: board.id, title: title.trim(), createdAt: nowISO(), bumpedAt: nowISO() };
+      state.data.threads.unshift(t);
+      state.selectedThreadId = t.id;
+      save();
+      renderAll();
+    }
+
+    function submitPost(e){
+      e.preventDefault();
+      const thread = getSelectedThread();
+      if(!thread) return;
+
+      const name = $("name").value.trim() || "Anonymous";
+      const imgUrl = $("imgUrl").value.trim();
+      const content = $("content").value.trim();
+      if(!content){
+        alert("내용을 입력하세요.");
+        return;
+      }
+
+      const p = { id: uid(), threadId: thread.id, name, imgUrl, content, createdAt: nowISO() };
+      state.data.posts.push(p);
+
+      // bump thread
+      thread.bumpedAt = nowISO();
+
+      $("content").value = "";
+      $("imgUrl").value = "";
+
+      save();
+      renderAll();
+    }
+
+    function deletePost(postId){
+      const thread = getSelectedThread();
+      if(!thread) return;
+      const ok = confirm("이 게시글을 삭제합니까?");
+      if(!ok) return;
+
+      state.data.posts = state.data.posts.filter(p => p.id !== postId);
+
+      // if no posts left, keep thread (like empty thread)
+      save();
+      renderAll();
+    }
+
+    function deleteThread(){
+      const thread = getSelectedThread();
+      if(!thread) return;
+      const ok = confirm("스레드(게시글 포함)를 삭제합니까?");
+      if(!ok) return;
+
+      state.data.posts = state.data.posts.filter(p => p.threadId !== thread.id);
+      state.data.threads = state.data.threads.filter(t => t.id !== thread.id);
+
+      // select another thread
+      const board = getSelectedBoard();
+      const next = board ? threadsForBoard(board.id)[0] : null;
+      state.selectedThreadId = next ? next.id : null;
+
+      save();
+      renderAll();
+    }
+
+    function exportData(){
+      const blob = new Blob([JSON.stringify(state.data, null, 2)], {type:"application/json"});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'dashboard-personalization.json';
+      a.download = `xboard_export_${Date.now()}.json`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-    });
-
-    importBtn.addEventListener('click', () => openImportModal());
-
-    function buildPersonalizationPayload(){
-      return {
-        v: 1,
-        exportedAt: new Date().toISOString(),
-        favorites: loadJSON(FAV_KEY, {}),
-        order: loadJSON(ORDER_KEY, {}),
-        customLinks: loadCustom(),
-        todo: loadJSON(TODO_KEY, []),
-        theme: localStorage.getItem(THEME_KEY) || 'light',
-      };
     }
 
-    function applyPersonalizationPayload(obj){
-      const favorites = obj.favorites ?? {};
-      const order = obj.order ?? {};
-      const customLinks = obj.customLinks ?? [];
-      const todo = obj.todo ?? [];
-      const theme = obj.theme ?? 'light';
-
-      if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)) return false;
-
-      const sanitizedCustom = customLinks
-        .filter(x => x && typeof x === 'object')
-        .map(x => ({
-          id: String(x.id || uid()),
-          cat: String(x.cat || 'comm'),
-          badge: String(x.badge || 'ME').slice(0,10),
-          title: String(x.title || '').slice(0,60),
-          sub: String(x.sub || '').slice(0,80),
-          href: safeUrl(String(x.href || '')) || 'https://example.com'
-        }));
-
-      saveJSON(FAV_KEY, favorites);
-      saveJSON(ORDER_KEY, order);
-      saveJSON(CUSTOM_KEY, sanitizedCustom);
-      saveJSON(TODO_KEY, Array.isArray(todo) ? todo : []);
-      if(theme === 'dark' || theme === 'light') applyTheme(theme);
-      return true;
+    function importData(){
+      $("fileInput").click();
     }
 
-    function openImportModal(){
-      modalBack.style.display = 'flex';
-      editingId = null;
-      linkFormArea.style.display = 'none';
-      importArea.style.display = 'block';
-      modalTitle.textContent = '개인화 가져오기';
-      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
-      importText.value = '';
-    }
-
-    applyImportBtn.addEventListener('click', () => {
-      const text = (importText.value || '').trim();
-      if(!text){ alert('JSON을 붙여넣으세요.'); return; }
-      if(!confirm('기존 개인화를 덮어쓰고 가져오겠습니까?')) return;
-
-      let obj;
-      try{ obj = JSON.parse(text); }
-      catch{ alert('JSON 파싱 실패'); return; }
-
-      const ok = applyPersonalizationPayload(obj);
-      if(!ok){ alert('JSON 구조가 올바르지 않습니다.'); return; }
-
-      closeModal();
-      renderGrid(); renderFav(); syncStars();
-      renderTodo();
-    });
-    importCancelBtn.addEventListener('click', () => closeModal());
-
-    // ---------------------------
-    // Share link (compressed)
-    // ---------------------------
-    shareBtn.addEventListener('click', async () => {
-      const payload = buildPersonalizationPayload();
-      const json = JSON.stringify(payload);
-      const packed = compressToEncodedURIComponent(json);
-
-      const base = location.origin + location.pathname + location.search;
-      const shareUrl = base + '#p=' + packed;
-
-      try{
-        await navigator.clipboard.writeText(shareUrl);
-        alert('공유 링크(압축)가 클립보드에 복사되었습니다.');
-      }catch{
-        prompt('공유 링크를 복사하세요:', shareUrl);
-      }
-    });
-
-    function tryApplyFromHash(){
-      const hash = location.hash || '';
-      if(!hash.startsWith('#p=')) return;
-
-      const packed = hash.slice(3);
-      if(!packed) return;
-
-      const json = decompressFromEncodedURIComponent(packed);
-      if (json == null) { alert('공유 링크 해석 실패(손상됨).'); return; }
-
-      let obj;
-      try{ obj = JSON.parse(json); }
-      catch{ alert('공유 데이터 JSON 파싱 실패'); return; }
-
-      const ok = confirm('공유 링크의 개인화를 이 브라우저에 적용할까요? (기존 개인화는 덮어쓰기)');
-      if(!ok) return;
-
-      const applied = applyPersonalizationPayload(obj);
-      if(!applied){
-        alert('공유 데이터 구조가 올바르지 않습니다.');
-        return;
-      }
-
-      history.replaceState(null,'', location.pathname + location.search);
-      renderGrid(); renderFav(); syncStars();
-      renderTodo();
-      alert('적용 완료');
-    }
-
-    // ---------------------------
-    // Link modal (add/edit)
-    // ---------------------------
-    function openLinkModal(mode, item){
-      modalBack.style.display = 'flex';
-      linkFormArea.style.display = 'block';
-      importArea.style.display = 'none';
-
-      editingId = (mode === 'edit') ? item.id : null;
-
-      if(mode === 'edit'){
-        modalTitle.textContent = '내 링크 편집';
-        modalDesc.textContent = '이 링크는 브라우저에만 저장됩니다.';
-        deleteBtn.style.display = 'inline-flex';
-      }else{
-        modalTitle.textContent = '내 링크 추가';
-        modalDesc.textContent = '현재 선택된 카테고리에 저장됩니다.';
-        deleteBtn.style.display = 'none';
-      }
-
-      fCat.value = item.cat || 'comm';
-      fBadge.value = item.badge || 'ME';
-      fTitle.value = item.title || '';
-      fSub.value = item.sub || '';
-      fHref.value = item.href || '';
-
-      if(currentCat !== 'all') fCat.value = currentCat;
-    }
-
-    function closeModal(){
-      modalBack.style.display = 'none';
-      editingId = null;
-      fTitle.value = '';
-      fSub.value = '';
-      fHref.value = '';
-      fBadge.value = '';
-      importText.value = '';
-    }
-
-    function validateForm(){
-      const cat = fCat.value;
-      const badge = (fBadge.value || '').trim().slice(0,10);
-      const title = (fTitle.value || '').trim().slice(0,60);
-      const sub = (fSub.value || '').trim().slice(0,80);
-      const hrefRaw = (fHref.value || '').trim();
-
-      if(!title) return {ok:false, msg:'이름을 입력하세요.'};
-      const href = safeUrl(hrefRaw);
-      if(!href) return {ok:false, msg:'URL은 http/https 형식만 허용됩니다.'};
-
-      return {ok:true, data:{cat, badge, title, sub, href}};
-    }
-
-    saveBtn.addEventListener('click', () => {
-      const v = validateForm();
-      if(!v.ok){ alert(v.msg); return; }
-
-      const item = v.data;
-      if(editingId) upsertCustom({id:editingId, ...item});
-      else upsertCustom({id:uid(), ...item});
-
-      closeModal();
-      renderGrid();
-      updateCounts();
-    });
-
-    deleteBtn.addEventListener('click', () => {
-      if(!editingId) return;
-      if(!confirm('이 내 링크를 삭제할까요?')) return;
-      deleteCustom(editingId);
-      closeModal();
-      renderGrid();
-      updateCounts();
-    });
-
-    modalClose.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    modalBack.addEventListener('click', (e) => { if(e.target === modalBack) closeModal(); });
-
-    // ---------------------------
-    // PWA install button
-    // ---------------------------
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'inline-flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if(!deferredPrompt) return;
-      deferredPrompt.prompt();
-      try{ await deferredPrompt.userChoice; } catch {}
-      deferredPrompt = null;
-      installBtn.style.display = 'none';
-    });
-
-    // ---------------------------
-    // Service Worker register
-    // ---------------------------
-    async function registerSW(){
-      if(!('serviceWorker' in navigator)) return;
-      try{ await navigator.serviceWorker.register('./sw.js'); } catch {}
-    }
-
-    // ---------------------------
-    // Init category from URL
-    // ---------------------------
-    function initChips(){
-      const params = new URLSearchParams(location.search);
-      const cat = params.get('cat') || 'all';
-      const exists = chips.some(c => c.dataset.cat === cat);
-      setActiveChip(exists ? cat : 'all');
-    }
-
-    window.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape'){
-        if(modalBack.style.display === 'flex') closeModal();
-        else resetAll();
-      }
-    });
-
-    // ---------------------------
-    // Weather (Open-Meteo)
-    // ---------------------------
-    function wxCodeToIcon(code){
-      if(code===0) return "☀";
-      if(code===1||code===2) return "🌤";
-      if(code===3) return "☁";
-      if(code===45||code===48) return "🌫";
-      if([51,53,55,61,63,65,80,81,82].includes(code)) return "🌧";
-      if([71,73,75].includes(code)) return "🌨";
-      if([95,96,99].includes(code)) return "⛈";
-      return "☁";
-    }
-    function wxCodeToText(code){
-      const map = {
-        0:"맑음",1:"대체로 맑음",2:"부분적으로 흐림",3:"흐림",
-        45:"안개",48:"서리 안개",
-        51:"이슬비(약)",53:"이슬비(중)",55:"이슬비(강)",
-        61:"비(약)",63:"비(중)",65:"비(강)",
-        71:"눈(약)",73:"눈(중)",75:"눈(강)",
-        80:"소나기(약)",81:"소나기(중)",82:"소나기(강)",
-        95:"뇌우",96:"뇌우+우박(약)",99:"뇌우+우박(강)"
-      };
-      return map[code] || "날씨";
-    }
-    async function fetchWeather(lat, lon){
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`;
-      const res = await fetch(url, {cache:"no-store"});
-      if(!res.ok) throw new Error("wx fail");
-      return res.json();
-    }
-    async function reverseGeocode(lat, lon){
-      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-      const res = await fetch(url, {headers:{Accept:"application/json"}});
-      if(!res.ok) return null;
-      const j = await res.json();
-      return j?.address?.city || j?.address?.town || j?.address?.village || j?.address?.state || null;
-    }
-    async function initWeather(){
-      let lat=37.5665, lon=126.9780, place="서울";
-      if("geolocation" in navigator){
+    function handleImport(file){
+      const reader = new FileReader();
+      reader.onload = () => {
         try{
-          const pos = await new Promise((resolve,reject)=>{
-            navigator.geolocation.getCurrentPosition(resolve,reject,{timeout:4000, maximumAge:600000});
-          });
-          lat = pos.coords.latitude;
-          lon = pos.coords.longitude;
-          const p = await reverseGeocode(lat, lon);
-          place = p || "현재 위치";
-        }catch{}
-      }
-      wxPlace.textContent = place;
-
-      try{
-        const data = await fetchWeather(lat, lon);
-        const c = data.current;
-        wxIcon.textContent = wxCodeToIcon(c.weather_code);
-        wxTemp.textContent = `${Math.round(c.temperature_2m)}°`;
-        wxDesc.textContent =
-          `${wxCodeToText(c.weather_code)} · 체감 ${Math.round(c.apparent_temperature)}° · 습도 ${Math.round(c.relative_humidity_2m)}% · 바람 ${Math.round(c.wind_speed_10m)}`;
-      }catch{
-        wxIcon.textContent = "☁";
-        wxTemp.textContent = `--°`;
-        wxDesc.textContent = "날씨 로드 실패";
-      }
-    }
-
-    // ---------------------------
-    // Calendar + Clock
-    // ---------------------------
-    function pad2(n){ return String(n).padStart(2,"0"); }
-    function tickClock(){
-      const d=new Date();
-      clockEl.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-    }
-    function buildCalendar(){
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = now.getMonth();
-      const today = now.getDate();
-
-      calTitleEl.textContent = `캘린더 · ${y}.${pad2(m+1)}`;
-
-      const week = ["일","월","화","수","목","금","토"];
-      calGridEl.innerHTML = week.map(w=>`<div class="calHead">${w}</div>`).join("");
-
-      const first = new Date(y,m,1);
-      const last = new Date(y,m+1,0);
-      const firstDow = first.getDay();
-      const daysInMonth = last.getDate();
-      const prevLast = new Date(y,m,0).getDate();
-
-      let dayNum=1;
-      for(let i=0;i<42;i++){
-        let d, muted=false, isToday=false;
-        if(i<firstDow){
-          d = prevLast - (firstDow-1-i);
-          muted=true;
-        }else if(dayNum<=daysInMonth){
-          d = dayNum++;
-          isToday = (d===today);
-        }else{
-          d = dayNum - daysInMonth;
-          dayNum++;
-          muted=true;
+          const obj = JSON.parse(reader.result);
+          if(!obj || !obj.boards || !obj.threads || !obj.posts){
+            alert("형식이 올바르지 않습니다.");
+            return;
+          }
+          state.data = obj;
+          save();
+          // reset selection
+          state.selectedBoardId = state.data.boards[0]?.id || null;
+          state.selectedThreadId = state.data.threads.find(t => t.boardId === state.selectedBoardId)?.id || null;
+          renderAll();
+        }catch(e){
+          alert("가져오기 실패: JSON 파싱 오류");
         }
-        const cls = ["calCell", muted?"muted":"", isToday?"today":""].join(" ").trim();
-        calGridEl.insertAdjacentHTML("beforeend", `<div class="${cls}">${d}</div>`);
-      }
+      };
+      reader.readAsText(file);
     }
 
-    // ---------------------------
-    // ToDo (localStorage)
-    // ---------------------------
-    function loadTodo(){ return loadJSON(TODO_KEY, []); }
-    function saveTodo(list){ saveJSON(TODO_KEY, list); }
+    function resetAll(){
+      const ok = confirm("모든 데이터를 초기화합니까?");
+      if(!ok) return;
+      state.data = defaultData();
+      save();
+      state.selectedBoardId = state.data.boards[0].id;
+      state.selectedThreadId = state.data.threads.find(t => t.boardId === state.selectedBoardId)?.id || null;
+      renderAll();
+    }
 
-    function renderTodo(){
-      const list = loadTodo();
-      if(!list.length){
-        todoList.innerHTML = `
-          <div class="todoItem" style="justify-content:flex-start;">
-            <div class="todoLeft">
-              <span style="font-weight:900; color:var(--muted);">비어있음</span>
-            </div>
-          </div>
-        `;
-        return;
-      }
-      todoList.innerHTML = list.map(x=>`
-        <div class="todoItem" data-id="${x.id}">
-          <div class="todoLeft">
-            <input type="checkbox" ${x.done ? "checked":""} />
-            <div class="todoText ${x.done ? "done":""}">${escapeHtml(x.text)}</div>
-          </div>
-          <div class="todoDel" title="삭제">×</div>
-        </div>
-      `).join("");
+    function bind(){
+      $("newBoardBtn").addEventListener("click", createBoard);
+      $("newThreadBtn").addEventListener("click", createThread);
+      $("postForm").addEventListener("submit", submitPost);
+      $("deleteThreadBtn").addEventListener("click", deleteThread);
 
-      todoList.querySelectorAll(".todoItem").forEach(row=>{
-        const id = row.dataset.id;
-        const cb = row.querySelector('input[type="checkbox"]');
-        const del = row.querySelector(".todoDel");
-        cb.addEventListener("change", ()=>{
-          const items = loadTodo();
-          const t = items.find(a=>a.id===id);
-          if(t){ t.done = cb.checked; saveTodo(items); renderTodo(); }
-        });
-        del.addEventListener("click", ()=>{
-          const items = loadTodo().filter(a=>a.id!==id);
-          saveTodo(items);
-          renderTodo();
-        });
+      $("exportBtn").addEventListener("click", exportData);
+      $("importBtn").addEventListener("click", importData);
+      $("resetBtn").addEventListener("click", resetAll);
+
+      $("fileInput").addEventListener("change", (e) => {
+        const f = e.target.files && e.target.files[0];
+        e.target.value = "";
+        if(f) handleImport(f);
+      });
+
+      $("search").addEventListener("input", (e) => {
+        state.search = e.target.value || "";
+        renderAll();
       });
     }
 
-    function addTodo(){
-      const text = (todoInput.value||"").trim();
-      if(!text) return;
-      const items = loadTodo();
-      items.unshift({id:uid(), text:text.slice(0,120), done:false});
-      saveTodo(items);
-      todoInput.value = "";
-      renderTodo();
-    }
-    todoAdd.addEventListener("click", addTodo);
-    todoInput.addEventListener("keydown", (e)=>{ if(e.key==="Enter") addTodo(); });
-
-    // ---------------------------
-    // Init
-    // ---------------------------
-    function init(){
-      registerSW();
-      initChips();
-      renderFav();
-      renderGrid();
-      tryApplyFromHash();
-
-      initWeather();
-      buildCalendar();
-      tickClock();
-      setInterval(tickClock, 250);
-
-      renderTodo();
-    }
-
-    init();
+    // init
+    load();
+    bind();
+    renderAll();
   </script>
-
-  <!--
-    ✅ 중요:
-    사용자가 올린 BASE 배열이 너무 길어서 이 코드에서는 window.__BASE_LINKS__로 받도록 했습니다.
-    가장 간단한 방법:
-      1) 당신의 BASE 배열 선언부( const BASE = [ ... ]; )를 그대로 유지하고
-      2) 위 "const BASE = (function(){ ... })();" 블록을 지우고
-      3) 원래 BASE 선언을 그대로 붙여넣으면 됩니다.
-    나머지(테마 토글/사이드바 날씨·캘린더·ToDo/2줄 카테고리/검색 UI)는 그대로 동작합니다.
-  -->
 </body>
 </html>
