@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>미니멀 링크 대시보드</title>
 
-  <!-- (선택) PWA: 같은 폴더에 manifest.json / sw.js가 있으면 동작 -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <!-- Minimal favicon -->
+  <!-- Minimal white brand favicon (SVG data URI) -->
   <link rel="icon" type="image/svg+xml"
     href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="128" height="128"%3E%3Crect width="128" height="128" rx="28" fill="%23ffffff"/%3E%3Cpath d="M36 40h56v10H36zM36 59h40v10H36zM36 78h56v10H36z" fill="%23111827"/%3E%3C/svg%3E' />
 
@@ -26,21 +26,11 @@
       --chip:#f3f4f6;
       --shadow: 0 10px 30px rgba(17,24,39,.06);
       --radius:16px;
-      --max:1200px;
+      --max:1100px;
 
       --warn:#ef4444;
       --gold:#f59e0b;
       --ok:#10b981;
-    }
-    [data-theme="dark"]{
-      --bg:#0b1220;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --line:#1f2937;
-      --card:#0f172a;
-      --hover:#111c33;
-      --chip:#111c33;
-      --shadow: 0 16px 36px rgba(0,0,0,.35);
     }
 
     *{box-sizing:border-box}
@@ -51,22 +41,10 @@
       background:var(--bg);
       color:var(--text);
     }
-
     .wrap{
       max-width:var(--max);
       margin:0 auto;
-      padding:28px 16px 56px;
-    }
-
-    /* Layout */
-    .layout{
-      display:grid;
-      grid-template-columns: 1.65fr 1fr; /* left / right */
-      gap:16px;
-      align-items:start;
-    }
-    @media (max-width: 980px){
-      .layout{grid-template-columns: 1fr; }
+      padding:32px 18px 56px;
     }
 
     /* Header */
@@ -76,11 +54,17 @@
       gap:12px;
       margin-bottom:14px;
     }
+    .brand{min-width:0}
     .brand h1{
       font-size:30px;
       letter-spacing:-0.02em;
       margin:0 0 6px 0;
       line-height:1.15;
+
+      /* ✅ title not cut */
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
       word-break:keep-all;
     }
     .brand p{
@@ -90,7 +74,7 @@
       font-size:14px;
     }
 
-    /* Buttons */
+    /* ✅ moved buttons under title */
     .actions{
       display:flex;
       align-items:center;
@@ -125,9 +109,6 @@
       gap:12px;
       margin-top:12px;
     }
-    @media (max-width:820px){
-      .searchRow{grid-template-columns:1fr;}
-    }
     .search{
       border:1px solid var(--line);
       border-radius:14px;
@@ -145,7 +126,6 @@
       color:var(--muted);
       font-weight:950;
       flex:0 0 auto;
-      border:1px solid var(--line);
     }
     .search input{
       border:0;
@@ -174,11 +154,11 @@
     }
     .favTop{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:10px;
-      flex-wrap:wrap;
       margin-bottom:10px;
+      flex-wrap:wrap;
     }
     .favTitle{
       font-weight:950;
@@ -202,7 +182,6 @@
       color:var(--muted);
       font-size:12px;
       line-height:1.4;
-      margin-top:6px;
     }
     .favGrid{
       display:grid;
@@ -308,13 +287,8 @@
       gap:14px;
       margin-top:12px;
     }
-    @media (max-width:520px){
-      .brand h1{font-size:24px;}
-      .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
-      .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
-      .actions{gap:8px;}
-    }
 
+    /* ✅ FIX: no absolute UI, use grid columns */
     .card{
       display:grid;
       grid-template-columns: 1fr auto auto;
@@ -383,7 +357,9 @@
       text-overflow:ellipsis;
     }
 
-    .star, .menu{
+    .star,
+    .menu{
+      position:static;
       width:34px;height:34px;
       border-radius:12px;
       border:1px solid var(--line);
@@ -403,126 +379,6 @@
     }
     .menu.hidden{display:none;}
 
-    /* Right panel cards */
-    .side{
-      position:sticky;
-      top:16px;
-      display:flex;
-      flex-direction:column;
-      gap:16px;
-    }
-    @media (max-width:980px){
-      .side{position:static;}
-    }
-    .panel{
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:var(--card);
-      box-shadow: var(--shadow);
-      padding:14px;
-    }
-    .panelTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-    .panelTitle{
-      font-weight:950;
-      letter-spacing:-0.01em;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .panelBody{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .iframeWrap{
-      border:1px solid var(--line);
-      border-radius:14px;
-      overflow:hidden;
-      background:var(--bg);
-    }
-    iframe{
-      width:100%;
-      height:520px;
-      border:0;
-      display:block;
-    }
-    .miniHelp{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.5;
-    }
-
-    /* Todo */
-    .todoRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-    .todoRow input{
-      flex:1;
-      border:1px solid var(--line);
-      background:var(--bg);
-      color:var(--text);
-      border-radius:12px;
-      padding:12px 12px;
-      outline:none;
-      font-weight:800;
-      font-size:14px;
-    }
-    .todoList{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-top:6px;
-    }
-    .todoItem{
-      border:1px solid var(--line);
-      background:var(--card);
-      border-radius:14px;
-      padding:10px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .todoItem[draggable="true"]{cursor:grab;}
-    .todoItem.dragging{opacity:.55;}
-    .todoItem.dragover{
-      outline: 2px dashed rgba(16,185,129,.65);
-      outline-offset: 2px;
-    }
-    .todoLeft{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .todoCheck{
-      width:18px;height:18px;
-      accent-color: var(--ok);
-      cursor:pointer;
-    }
-    .todoText{
-      font-weight:900;
-      font-size:14px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 100%;
-    }
-    .todoText.done{
-      color:var(--muted);
-      text-decoration: line-through;
-      font-weight:850;
-    }
-
     /* Modal */
     .modalBack{
       position:fixed;
@@ -535,7 +391,7 @@
       z-index:50;
     }
     .modal{
-      width:min(640px, 100%);
+      width:min(560px, 100%);
       background:var(--card);
       border:1px solid var(--line);
       border-radius:18px;
@@ -577,7 +433,7 @@
       font-size:14px;
     }
     .field textarea{
-      min-height:160px;
+      min-height:140px;
       resize:vertical;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size:12px;
@@ -589,9 +445,6 @@
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
-    @media (max-width:820px){
-      .row2{grid-template-columns:1fr;}
-    }
     .modalActions{
       display:flex;
       gap:10px;
@@ -602,17 +455,28 @@
     .small{
       font-size:12px;
       color:var(--muted);
-      line-height:1.45;
+      line-height:1.4;
       margin-top:8px;
     }
 
     footer{
-      margin-top:22px;
+      margin-top:34px;
       padding-top:18px;
       border-top:1px solid var(--line);
       color:var(--muted);
       font-size:12px;
       line-height:1.7;
+    }
+
+    @media (max-width:820px){
+      .searchRow{grid-template-columns:1fr;}
+      .row2{grid-template-columns:1fr;}
+    }
+    @media (max-width:520px){
+      .brand h1{font-size:24px;}
+      .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
+      .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
+      .actions{gap:8px;}
     }
   </style>
 </head>
@@ -625,129 +489,75 @@
         <p>무회원 · 무수집 · 개인화는 브라우저에만 저장됩니다. (공유는 URL로만 전달)</p>
       </div>
 
-      <div class="searchRow">
-        <div class="search" title="네이버 검색 (Enter)">
-          <div class="icon">N</div>
-          <input id="naverQ" placeholder="네이버 검색 (Enter)" autocomplete="off" />
-          <button class="btn" type="button" id="naverGo">검색</button>
-        </div>
-
-        <div class="search" title="구글 검색 (Enter)">
-          <div class="icon">G</div>
-          <input id="googleQ" placeholder="구글 검색 (Enter)" autocomplete="off" />
-          <button class="btn" type="button" id="googleGo">검색</button>
-        </div>
-      </div>
-
-      <div class="hint">
-        • ⭐: 전역 즐겨찾기 • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달(압축)
+      <!-- ✅ moved here (under title) -->
+      <div class="actions">
+        <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
+        <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
+        <button class="btn" id="exportBtn" type="button">내보내기</button>
+        <button class="btn" id="importBtn" type="button">가져오기</button>
+        <button class="btn danger" id="wipeBtn" type="button">개인화 초기화</button>
+        <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
+        <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
+        <button class="btn" type="button" id="resetBtn">초기화</button>
       </div>
     </div>
 
-    <div class="layout">
-      <!-- LEFT -->
-      <div class="main">
-        <!-- Favorites (with moved actions + theme toggle) -->
-        <div class="favBox">
-          <div class="favTop">
-            <div>
-              <div class="favTitle">
-                <span>즐겨찾기</span>
-                <span class="pill">전역</span>
-              </div>
-              <div class="favHelp">카테고리와 무관하게 한 곳에 저장됩니다. (드래그로 순서 변경)</div>
-            </div>
-
-            <div class="actions">
-              <button class="btn" id="themeBtn" type="button" title="화이트/블랙 토글">화이트/블랙</button>
-
-              <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
-              <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
-              <button class="btn" id="exportBtn" type="button">내보내기</button>
-              <button class="btn" id="importBtn" type="button">가져오기</button>
-              <button class="btn danger" id="wipeBtn" type="button">개인화 초기화</button>
-              <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
-              <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
-              <button class="btn" type="button" id="resetBtn">초기화</button>
-            </div>
-          </div>
-
-          <div class="favGrid" id="favGrid"></div>
-        </div>
-
-        <!-- Categories -->
-        <div class="cats" id="cats">
-          <div class="chipbtn active" data-cat="all">전체 <span class="count" data-count="all">(0)</span></div>
-          <div class="chipbtn" data-cat="comm">커뮤니케이션 <span class="count" data-count="comm">(0)</span></div>
-          <div class="chipbtn" data-cat="prod">생산성 <span class="count" data-count="prod">(0)</span></div>
-          <div class="chipbtn" data-cat="media">미디어 <span class="count" data-count="media">(0)</span></div>
-          <div class="chipbtn" data-cat="finance">금융 <span class="count" data-count="finance">(0)</span></div>
-          <div class="chipbtn" data-cat="ai">AI <span class="count" data-count="ai">(0)</span></div>
-          <div class="chipbtn" data-cat="news">뉴스·리서치 <span class="count" data-count="news">(0)</span></div>
-          <div class="chipbtn" data-cat="shop">쇼핑 <span class="count" data-count="shop">(0)</span></div>
-          <div class="chipbtn" data-cat="community">커뮤니티 <span class="count" data-count="community">(0)</span></div>
-          <div class="chipbtn" data-cat="dev">개발·도구 <span class="count" data-count="dev">(0)</span></div>
-          <div class="chipbtn" data-cat="util">유틸리티 <span class="count" data-count="util">(0)</span></div>
-        </div>
-
-        <!-- Grid -->
-        <div class="grid" id="grid"></div>
-
-        <footer>
-          본 사이트는 링크 허브(북마크 대체)입니다. 외부 서비스의 상표/운영 권한은 각 소유자에게 있습니다.<br/>
-          회원가입/로그인 없음, 개인정보 수집/저장 없음. 개인화(즐겨찾기/정렬/내 링크/캘린더/투두)는 브라우저(LocalStorage)에만 저장됩니다.
-        </footer>
+    <!-- Two search bars -->
+    <div class="searchRow">
+      <div class="search" title="네이버 검색 (Enter)">
+        <div class="icon">N</div>
+        <input id="naverQ" placeholder="네이버 검색 (Enter)" autocomplete="off" />
+        <button class="btn" type="button" id="naverGo">검색</button>
       </div>
 
-      <!-- RIGHT -->
-      <aside class="side">
-        <!-- Google Calendar -->
-        <section class="panel">
-          <div class="panelTop">
-            <div class="panelTitle">
-              <span>Google Calendar</span>
-              <span class="pill">임베드</span>
-            </div>
-            <div class="actions">
-              <button class="btn" id="calSettingBtn" type="button">연동 설정</button>
-            </div>
-          </div>
-          <div class="panelBody">
-            <div class="iframeWrap">
-              <iframe id="calFrame" title="Google Calendar"></iframe>
-            </div>
-            <div class="miniHelp">
-              • “연동”은 Google Calendar의 <b>공개 임베드 URL</b> 또는 <b>캘린더 ID</b>를 저장해 불러오는 방식입니다.<br/>
-              • 개인 계정의 비공개 캘린더를 “자동 로그인 연동”하려면 OAuth가 필요하며, 이 단일 HTML(무서버) 구조에서는 지원하지 않습니다.
-            </div>
-          </div>
-        </section>
-
-        <!-- Todo -->
-        <section class="panel">
-          <div class="panelTop">
-            <div class="panelTitle">
-              <span>To-Do</span>
-              <span class="pill">로컬</span>
-            </div>
-            <div class="actions">
-              <button class="btn danger" id="todoClearBtn" type="button">완료삭제</button>
-            </div>
-          </div>
-          <div class="panelBody">
-            <div class="todoRow">
-              <input id="todoInput" placeholder="할 일 입력 후 Enter" autocomplete="off"/>
-              <button class="btn primary" id="todoAddBtn" type="button">추가</button>
-            </div>
-            <div class="todoList" id="todoList"></div>
-            <div class="miniHelp">• 체크/드래그로 관리됩니다. (브라우저에만 저장)</div>
-          </div>
-        </section>
-      </aside>
+      <div class="search" title="구글 검색 (Enter)">
+        <div class="icon">G</div>
+        <input id="googleQ" placeholder="구글 검색 (Enter)" autocomplete="off" />
+        <button class="btn" type="button" id="googleGo">검색</button>
+      </div>
     </div>
+
+    <div class="hint">
+      • ⭐: 즐겨찾기(카테고리별 최대 5) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달(압축)
+    </div>
+
+    <!-- Favorites -->
+    <div class="favBox">
+      <div class="favTop">
+        <div class="favTitle">
+          <span>즐겨찾기</span>
+          <span class="pill" id="favScope">전체</span>
+        </div>
+        <div class="favHelp">현재 카테고리 기준 저장 (드래그로 순서 변경)</div>
+      </div>
+      <div class="favGrid" id="favGrid"></div>
+    </div>
+
+    <!-- Categories -->
+    <div class="cats" id="cats">
+      <div class="chipbtn active" data-cat="all">전체 <span class="count" data-count="all">(0)</span></div>
+      <div class="chipbtn" data-cat="comm">커뮤니케이션 <span class="count" data-count="comm">(0)</span></div>
+      <div class="chipbtn" data-cat="prod">생산성 <span class="count" data-count="prod">(0)</span></div>
+      <div class="chipbtn" data-cat="media">미디어 <span class="count" data-count="media">(0)</span></div>
+      <div class="chipbtn" data-cat="finance">금융 <span class="count" data-count="finance">(0)</span></div>
+      <div class="chipbtn" data-cat="ai">AI <span class="count" data-count="ai">(0)</span></div>
+      <div class="chipbtn" data-cat="news">뉴스·리서치 <span class="count" data-count="news">(0)</span></div>
+      <div class="chipbtn" data-cat="shop">쇼핑 <span class="count" data-count="shop">(0)</span></div>
+      <div class="chipbtn" data-cat="community">커뮤니티 <span class="count" data-count="community">(0)</span></div>
+      <div class="chipbtn" data-cat="dev">개발·도구 <span class="count" data-count="dev">(0)</span></div>
+      <div class="chipbtn" data-cat="util">유틸리티 <span class="count" data-count="util">(0)</span></div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid" id="grid"></div>
+
+    <footer>
+      본 사이트는 링크 허브(북마크 대체)입니다. 외부 서비스의 상표/운영 권한은 각 소유자에게 있습니다.<br/>
+      회원가입/로그인 없음, 개인정보 수집/저장 없음. 개인화(즐겨찾기/정렬/내 링크)는 브라우저(LocalStorage)에만 저장됩니다.
+    </footer>
   </div>
 
-  <!-- Modal: link add/edit OR import JSON OR calendar setting -->
+  <!-- Modal: add/edit OR import JSON -->
   <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modalHeader">
@@ -755,7 +565,7 @@
         <button class="iconBtn" id="modalClose" type="button" title="닫기">×</button>
       </div>
 
-      <div class="small" id="modalDesc"></div>
+      <div class="small" id="modalDesc">현재 선택된 카테고리에 저장됩니다.</div>
 
       <!-- Link form -->
       <div id="linkFormArea">
@@ -817,35 +627,7 @@
           <button class="btn" id="importCancelBtn" type="button">취소</button>
           <button class="btn primary" id="applyImportBtn" type="button">가져오기 적용</button>
         </div>
-        <div class="small">주의: 기존 개인화(내 링크/정렬/즐겨찾기/캘린더/투두)를 덮어씁니다.</div>
-      </div>
-
-      <!-- Calendar setting area -->
-      <div id="calArea" style="display:none;">
-        <div class="form">
-          <div class="field">
-            <label>방식 1) Google Calendar 임베드 URL (권장)</label>
-            <input id="calEmbedUrl" placeholder="https://calendar.google.com/calendar/embed?..." />
-            <div class="small">
-              Google Calendar → 설정 → “캘린더 통합” → “임베드 코드”에서 src URL을 복사해 넣으세요.
-              (공개 캘린더 또는 조직 정책상 허용된 캘린더만 표시됩니다.)
-            </div>
-          </div>
-
-          <div class="field">
-            <label>방식 2) 캘린더 ID로 생성 (간단)</label>
-            <input id="calId" placeholder="예: yourname@gmail.com 또는 ...@group.calendar.google.com" />
-            <div class="small">
-              이 방식은 기본 임베드 URL을 만들어 적용합니다(주로 공개/공유 캘린더용).
-            </div>
-          </div>
-        </div>
-
-        <div class="modalActions">
-          <button class="btn danger" id="calResetBtn" type="button">캘린더 초기화</button>
-          <button class="btn" id="calCancelBtn" type="button">취소</button>
-          <button class="btn primary" id="calSaveBtn" type="button">저장</button>
-        </div>
+        <div class="small">주의: 기존 개인화(내 링크/정렬/즐겨찾기)를 덮어씁니다.</div>
       </div>
     </div>
   </div>
@@ -854,12 +636,10 @@
     // ---------------------------
     // Keys
     // ---------------------------
-    const FAV_KEY    = 'xbrand_favorites_global_v2';
-    const ORDER_KEY  = 'xbrand_order_v2';
-    const CUSTOM_KEY = 'xbrand_custom_links_v2';
-    const TODO_KEY   = 'xbrand_todo_v1';
-    const THEME_KEY  = 'xbrand_theme_v1';
-    const CAL_KEY    = 'xbrand_calendar_v1';
+    const FAV_KEY = 'xbrand_favorites_v1';
+    const ORDER_KEY = 'xbrand_order_v1';
+    const CUSTOM_KEY = 'xbrand_custom_links_v1';
+    const MAX_FAV = 5;
 
     // ---------------------------
     // Helpers
@@ -899,6 +679,7 @@
 
     // ---------------------------
     // URL-safe compression (LZ-based)
+    // compressToEncodedURIComponent / decompressFromEncodedURIComponent
     // ---------------------------
     const _keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
     function _getBaseValue(alphabet, character) { return alphabet.indexOf(character); }
@@ -932,6 +713,7 @@
           context_dictionary[context_c] = context_dictSize++;
           context_dictionaryToCreate[context_c] = true;
         }
+
         context_wc = context_w + context_c;
         if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
           context_w = context_wc;
@@ -1094,6 +876,7 @@
       }
       return context_data.join("");
     }
+
     function _decompress(length, resetValue, getNextValue) {
       const dictionary = [];
       let next;
@@ -1212,78 +995,128 @@
 
     // ---------------------------
     // Base links (추천)
+    // (✅ keyword-chatting removed)
     // ---------------------------
     const BASE = [
-      // comm
+      // comm (10)
       {id:'b_comm_1',cat:'comm',title:'Telegram Web',sub:'메신저',href:'https://web.telegram.org',badge:'COMM'},
       {id:'b_comm_2',cat:'comm',title:'Discord',sub:'커뮤니티/채팅',href:'https://discord.com/app',badge:'COMM'},
       {id:'b_comm_3',cat:'comm',title:'Slack',sub:'업무 메신저',href:'https://slack.com/signin',badge:'COMM'},
       {id:'b_comm_4',cat:'comm',title:'Gmail',sub:'메일',href:'https://mail.google.com',badge:'COMM'},
-      {id:'b_comm_5',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'COMM'},
-      {id:'b_comm_6',cat:'comm',title:'Naver',sub:'포털',href:'https://www.naver.com',badge:'COMM'},
-      {id:'b_comm_7',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'COMM'},
+      {id:'b_comm_5',cat:'comm',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
+      {id:'b_comm_6',cat:'comm',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
+      {id:'b_comm_7',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'COMM'},
+      {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털',href:'https://www.naver.com',badge:'COMM'},
+      {id:'b_comm_9',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'COMM'},
+      {id:'b_comm_10',cat:'comm',title:'Facebook Messages',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
 
-      // prod
+      // prod (10)
       {id:'b_prod_1',cat:'prod',title:'Notion',sub:'문서 · 위키',href:'https://www.notion.so',badge:'PROD'},
       {id:'b_prod_2',cat:'prod',title:'Google Docs',sub:'문서',href:'https://docs.google.com',badge:'PROD'},
       {id:'b_prod_3',cat:'prod',title:'Google Sheets',sub:'스프레드시트',href:'https://sheets.google.com',badge:'PROD'},
       {id:'b_prod_4',cat:'prod',title:'Google Drive',sub:'파일',href:'https://drive.google.com',badge:'PROD'},
       {id:'b_prod_5',cat:'prod',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'PROD'},
-      {id:'b_prod_6',cat:'prod',title:'Figma',sub:'디자인',href:'https://www.figma.com',badge:'PROD'},
-      {id:'b_prod_7',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'PROD'},
-      {id:'b_prod_8',cat:'prod',title:'Canva',sub:'템플릿',href:'https://www.canva.com',badge:'PROD'},
+      {id:'b_prod_6',cat:'prod',title:'Microsoft Excel',sub:'엑셀',href:'https://www.microsoft.com/microsoft-365/excel',badge:'PROD'},
+      {id:'b_prod_7',cat:'prod',title:'Microsoft 365',sub:'오피스',href:'https://www.office.com',badge:'PROD'},
+      {id:'b_prod_8',cat:'prod',title:'Figma',sub:'디자인',href:'https://www.figma.com',badge:'PROD'},
+      {id:'b_prod_9',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'PROD'},
+      {id:'b_prod_10',cat:'prod',title:'Canva',sub:'템플릿',href:'https://www.canva.com',badge:'PROD'},
 
-      // media
+      // media (10)
       {id:'b_media_1',cat:'media',title:'YouTube',sub:'동영상',href:'https://www.youtube.com',badge:'MEDIA'},
-      {id:'b_media_2',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'MEDIA'},
-      {id:'b_media_3',cat:'media',title:'Naver Webtoon',sub:'웹툰',href:'https://comic.naver.com',badge:'MEDIA'},
-      {id:'b_media_4',cat:'media',title:'Spotify',sub:'음악',href:'https://www.spotify.com',badge:'MEDIA'},
+      {id:'b_media_2',cat:'media',title:'YouTube Music',sub:'음악',href:'https://music.youtube.com',badge:'MEDIA'},
+      {id:'b_media_3',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'MEDIA'},
+      {id:'b_media_4',cat:'media',title:'Naver Webtoon',sub:'웹툰',href:'https://comic.naver.com',badge:'MEDIA'},
+      {id:'b_media_5',cat:'media',title:'Kakao Webtoon',sub:'웹툰',href:'https://webtoon.kakao.com',badge:'MEDIA'},
+      {id:'b_media_6',cat:'media',title:'TVING',sub:'국내 OTT',href:'https://www.tving.com',badge:'MEDIA'},
+      {id:'b_media_7',cat:'media',title:'Wavve',sub:'국내 OTT',href:'https://www.wavve.com',badge:'MEDIA'},
+      {id:'b_media_8',cat:'media',title:'Spotify',sub:'음악',href:'https://www.spotify.com',badge:'MEDIA'},
+      {id:'b_media_9',cat:'media',title:'Twitch',sub:'라이브',href:'https://www.twitch.tv',badge:'MEDIA'},
+      {id:'b_media_10',cat:'media',title:'Disney+',sub:'스트리밍',href:'https://www.disneyplus.com',badge:'MEDIA'},
 
-      // finance
-      {id:'b_fin_1',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'FIN'},
-      {id:'b_fin_2',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'FIN'},
-      {id:'b_fin_3',cat:'finance',title:'Binance',sub:'거래소',href:'https://www.binance.com',badge:'FIN'},
-      {id:'b_fin_4',cat:'finance',title:'CoinMarketCap',sub:'시총',href:'https://www.coinmarketcap.com',badge:'FIN'},
-      {id:'b_fin_5',cat:'finance',title:'CoinGecko',sub:'데이터',href:'https://www.coingecko.com',badge:'FIN'},
-      {id:'b_fin_6',cat:'finance',title:'Google Finance',sub:'시장',href:'https://www.google.com/finance',badge:'FIN'},
+      // finance (10)
+      {id:'b_fin_1',cat:'finance',title:'Naver Finance',sub:'국내 시세',href:'https://finance.naver.com',badge:'FIN'},
+      {id:'b_fin_2',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'FIN'},
+      {id:'b_fin_3',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'FIN'},
+      {id:'b_fin_4',cat:'finance',title:'Binance',sub:'거래소',href:'https://www.binance.com',badge:'FIN'},
+      {id:'b_fin_5',cat:'finance',title:'CoinMarketCap',sub:'시총',href:'https://www.coinmarketcap.com',badge:'FIN'},
+      {id:'b_fin_6',cat:'finance',title:'CoinGecko',sub:'데이터',href:'https://www.coingecko.com',badge:'FIN'},
+      {id:'b_fin_7',cat:'finance',title:'Google Finance',sub:'시장',href:'https://www.google.com/finance',badge:'FIN'},
+      {id:'b_fin_8',cat:'finance',title:'Investing',sub:'데이터',href:'https://www.investing.com',badge:'FIN'},
+      {id:'b_fin_9',cat:'finance',title:'Toss',sub:'금융',href:'https://www.toss.im',badge:'FIN'},
+      {id:'b_fin_10',cat:'finance',title:'KakaoBank',sub:'은행',href:'https://www.kakaobank.com',badge:'FIN'},
 
-      // ai
+      // ai (10)
       {id:'b_ai_1',cat:'ai',title:'ChatGPT',sub:'대화형 AI',href:'https://chat.openai.com',badge:'AI'},
       {id:'b_ai_2',cat:'ai',title:'Claude',sub:'대화형 AI',href:'https://claude.ai',badge:'AI'},
       {id:'b_ai_3',cat:'ai',title:'Gemini',sub:'구글 AI',href:'https://gemini.google.com',badge:'AI'},
       {id:'b_ai_4',cat:'ai',title:'Perplexity',sub:'AI 검색',href:'https://www.perplexity.ai',badge:'AI'},
-      {id:'b_ai_5',cat:'ai',title:'Hugging Face',sub:'모델/데이터',href:'https://huggingface.co',badge:'AI'},
+      {id:'b_ai_5',cat:'ai',title:'OpenAI Platform',sub:'API',href:'https://platform.openai.com',badge:'AI'},
+      {id:'b_ai_6',cat:'ai',title:'Hugging Face',sub:'모델/데이터',href:'https://huggingface.co',badge:'AI'},
+      {id:'b_ai_7',cat:'ai',title:'GitHub Copilot',sub:'코딩',href:'https://copilot.github.com',badge:'AI'},
+      {id:'b_ai_8',cat:'ai',title:'Cursor',sub:'AI 에디터',href:'https://www.cursor.com',badge:'AI'},
+      {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지',href:'https://www.midjourney.com',badge:'AI'},
+      {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인',href:'https://recraft.ai',badge:'AI'},
 
-      // news
+      // news (10)
       {id:'b_news_1',cat:'news',title:'Naver News',sub:'뉴스',href:'https://news.naver.com',badge:'NEWS'},
       {id:'b_news_2',cat:'news',title:'Google News',sub:'뉴스',href:'https://news.google.com',badge:'NEWS'},
-      {id:'b_news_3',cat:'news',title:'Reuters',sub:'글로벌',href:'https://www.reuters.com',badge:'NEWS'},
-      {id:'b_news_4',cat:'news',title:'arXiv',sub:'논문',href:'https://arxiv.org',badge:'NEWS'},
+      {id:'b_news_3',cat:'news',title:'Bloomberg',sub:'금융뉴스',href:'https://www.bloomberg.com',badge:'NEWS'},
+      {id:'b_news_4',cat:'news',title:'Reuters',sub:'글로벌',href:'https://www.reuters.com',badge:'NEWS'},
+      {id:'b_news_5',cat:'news',title:'Financial Times',sub:'금융',href:'https://www.ft.com',badge:'NEWS'},
+      {id:'b_news_6',cat:'news',title:'WSJ',sub:'비즈니스',href:'https://www.wsj.com',badge:'NEWS'},
+      {id:'b_news_7',cat:'news',title:'The Economist',sub:'시사',href:'https://www.economist.com',badge:'NEWS'},
+      {id:'b_news_8',cat:'news',title:'arXiv',sub:'논문',href:'https://arxiv.org',badge:'NEWS'},
+      {id:'b_news_9',cat:'news',title:'The Information',sub:'리서치',href:'https://www.theinformation.com',badge:'NEWS'},
+      {id:'b_news_10',cat:'news',title:'NYTimes',sub:'뉴스',href:'https://www.nytimes.com',badge:'NEWS'},
 
-      // shop
+      // shop (10)
       {id:'b_shop_1',cat:'shop',title:'Coupang',sub:'쇼핑',href:'https://www.coupang.com',badge:'SHOP'},
       {id:'b_shop_2',cat:'shop',title:'Naver Shopping',sub:'가격비교',href:'https://shopping.naver.com',badge:'SHOP'},
-      {id:'b_shop_3',cat:'shop',title:'Amazon',sub:'해외',href:'https://www.amazon.com',badge:'SHOP'},
+      {id:'b_shop_3',cat:'shop',title:'11st',sub:'쇼핑',href:'https://www.11st.co.kr',badge:'SHOP'},
+      {id:'b_shop_4',cat:'shop',title:'Gmarket',sub:'쇼핑',href:'https://www.gmarket.co.kr',badge:'SHOP'},
+      {id:'b_shop_5',cat:'shop',title:'Auction',sub:'쇼핑',href:'https://www.auction.co.kr',badge:'SHOP'},
+      {id:'b_shop_6',cat:'shop',title:'SSG',sub:'쇼핑',href:'https://www.ssg.com',badge:'SHOP'},
+      {id:'b_shop_7',cat:'shop',title:'오늘의집',sub:'리빙',href:'https://www.todayhouse.com',badge:'SHOP'},
+      {id:'b_shop_8',cat:'shop',title:'Amazon',sub:'해외',href:'https://www.amazon.com',badge:'SHOP'},
+      {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외',href:'https://www.aliexpress.com',badge:'SHOP'},
+      {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외',href:'https://www.temu.com',badge:'SHOP'},
 
-      // community
+      // community (10) - ✅ removed 키워드채팅
       {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'COMM'},
       {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'COMM'},
-      {id:'b_comu_3',cat:'community',title:'Reddit',sub:'글로벌',href:'https://www.reddit.com',badge:'COMM'},
-      {id:'b_comu_4',cat:'community',title:'Namu Wiki',sub:'위키',href:'https://namu.wiki',badge:'COMM'},
+      {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'COMM'},
+      {id:'b_comu_4',cat:'community',title:'Ruliweb',sub:'커뮤니티',href:'https://www.ruliweb.com',badge:'COMM'},
+      {id:'b_comu_5',cat:'community',title:'Inven',sub:'게임',href:'https://www.inven.co.kr',badge:'COMM'},
+      {id:'b_comu_6',cat:'community',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
+      {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
+      {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌',href:'https://www.reddit.com',badge:'COMM'},
+      {id:'b_comu_9',cat:'community',title:'Quora',sub:'Q&A',href:'https://www.quora.com',badge:'COMM'},
+      {id:'b_comu_10',cat:'community',title:'Namu Wiki',sub:'위키',href:'https://namu.wiki',badge:'COMM'},
 
-      // dev
+      // dev (10)
       {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드',href:'https://github.com',badge:'DEV'},
       {id:'b_dev_2',cat:'dev',title:'Vercel',sub:'배포',href:'https://vercel.com',badge:'DEV'},
-      {id:'b_dev_3',cat:'dev',title:'Stack Overflow',sub:'Q&A',href:'https://stackoverflow.com',badge:'DEV'},
-      {id:'b_dev_4',cat:'dev',title:'Postman',sub:'API',href:'https://www.postman.com',badge:'DEV'},
-      {id:'b_dev_5',cat:'dev',title:'Cloudflare',sub:'CDN',href:'https://cloudflare.com',badge:'DEV'},
+      {id:'b_dev_3',cat:'dev',title:'Netlify',sub:'배포',href:'https://www.netlify.com',badge:'DEV'},
+      {id:'b_dev_4',cat:'dev',title:'Google Developers',sub:'문서',href:'https://developers.google.com',badge:'DEV'},
+      {id:'b_dev_5',cat:'dev',title:'Stack Overflow',sub:'Q&A',href:'https://stackoverflow.com',badge:'DEV'},
+      {id:'b_dev_6',cat:'dev',title:'CodePen',sub:'실험',href:'https://codepen.io',badge:'DEV'},
+      {id:'b_dev_7',cat:'dev',title:'Replit',sub:'코딩',href:'https://replit.com',badge:'DEV'},
+      {id:'b_dev_8',cat:'dev',title:'Postman',sub:'API',href:'https://www.postman.com',badge:'DEV'},
+      {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'CDN',href:'https://cloudflare.com',badge:'DEV'},
+      {id:'b_dev_10',cat:'dev',title:'Supabase',sub:'DB/Auth',href:'https://supabase.com',badge:'DEV'},
 
-      // util
+      // util (10)
       {id:'b_util_1',cat:'util',title:'Google Translate',sub:'번역',href:'https://translate.google.com',badge:'UTIL'},
       {id:'b_util_2',cat:'util',title:'Google Keep',sub:'메모',href:'https://keep.google.com',badge:'UTIL'},
-      {id:'b_util_3',cat:'util',title:'Naver Map',sub:'지도',href:'https://map.naver.com',badge:'UTIL'},
-      {id:'b_util_4',cat:'util',title:'Naver Weather',sub:'날씨',href:'https://weather.naver.com',badge:'UTIL'},
-      {id:'b_util_5',cat:'util',title:'Speedtest',sub:'속도',href:'https://www.speedtest.net',badge:'UTIL'},
+      {id:'b_util_3',cat:'util',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'UTIL'},
+      {id:'b_util_4',cat:'util',title:'Naver Map',sub:'지도',href:'https://map.naver.com',badge:'UTIL'},
+      {id:'b_util_5',cat:'util',title:'Kakao Map',sub:'지도',href:'https://map.kakao.com',badge:'UTIL'},
+      {id:'b_util_6',cat:'util',title:'Naver Weather',sub:'날씨',href:'https://weather.naver.com',badge:'UTIL'},
+      {id:'b_util_7',cat:'util',title:'Speedtest',sub:'속도',href:'https://www.speedtest.net',badge:'UTIL'},
+      {id:'b_util_8',cat:'util',title:'Time & Date',sub:'시간',href:'https://www.timeanddate.com',badge:'UTIL'},
+      {id:'b_util_9',cat:'util',title:'remove.bg',sub:'배경 제거',href:'https://www.remove.bg',badge:'UTIL'},
+      {id:'b_util_10',cat:'util',title:'Google Drive',sub:'드라이브',href:'https://drive.google.com',badge:'UTIL'},
     ];
 
     // ---------------------------
@@ -1297,7 +1130,6 @@
     const importBtn = document.getElementById('importBtn');
     const shareBtn = document.getElementById('shareBtn');
     const installBtn = document.getElementById('installBtn');
-    const themeBtn = document.getElementById('themeBtn');
 
     const naverQ = document.getElementById('naverQ');
     const googleQ = document.getElementById('googleQ');
@@ -1307,70 +1139,34 @@
     const chips = Array.from(document.querySelectorAll('.chipbtn'));
     const grid = document.getElementById('grid');
     const favGrid = document.getElementById('favGrid');
-
-    // Calendar
-    const calFrame = document.getElementById('calFrame');
-    const calSettingBtn = document.getElementById('calSettingBtn');
-
-    // Todo
-    const todoInput = document.getElementById('todoInput');
-    const todoAddBtn = document.getElementById('todoAddBtn');
-    const todoListEl = document.getElementById('todoList');
-    const todoClearBtn = document.getElementById('todoClearBtn');
+    const favScope = document.getElementById('favScope');
 
     // Modal refs
     const modalBack = document.getElementById('modalBack');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDesc');
     const modalClose = document.getElementById('modalClose');
-
-    const linkFormArea = document.getElementById('linkFormArea');
-    const importArea = document.getElementById('importArea');
-    const calArea = document.getElementById('calArea');
-
-    // Link form
     const cancelBtn = document.getElementById('cancelBtn');
     const saveBtn = document.getElementById('saveBtn');
     const deleteBtn = document.getElementById('deleteBtn');
+
+    const linkFormArea = document.getElementById('linkFormArea');
+    const importArea = document.getElementById('importArea');
+    const importText = document.getElementById('importText');
+    const importCancelBtn = document.getElementById('importCancelBtn');
+    const applyImportBtn = document.getElementById('applyImportBtn');
+
     const fCat = document.getElementById('fCat');
     const fBadge = document.getElementById('fBadge');
     const fTitle = document.getElementById('fTitle');
     const fSub = document.getElementById('fSub');
     const fHref = document.getElementById('fHref');
 
-    // Import
-    const importText = document.getElementById('importText');
-    const importCancelBtn = document.getElementById('importCancelBtn');
-    const applyImportBtn = document.getElementById('applyImportBtn');
-
-    // Calendar modal
-    const calEmbedUrl = document.getElementById('calEmbedUrl');
-    const calId = document.getElementById('calId');
-    const calResetBtn = document.getElementById('calResetBtn');
-    const calCancelBtn = document.getElementById('calCancelBtn');
-    const calSaveBtn = document.getElementById('calSaveBtn');
-
     // ---------------------------
     // State
     // ---------------------------
     let currentCat = 'all';
     let editingId = null;
-
-    // ---------------------------
-    // Theme
-    // ---------------------------
-    function applyTheme(theme){
-      document.documentElement.setAttribute('data-theme', theme);
-      saveJSON(THEME_KEY, theme);
-      // theme-color meta sync (optional)
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute('content', theme === 'dark' ? '#0b1220' : '#ffffff');
-    }
-    function toggleTheme(){
-      const cur = loadJSON(THEME_KEY, 'light');
-      applyTheme(cur === 'dark' ? 'light' : 'dark');
-    }
-    themeBtn.addEventListener('click', toggleTheme);
 
     // ---------------------------
     // Search
@@ -1391,19 +1187,29 @@
     googleQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openGoogle(); });
 
     // ---------------------------
-    // Favorites (GLOBAL)
+    // Favorites
     // ---------------------------
-    function getFavList(){ return loadJSON(FAV_KEY, []); }
-    function setFavList(list){ saveJSON(FAV_KEY, list); }
-    function isFav(href){ return getFavList().some(x => x.href === href); }
-
-    function toggleFav(item){
-      const list = getFavList();
+    function getFavData(){ return loadJSON(FAV_KEY, {}); }
+    function setFavData(data){ saveJSON(FAV_KEY, data); }
+    function getFavList(cat){
+      const data = getFavData();
+      return Array.isArray(data[cat]) ? data[cat] : [];
+    }
+    function setFavList(cat, list){
+      const data = getFavData();
+      data[cat] = list;
+      setFavData(data);
+    }
+    function isFav(cat, href){
+      return getFavList(cat).some(x => x.href === href);
+    }
+    function toggleFav(cat, item){
+      const list = getFavList(cat);
       const idx = list.findIndex(x => x.href === item.href);
 
       if(idx >= 0){
         list.splice(idx, 1);
-        setFavList(list);
+        setFavList(cat, list);
       }else{
         list.unshift(item);
         const seen = new Set();
@@ -1413,44 +1219,41 @@
           seen.add(x.href);
           deduped.push(x);
         }
-        const MAX_GLOBAL_FAV = 30;
-        while(deduped.length > MAX_GLOBAL_FAV) deduped.pop();
-        setFavList(deduped);
+        while(deduped.length > MAX_FAV) deduped.pop();
+        setFavList(cat, deduped);
       }
       renderFav();
       syncStars();
     }
-
-    function removeFav(href){
-      const list = getFavList().filter(x => x.href !== href);
-      setFavList(list);
+    function removeFav(cat, href){
+      const list = getFavList(cat).filter(x => x.href !== href);
+      setFavList(cat, list);
       renderFav();
       syncStars();
     }
-
     function persistFavOrderFromDOM(){
+      const cat = currentCat;
       const hrefs = Array.from(favGrid.querySelectorAll('.favItem'))
         .map(el => el.dataset.href)
         .filter(Boolean);
-
-      const list = getFavList();
+      const list = getFavList(cat);
       const map = new Map(list.map(x => [x.href, x]));
       const ordered = [];
       hrefs.forEach(h => { if(map.has(h)) ordered.push(map.get(h)); });
       list.forEach(x => { if(!hrefs.includes(x.href)) ordered.push(x); });
-      setFavList(ordered);
+      setFavList(cat, ordered);
     }
-
     function renderFav(){
-      const list = getFavList();
-      favGrid.innerHTML = '';
+      const cat = currentCat;
+      const list = getFavList(cat);
 
+      favGrid.innerHTML = '';
       if(list.length === 0){
         favGrid.innerHTML = `
           <div class="favItem" style="grid-column:1/-1; justify-content:flex-start;">
             <div class="favLeft">
               <div class="favLink">비어있음</div>
-              <div class="favMeta">아래 카드의 ⭐를 눌러 즐겨찾기를 추가하세요.</div>
+              <div class="favMeta">아래 카드의 ⭐를 눌러 즐겨찾기를 추가하세요. (카테고리별 최대 ${MAX_FAV}개)</div>
             </div>
           </div>
         `;
@@ -1469,13 +1272,12 @@
           </div>
           <button class="iconBtn danger" title="삭제">×</button>
         `;
-        div.querySelector('.iconBtn').addEventListener('click', () => removeFav(item.href));
+        div.querySelector('.iconBtn').addEventListener('click', () => removeFav(cat, item.href));
         favGrid.appendChild(div);
       });
 
       enableFavDrag();
     }
-
     function enableFavDrag(){
       const items = Array.from(favGrid.querySelectorAll('.favItem'));
       let draggingEl = null;
@@ -1506,6 +1308,7 @@
 
           const rect = el.getBoundingClientRect();
           const after = (e.clientY - rect.top) > (rect.height / 2);
+
           if(after) el.insertAdjacentElement('afterend', draggingEl);
           else el.insertAdjacentElement('beforebegin', draggingEl);
         });
@@ -1577,6 +1380,7 @@
       grid.innerHTML = items.map(item => {
         const menuHidden = item.custom ? '' : 'hidden';
         const draggable = (currentCat === 'all') ? 'false' : 'true';
+
         return `
           <a class="card" href="${item.href}" target="_blank" rel="noopener"
              data-id="${item.id}" data-cat="${item.cat}" draggable="${draggable}">
@@ -1587,6 +1391,7 @@
                 ${item.badge ? `<div class="badge" title="${escapeHtml(item.badge)}">${escapeHtml(item.badge)}</div>` : ``}
               </div>
             </div>
+
             <div class="star" title="즐겨찾기">☆</div>
             <div class="menu ${menuHidden}" title="내 링크 편집/삭제">⋯</div>
           </a>
@@ -1600,6 +1405,7 @@
 
     function attachCardHandlers(){
       const cards = Array.from(grid.querySelectorAll('.card'));
+
       cards.forEach(card => {
         const star = card.querySelector('.star');
         star.addEventListener('click', (e) => {
@@ -1610,7 +1416,7 @@
             sub: card.querySelector('.sub')?.innerText || '',
             href: card.getAttribute('href')
           };
-          toggleFav(item);
+          toggleFav(currentCat, item);
         });
 
         const menu = card.querySelector('.menu');
@@ -1633,7 +1439,7 @@
       anchors.forEach(card => {
         const star = card.querySelector('.star');
         const href = card.getAttribute('href');
-        const on = isFav(href);
+        const on = isFav(currentCat, href);
         star.classList.toggle('on', on);
         star.textContent = on ? '★' : '☆';
       });
@@ -1721,8 +1527,10 @@
     function setActiveChip(cat){
       chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
       currentCat = cat;
+      favScope.textContent = chipLabel(cat);
       updateUrlStateOnly();
       renderGrid();
+      renderFav();
     }
     chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
 
@@ -1743,94 +1551,25 @@
     });
 
     wipeBtn.addEventListener('click', () => {
-      if(!confirm('개인화(즐겨찾기/정렬/내 링크/캘린더/투두)를 전부 초기화할까요?')) return;
+      if(!confirm('개인화(즐겨찾기/정렬/내 링크)를 전부 초기화할까요?')) return;
       localStorage.removeItem(FAV_KEY);
       localStorage.removeItem(ORDER_KEY);
       localStorage.removeItem(CUSTOM_KEY);
-      localStorage.removeItem(TODO_KEY);
-      localStorage.removeItem(CAL_KEY);
-      // theme는 유지(원하면 여기서도 지우면 됨)
       history.replaceState(null,'', location.pathname + location.search);
-      renderFav();
-      renderGrid();
-      syncStars();
-      renderTodo();
-      loadCalendar();
+      renderGrid(); renderFav(); syncStars();
     });
 
     addBtn.addEventListener('click', () => {
-      const cat = (currentCat === 'all') ? 'comm' : currentCat;
-      openLinkModal('add', {cat, badge:'ME', title:'', sub:'', href:''});
+      if(currentCat === 'all'){
+        openLinkModal('add', {cat:'comm',badge:'ME',title:'',sub:'',href:''});
+      }else{
+        openLinkModal('add', {cat:currentCat,badge:'ME',title:'',sub:'',href:''});
+      }
     });
 
     // ---------------------------
-    // Export / Import / Share
+    // Export / Import
     // ---------------------------
-    function buildPersonalizationPayload(){
-      return {
-        v: 2,
-        exportedAt: new Date().toISOString(),
-        favorites: getFavList(),
-        order: loadJSON(ORDER_KEY, {}),
-        customLinks: loadCustom(),
-        todo: loadJSON(TODO_KEY, []),
-        calendar: loadJSON(CAL_KEY, null),
-        theme: loadJSON(THEME_KEY, 'light'),
-      };
-    }
-
-    function applyPersonalizationPayload(obj){
-      // favorites
-      const favorites = Array.isArray(obj.favorites) ? obj.favorites : [];
-      // order
-      const order = (obj.order && typeof obj.order === 'object') ? obj.order : {};
-      // custom
-      const customLinks = Array.isArray(obj.customLinks) ? obj.customLinks : [];
-      // todo
-      const todo = Array.isArray(obj.todo) ? obj.todo : [];
-      // calendar
-      const calendar = (obj.calendar && typeof obj.calendar === 'object') ? obj.calendar : null;
-      // theme
-      const theme = (obj.theme === 'dark' || obj.theme === 'light') ? obj.theme : 'light';
-
-      const sanitizedCustom = customLinks
-        .filter(x => x && typeof x === 'object')
-        .map(x => ({
-          id: String(x.id || uid()),
-          cat: String(x.cat || 'comm'),
-          badge: String(x.badge || 'ME').slice(0,10),
-          title: String(x.title || '').slice(0,60),
-          sub: String(x.sub || '').slice(0,80),
-          href: safeUrl(String(x.href || '')) || 'https://example.com'
-        }));
-
-      const sanitizedFav = favorites
-        .filter(x => x && typeof x === 'object')
-        .map(x => ({
-          title: String(x.title || '즐겨찾기').slice(0,60),
-          sub: String(x.sub || '').slice(0,80),
-          href: safeUrl(String(x.href || '')) || 'https://example.com'
-        }));
-
-      const sanitizedTodo = todo
-        .filter(x => x && typeof x === 'object')
-        .map(x => ({
-          id: String(x.id || uid()),
-          text: String(x.text || '').slice(0,120),
-          done: !!x.done
-        }))
-        .filter(x => x.text.length > 0);
-
-      saveJSON(FAV_KEY, sanitizedFav);
-      saveJSON(ORDER_KEY, order);
-      saveJSON(CUSTOM_KEY, sanitizedCustom);
-      saveJSON(TODO_KEY, sanitizedTodo);
-      if(calendar) saveJSON(CAL_KEY, calendar);
-      applyTheme(theme);
-
-      return true;
-    }
-
     exportBtn.addEventListener('click', () => {
       const payload = buildPersonalizationPayload();
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -1846,22 +1585,76 @@
 
     importBtn.addEventListener('click', () => openImportModal());
 
+    function buildPersonalizationPayload(){
+      return {
+        v: 1,
+        exportedAt: new Date().toISOString(),
+        favorites: loadJSON(FAV_KEY, {}),
+        order: loadJSON(ORDER_KEY, {}),
+        customLinks: loadCustom(),
+      };
+    }
+
+    function applyPersonalizationPayload(obj){
+      const favorites = obj.favorites ?? {};
+      const order = obj.order ?? {};
+      const customLinks = obj.customLinks ?? [];
+
+      if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)) return false;
+
+      const sanitizedCustom = customLinks
+        .filter(x => x && typeof x === 'object')
+        .map(x => ({
+          id: String(x.id || uid()),
+          cat: String(x.cat || 'comm'),
+          badge: String(x.badge || 'ME').slice(0,10),
+          title: String(x.title || '').slice(0,60),
+          sub: String(x.sub || '').slice(0,80),
+          href: safeUrl(String(x.href || '')) || 'https://example.com'
+        }));
+
+      saveJSON(FAV_KEY, favorites);
+      saveJSON(ORDER_KEY, order);
+      saveJSON(CUSTOM_KEY, sanitizedCustom);
+      return true;
+    }
+
+    function openImportModal(){
+      modalBack.style.display = 'flex';
+      editingId = null;
+      linkFormArea.style.display = 'none';
+      importArea.style.display = 'block';
+      modalTitle.textContent = '개인화 가져오기';
+      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
+      importText.value = '';
+    }
+
+    function applyImport(jsonText){
+      let obj;
+      try{ obj = JSON.parse(jsonText); }
+      catch{ alert('JSON 파싱 실패'); return false; }
+
+      const ok = applyPersonalizationPayload(obj);
+      if(!ok){ alert('JSON 구조가 올바르지 않습니다.'); return false; }
+      return true;
+    }
+
     applyImportBtn.addEventListener('click', () => {
       const text = (importText.value || '').trim();
       if(!text){ alert('JSON을 붙여넣으세요.'); return; }
       if(!confirm('기존 개인화를 덮어쓰고 가져오겠습니까?')) return;
 
-      let obj;
-      try{ obj = JSON.parse(text); }
-      catch{ alert('JSON 파싱 실패'); return; }
-
-      applyPersonalizationPayload(obj);
-      closeModal();
-      renderFav(); renderGrid(); syncStars(); renderTodo(); loadCalendar();
+      const ok = applyImport(text);
+      if(ok){
+        closeModal();
+        renderGrid(); renderFav(); syncStars();
+      }
     });
+    importCancelBtn.addEventListener('click', () => closeModal());
 
-    importCancelBtn.addEventListener('click', closeModal);
-
+    // ---------------------------
+    // Share link (✅ compressed)
+    // ---------------------------
     shareBtn.addEventListener('click', async () => {
       const payload = buildPersonalizationPayload();
       const json = JSON.stringify(payload);
@@ -1895,34 +1688,24 @@
       const ok = confirm('공유 링크의 개인화를 이 브라우저에 적용할까요? (기존 개인화는 덮어쓰기)');
       if(!ok) return;
 
-      applyPersonalizationPayload(obj);
+      const applied = applyPersonalizationPayload(obj);
+      if(!applied){
+        alert('공유 데이터 구조가 올바르지 않습니다.');
+        return;
+      }
+
       history.replaceState(null,'', location.pathname + location.search);
-      renderFav(); renderGrid(); syncStars(); renderTodo(); loadCalendar();
+      renderGrid(); renderFav(); syncStars();
       alert('적용 완료');
     }
 
     // ---------------------------
-    // Modal open/close
+    // Link modal (add/edit)
     // ---------------------------
-    function closeModal(){
-      modalBack.style.display = 'none';
-      editingId = null;
-
-      // clear
-      fTitle.value = '';
-      fSub.value = '';
-      fHref.value = '';
-      fBadge.value = '';
-      importText.value = '';
-      calEmbedUrl.value = '';
-      calId.value = '';
-    }
-
     function openLinkModal(mode, item){
       modalBack.style.display = 'flex';
       linkFormArea.style.display = 'block';
       importArea.style.display = 'none';
-      calArea.style.display = 'none';
 
       editingId = (mode === 'edit') ? item.id : null;
 
@@ -1932,7 +1715,7 @@
         deleteBtn.style.display = 'inline-flex';
       }else{
         modalTitle.textContent = '내 링크 추가';
-        modalDesc.textContent = '선택한 카테고리에 저장됩니다.';
+        modalDesc.textContent = '현재 선택된 카테고리에 저장됩니다.';
         deleteBtn.style.display = 'none';
       }
 
@@ -1941,45 +1724,20 @@
       fTitle.value = item.title || '';
       fSub.value = item.sub || '';
       fHref.value = item.href || '';
+
+      if(currentCat !== 'all') fCat.value = currentCat;
     }
 
-    function openImportModal(){
-      modalBack.style.display = 'flex';
-      linkFormArea.style.display = 'none';
-      importArea.style.display = 'block';
-      calArea.style.display = 'none';
-      modalTitle.textContent = '개인화 가져오기';
-      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
+    function closeModal(){
+      modalBack.style.display = 'none';
+      editingId = null;
+      fTitle.value = '';
+      fSub.value = '';
+      fHref.value = '';
+      fBadge.value = '';
       importText.value = '';
     }
 
-    function openCalendarModal(){
-      modalBack.style.display = 'flex';
-      linkFormArea.style.display = 'none';
-      importArea.style.display = 'none';
-      calArea.style.display = 'block';
-      modalTitle.textContent = 'Google Calendar 연동 설정';
-      modalDesc.textContent = '임베드 URL 또는 캘린더 ID를 저장합니다(로컬).';
-
-      const saved = loadJSON(CAL_KEY, null);
-      calEmbedUrl.value = saved?.embedUrl || '';
-      calId.value = saved?.calId || '';
-    }
-
-    modalClose.addEventListener('click', closeModal);
-    modalBack.addEventListener('click', (e) => { if(e.target === modalBack) closeModal(); });
-    cancelBtn.addEventListener('click', closeModal);
-
-    window.addEventListener('keydown', (e) => {
-      if(e.key === 'Escape'){
-        if(modalBack.style.display === 'flex') closeModal();
-        else resetAll();
-      }
-    });
-
-    // ---------------------------
-    // Link form validate/save/delete
-    // ---------------------------
     function validateForm(){
       const cat = fCat.value;
       const badge = (fBadge.value || '').trim().slice(0,10);
@@ -2016,228 +1774,9 @@
       updateCounts();
     });
 
-    // ---------------------------
-    // Calendar (embed only)
-    // ---------------------------
-    function buildCalendarEmbedFromId(id){
-      // Agenda-style minimal
-      const params = new URLSearchParams({
-        mode: 'AGENDA',
-        showTitle: '0',
-        showNav: '0',
-        showDate: '1',
-        showPrint: '0',
-        showTabs: '0',
-        showCalendars: '0',
-        showTz: '0',
-        wkst: '1',
-        bgcolor: '#ffffff',
-        ctz: 'Asia/Seoul',
-      });
-      params.append('src', id);
-      return 'https://calendar.google.com/calendar/embed?' + params.toString();
-    }
-
-    function loadCalendar(){
-      const saved = loadJSON(CAL_KEY, null);
-
-      // default: just open calendar.google.com (no embed)
-      const fallback = 'https://calendar.google.com/calendar/u/0/r/agenda';
-      if(!saved){
-        // show a helpful “open” page in iframe if blocked, it still works in most cases
-        calFrame.src = fallback;
-        return;
-      }
-
-      let src = '';
-      if(saved.embedUrl){
-        const u = safeUrl(saved.embedUrl);
-        if(u) src = u;
-      }
-      if(!src && saved.calId){
-        src = buildCalendarEmbedFromId(String(saved.calId));
-      }
-      calFrame.src = src || fallback;
-    }
-
-    calSettingBtn.addEventListener('click', openCalendarModal);
-    calCancelBtn.addEventListener('click', closeModal);
-
-    calResetBtn.addEventListener('click', () => {
-      if(!confirm('캘린더 연동을 초기화할까요?')) return;
-      localStorage.removeItem(CAL_KEY);
-      closeModal();
-      loadCalendar();
-    });
-
-    calSaveBtn.addEventListener('click', () => {
-      const embed = (calEmbedUrl.value || '').trim();
-      const id = (calId.value || '').trim();
-
-      const payload = {};
-      if(embed){
-        const u = safeUrl(embed);
-        if(!u){ alert('임베드 URL이 올바르지 않습니다(http/https).'); return; }
-        payload.embedUrl = u;
-      }
-      if(id) payload.calId = id;
-
-      if(!payload.embedUrl && !payload.calId){
-        alert('임베드 URL 또는 캘린더 ID 중 하나는 입력하세요.');
-        return;
-      }
-
-      saveJSON(CAL_KEY, payload);
-      closeModal();
-      loadCalendar();
-    });
-
-    // ---------------------------
-    // Todo (local)
-    // ---------------------------
-    function loadTodo(){ return loadJSON(TODO_KEY, []); }
-    function saveTodo(list){ saveJSON(TODO_KEY, list); }
-
-    function addTodo(text){
-      const t = String(text || '').trim();
-      if(!t) return;
-      const list = loadTodo();
-      list.unshift({id: uid(), text: t.slice(0,120), done:false});
-      saveTodo(list);
-      renderTodo();
-    }
-
-    function toggleTodo(id, done){
-      const list = loadTodo();
-      const idx = list.findIndex(x => x.id === id);
-      if(idx < 0) return;
-      list[idx].done = !!done;
-      saveTodo(list);
-      renderTodo();
-    }
-
-    function removeTodo(id){
-      saveTodo(loadTodo().filter(x => x.id !== id));
-      renderTodo();
-    }
-
-    function clearDone(){
-      saveTodo(loadTodo().filter(x => !x.done));
-      renderTodo();
-    }
-
-    function persistTodoOrderFromDOM(){
-      const ids = Array.from(todoListEl.querySelectorAll('.todoItem'))
-        .map(el => el.dataset.id)
-        .filter(Boolean);
-      const list = loadTodo();
-      const map = new Map(list.map(x => [x.id, x]));
-      const ordered = [];
-      ids.forEach(id => { if(map.has(id)) ordered.push(map.get(id)); });
-      list.forEach(x => { if(!ids.includes(x.id)) ordered.push(x); });
-      saveTodo(ordered);
-    }
-
-    function renderTodo(){
-      const list = loadTodo();
-      todoListEl.innerHTML = '';
-
-      if(list.length === 0){
-        todoListEl.innerHTML = `
-          <div class="todoItem" style="justify-content:flex-start;">
-            <div class="todoLeft">
-              <div class="todoText" style="color:var(--muted); font-weight:850;">비어있음</div>
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      list.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'todoItem';
-        el.setAttribute('draggable','true');
-        el.dataset.id = item.id;
-
-        el.innerHTML = `
-          <div class="todoLeft">
-            <input class="todoCheck" type="checkbox" ${item.done ? 'checked' : ''} />
-            <div class="todoText ${item.done ? 'done' : ''}">${escapeHtml(item.text)}</div>
-          </div>
-          <button class="iconBtn danger" title="삭제">×</button>
-        `;
-
-        el.querySelector('.todoCheck').addEventListener('change', (e) => {
-          toggleTodo(item.id, e.target.checked);
-        });
-        el.querySelector('.iconBtn').addEventListener('click', () => removeTodo(item.id));
-
-        todoListEl.appendChild(el);
-      });
-
-      enableTodoDrag();
-    }
-
-    function enableTodoDrag(){
-      const items = Array.from(todoListEl.querySelectorAll('.todoItem'));
-      let draggingEl = null;
-
-      items.forEach(el => {
-        el.addEventListener('dragstart', (e) => {
-          draggingEl = el;
-          el.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/plain', el.dataset.id || '');
-        });
-        el.addEventListener('dragend', () => {
-          el.classList.remove('dragging');
-          items.forEach(x => x.classList.remove('dragover'));
-          draggingEl = null;
-          persistTodoOrderFromDOM();
-        });
-        el.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          if(!draggingEl || draggingEl === el) return;
-          el.classList.add('dragover');
-        });
-        el.addEventListener('dragleave', () => el.classList.remove('dragover'));
-        el.addEventListener('drop', (e) => {
-          e.preventDefault();
-          el.classList.remove('dragover');
-          if(!draggingEl || draggingEl === el) return;
-          const rect = el.getBoundingClientRect();
-          const after = (e.clientY - rect.top) > (rect.height / 2);
-          if(after) el.insertAdjacentElement('afterend', draggingEl);
-          else el.insertAdjacentElement('beforebegin', draggingEl);
-        });
-      });
-    }
-
-    todoAddBtn.addEventListener('click', () => {
-      addTodo(todoInput.value);
-      todoInput.value = '';
-      todoInput.focus();
-    });
-    todoInput.addEventListener('keydown', (e) => {
-      if(e.key === 'Enter'){
-        addTodo(todoInput.value);
-        todoInput.value = '';
-      }
-    });
-    todoClearBtn.addEventListener('click', () => {
-      if(!confirm('완료된 항목을 삭제할까요?')) return;
-      clearDone();
-    });
-
-    // ---------------------------
-    // Import/Export include todo/calendar/theme already
-    // ---------------------------
-    // (handled above)
-
-    // ---------------------------
-    // Share link apply
-    // ---------------------------
-    // (handled above)
+    modalClose.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modalBack.addEventListener('click', (e) => { if(e.target === modalBack) closeModal(); });
 
     // ---------------------------
     // PWA install button
@@ -2248,6 +1787,7 @@
       deferredPrompt = e;
       installBtn.style.display = 'inline-flex';
     });
+
     installBtn.addEventListener('click', async () => {
       if(!deferredPrompt) return;
       deferredPrompt.prompt();
@@ -2257,7 +1797,7 @@
     });
 
     // ---------------------------
-    // Service Worker register (optional)
+    // Service Worker register
     // ---------------------------
     async function registerSW(){
       if(!('serviceWorker' in navigator)) return;
@@ -2274,30 +1814,20 @@
       setActiveChip(exists ? cat : 'all');
     }
 
-    function initTheme(){
-      const theme = loadJSON(THEME_KEY, 'light');
-      applyTheme(theme === 'dark' ? 'dark' : 'light');
-    }
+    resetBtn.addEventListener('click', resetAll);
 
-    function init(){
-      initTheme();
-      registerSW();
-      initChips();
-      renderFav();
-      renderGrid();
-      renderTodo();
-      loadCalendar();
-      tryApplyFromHash();
-    }
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){
+        if(modalBack.style.display === 'flex') closeModal();
+        else resetAll();
+      }
+    });
 
-    // Hook buttons that open modals
-    importBtn.addEventListener('click', openImportModal);
-
-    // Modal buttons already wired
-    // Link modal open is in addBtn/menu handlers
-
-    // Start
-    init();
+    registerSW();
+    initChips();
+    renderFav();
+    renderGrid();
+    tryApplyFromHash();
   </script>
 </body>
 </html>
