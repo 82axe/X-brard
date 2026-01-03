@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>나만의 시작 화면</title>
+  <title>미니멀 링크 대시보드</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+  <!-- Minimal white brand favicon (SVG data URI) -->
+  <link rel="icon" type="image/svg+xml"
+    href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="128" height="128"%3E%3Crect width="128" height="128" rx="28" fill="%23ffffff"/%3E%3Cpath d="M36 40h56v10H36zM36 59h40v10H36zM36 78h56v10H36z" fill="%23111827"/%3E%3C/svg%3E' />
 
   <style>
     :root{
@@ -17,24 +27,10 @@
       --shadow: 0 10px 30px rgba(17,24,39,.06);
       --radius:16px;
       --max:1100px;
-      --accent:#111827;
+
       --warn:#ef4444;
       --gold:#f59e0b;
       --ok:#10b981;
-    }
-    [data-theme="dark"]{
-      --bg:#0b0f14;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --line:#1f2937;
-      --card:#0f1621;
-      --hover:#111b27;
-      --chip:#0f1724;
-      --shadow: 0 18px 40px rgba(0,0,0,.35);
-      --accent:#e5e7eb;
-      --warn:#f87171;
-      --gold:#fbbf24;
-      --ok:#34d399;
     }
 
     *{box-sizing:border-box}
@@ -48,41 +44,42 @@
     .wrap{
       max-width:var(--max);
       margin:0 auto;
-      padding:34px 18px 56px;
+      padding:32px 18px 56px;
     }
 
-    /* Top */
+    /* Header */
     .top{
       display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:16px;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom:14px;
     }
     .brand{min-width:0}
     .brand h1{
-      font-size:32px;
+      font-size:30px;
       letter-spacing:-0.02em;
       margin:0 0 6px 0;
-      line-height:1.1;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      line-height:1.15;
+
+      /* ✅ title not cut */
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
+      word-break:keep-all;
     }
     .brand p{
       margin:0;
       color:var(--muted);
-      line-height:1.4;
+      line-height:1.5;
       font-size:14px;
     }
-    .right{
+
+    /* ✅ moved buttons under title */
+    .actions{
       display:flex;
       align-items:center;
       gap:10px;
-      margin-top:4px;
-      flex:0 0 auto;
       flex-wrap:wrap;
-      justify-content:flex-end;
     }
     .btn{
       border:1px solid var(--line);
@@ -93,6 +90,7 @@
       font-size:13px;
       cursor:pointer;
       color:var(--text);
+      white-space:nowrap;
     }
     .btn:hover{background:var(--hover);}
     .btn.primary{
@@ -102,30 +100,6 @@
     .btn.danger{
       border-color: rgba(239,68,68,.35);
       background: rgba(239,68,68,.08);
-      color: var(--text);
-    }
-    .toggle{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--card);
-      cursor:pointer;
-      user-select:none;
-      font-weight:950;
-      font-size:13px;
-      color:var(--text);
-    }
-    .dot{
-      width:14px;height:14px;border-radius:999px;
-      border:1px solid var(--line);
-      background:var(--chip);
-    }
-    [data-theme="dark"] .dot{
-      background: #111827;
-      box-shadow: inset 0 0 0 3px rgba(229,231,235,.18);
     }
 
     /* Search rows */
@@ -133,7 +107,7 @@
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:12px;
-      margin-top:14px;
+      margin-top:12px;
     }
     .search{
       border:1px solid var(--line);
@@ -171,7 +145,7 @@
 
     /* Favorites */
     .favBox{
-      margin-top:16px;
+      margin-top:14px;
       border:1px solid var(--line);
       border-radius:16px;
       background:var(--card);
@@ -278,7 +252,7 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin:18px 0 12px;
+      margin:16px 0 12px;
     }
     .chipbtn{
       border:1px solid var(--line);
@@ -296,9 +270,9 @@
     }
     .chipbtn:hover{background:var(--hover);}
     .chipbtn.active{
-      background:var(--accent);
+      background:var(--text);
       color:var(--bg);
-      border-color:var(--accent);
+      border-color:var(--text);
     }
     .count{
       font-size:12px;
@@ -313,33 +287,40 @@
       gap:14px;
       margin-top:12px;
     }
+
+    /* ✅ FIX: no absolute UI, use grid columns */
     .card{
-      display:flex;
+      display:grid;
+      grid-template-columns: 1fr auto auto;
       align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:16px 16px;
+      gap:10px;
+      padding:16px;
       border-radius:var(--radius);
       border:1px solid var(--line);
       background:var(--card);
       text-decoration:none;
       color:var(--text);
       transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
-      position:relative;
       min-height:86px;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
     }
     .card:hover{
       background:var(--hover);
       transform: translateY(-1px);
       box-shadow: 0 14px 28px rgba(17,24,39,.08);
     }
-    [data-theme="dark"] .card:hover{
-      box-shadow: 0 22px 46px rgba(0,0,0,.35);
+    .card[draggable="true"]{cursor:grab;}
+    .card.dragging{opacity:.55; transform:none;}
+    .card.dragover{
+      outline: 2px dashed rgba(16,185,129,.65);
+      outline-offset: 2px;
     }
+
     .left{
-      display:flex; flex-direction:column; gap:6px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
       min-width:0;
-      padding-right:74px; /* star + menu */
     }
     .title{
       font-weight:980;
@@ -355,22 +336,30 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
+    .metaRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      min-width:0;
+    }
     .badge{
       flex:0 0 auto;
       font-size:12px;
-      font-weight:980;
+      font-weight:950;
       color:var(--text);
       background:var(--chip);
       border:1px solid var(--line);
-      padding:8px 10px;
-      border-radius:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      max-width: 100%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    /* Star */
-    .star{
-      position:absolute;
-      top:12px;
-      right:44px;
+    .star,
+    .menu{
+      position:static;
       width:34px;height:34px;
       border-radius:12px;
       border:1px solid var(--line);
@@ -383,39 +372,12 @@
       user-select:none;
       color:var(--muted);
     }
-    .star:hover{background:var(--hover);}
+    .star:hover,.menu:hover{background:var(--hover);}
     .star.on{
       color:var(--gold);
       border-color: rgba(245, 158, 11, .35);
     }
-
-    /* Menu (edit/delete for custom links) */
-    .menu{
-      position:absolute;
-      top:12px;
-      right:12px;
-      width:34px;height:34px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:var(--chip);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:980;
-      user-select:none;
-      color:var(--muted);
-    }
-    .menu:hover{background:var(--hover);}
     .menu.hidden{display:none;}
-
-    /* Dragging cards */
-    .card[draggable="true"]{cursor:grab;}
-    .card.dragging{opacity:.55; transform:none;}
-    .card.dragover{
-      outline: 2px dashed rgba(16,185,129,.65);
-      outline-offset: 2px;
-    }
 
     /* Modal */
     .modalBack{
@@ -443,10 +405,7 @@
       gap:10px;
       margin-bottom:10px;
     }
-    .modalTitle{
-      font-weight:980;
-      letter-spacing:-0.01em;
-    }
+    .modalTitle{font-weight:980; letter-spacing:-0.01em;}
     .form{
       display:flex;
       flex-direction:column;
@@ -517,6 +476,7 @@
       .brand h1{font-size:24px;}
       .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
       .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
+      .actions{gap:8px;}
     }
   </style>
 </head>
@@ -525,26 +485,20 @@
   <div class="wrap">
     <div class="top">
       <div class="brand">
-        <h1>북마크보다 빠른, 나만의 시작 화면</h1>
-        <p>무회원 · 무수집 · 개인화는 브라우저(LocalStorage)에만 저장됩니다.</p>
-
-        
+        <h1>미니멀 링크 대시보드</h1>
+        <p>무회원 · 무수집 · 개인화는 브라우저에만 저장됩니다. (공유는 URL로만 전달)</p>
       </div>
 
-      <div class="right">
-        <button class="btn primary" id="addBtn" type="button" title="현재 카테고리에 내 링크 추가">내 링크 추가</button>
-        <button class="btn" id="resetOrderBtn" type="button" title="현재 카테고리 정렬을 기본값으로 되돌림">정렬 초기화</button>
-
-        <button class="btn" id="exportBtn" type="button" title="개인화 내보내기(JSON)">내보내기</button>
-        <button class="btn" id="importBtn" type="button" title="개인화 가져오기(JSON)">가져오기</button>
-
-        <button class="btn danger" id="wipeBtn" type="button" title="내 링크/정렬/즐겨찾기 전체 삭제">개인화 초기화</button>
-
-        <div id="themeToggle" class="toggle" title="다크모드 전환 (저장됨)">
-          <span class="dot"></span>
-          <span id="themeLabel">라이트</span>
-        </div>
-        <button class="btn" type="button" id="resetBtn" title="필터/검색 초기화">초기화</button>
+      <!-- ✅ moved here (under title) -->
+      <div class="actions">
+        <button class="btn primary" id="addBtn" type="button">내 링크 추가</button>
+        <button class="btn" id="resetOrderBtn" type="button">정렬 초기화</button>
+        <button class="btn" id="exportBtn" type="button">내보내기</button>
+        <button class="btn" id="importBtn" type="button">가져오기</button>
+        <button class="btn danger" id="wipeBtn" type="button">개인화 초기화</button>
+        <button class="btn" id="shareBtn" type="button" title="현재 개인화를 URL로 공유">공유 링크(압축)</button>
+        <button class="btn" id="installBtn" type="button" style="display:none;">홈화면 설치</button>
+        <button class="btn" type="button" id="resetBtn">초기화</button>
       </div>
     </div>
 
@@ -564,7 +518,7 @@
     </div>
 
     <div class="hint">
-      • ⭐: 즐겨찾기(카테고리별) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 내보내기/가져오기(JSON)
+      • ⭐: 즐겨찾기(카테고리별 최대 5) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 공유 링크: 서버 없이 URL로 전달(압축)
     </div>
 
     <!-- Favorites -->
@@ -574,7 +528,7 @@
           <span>즐겨찾기</span>
           <span class="pill" id="favScope">전체</span>
         </div>
-        <div class="favHelp">현재 카테고리 기준으로 저장됩니다. (드래그로 순서 변경)</div>
+        <div class="favHelp">현재 카테고리 기준 저장 (드래그로 순서 변경)</div>
       </div>
       <div class="favGrid" id="favGrid"></div>
     </div>
@@ -598,12 +552,12 @@
     <div class="grid" id="grid"></div>
 
     <footer>
-      본 사이트는 외부 서비스의 공식 링크를 정리·제공하는 정보성 페이지입니다. 각 서비스의 상표 및 운영 권한은 해당 회사에 귀속됩니다.<br/>
+      본 사이트는 링크 허브(북마크 대체)입니다. 외부 서비스의 상표/운영 권한은 각 소유자에게 있습니다.<br/>
       회원가입/로그인 없음, 개인정보 수집/저장 없음. 개인화(즐겨찾기/정렬/내 링크)는 브라우저(LocalStorage)에만 저장됩니다.
     </footer>
   </div>
 
-  <!-- Modal: add/edit link OR import JSON -->
+  <!-- Modal: add/edit OR import JSON -->
   <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
     <div class="modal">
       <div class="modalHeader">
@@ -613,7 +567,7 @@
 
       <div class="small" id="modalDesc">현재 선택된 카테고리에 저장됩니다.</div>
 
-      <!-- Form area -->
+      <!-- Link form -->
       <div id="linkFormArea">
         <div class="form">
           <div class="row2">
@@ -640,12 +594,12 @@
 
           <div class="field">
             <label>이름</label>
-            <input id="fTitle" placeholder="예: 키워드채팅" />
+            <input id="fTitle" placeholder="예: 내 서비스" />
           </div>
 
           <div class="field">
             <label>설명</label>
-            <input id="fSub" placeholder="예: 내 프로젝트" />
+            <input id="fSub" placeholder="예: 메모" />
           </div>
 
           <div class="field">
@@ -675,7 +629,6 @@
         </div>
         <div class="small">주의: 기존 개인화(내 링크/정렬/즐겨찾기)를 덮어씁니다.</div>
       </div>
-
     </div>
   </div>
 
@@ -683,7 +636,6 @@
     // ---------------------------
     // Keys
     // ---------------------------
-    const THEME_KEY = 'xbrand_theme';
     const FAV_KEY = 'xbrand_favorites_v1';
     const ORDER_KEY = 'xbrand_order_v1';
     const CUSTOM_KEY = 'xbrand_custom_links_v1';
@@ -705,9 +657,7 @@
         const u = new URL(url);
         if(u.protocol !== 'http:' && u.protocol !== 'https:') return null;
         return u.toString();
-      }catch{
-        return null;
-      }
+      }catch{ return null; }
     }
     function loadJSON(key, fallback){
       try{ return JSON.parse(localStorage.getItem(key) || '') ?? fallback; }
@@ -728,22 +678,339 @@
     }
 
     // ---------------------------
+    // URL-safe compression (LZ-based)
+    // compressToEncodedURIComponent / decompressFromEncodedURIComponent
+    // ---------------------------
+    const _keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";
+    function _getBaseValue(alphabet, character) { return alphabet.indexOf(character); }
+    function compressToEncodedURIComponent(input) {
+      if (input == null) return "";
+      return _compress(input, 6, (a) => _keyStrUriSafe.charAt(a));
+    }
+    function decompressFromEncodedURIComponent(input) {
+      if (input == null) return "";
+      if (input === "") return null;
+      return _decompress(input.length, 32, (index) => _getBaseValue(_keyStrUriSafe, input.charAt(index)));
+    }
+    function _compress(uncompressed, bitsPerChar, getCharFromInt) {
+      if (uncompressed == null) return "";
+      let i, value;
+      const context_dictionary = {};
+      const context_dictionaryToCreate = {};
+      let context_c = "";
+      let context_wc = "";
+      let context_w = "";
+      let context_enlargeIn = 2;
+      let context_dictSize = 3;
+      let context_numBits = 2;
+      const context_data = [];
+      let context_data_val = 0;
+      let context_data_position = 0;
+
+      for (let ii = 0; ii < uncompressed.length; ii += 1) {
+        context_c = uncompressed.charAt(ii);
+        if (!Object.prototype.hasOwnProperty.call(context_dictionary, context_c)) {
+          context_dictionary[context_c] = context_dictSize++;
+          context_dictionaryToCreate[context_c] = true;
+        }
+
+        context_wc = context_w + context_c;
+        if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
+          context_w = context_wc;
+        } else {
+          if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+            if (context_w.charCodeAt(0) < 256) {
+              for (i = 0; i < context_numBits; i++) {
+                context_data_val = (context_data_val << 1);
+                if (context_data_position == bitsPerChar - 1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else context_data_position++;
+              }
+              value = context_w.charCodeAt(0);
+              for (i = 0; i < 8; i++) {
+                context_data_val = (context_data_val << 1) | (value & 1);
+                if (context_data_position == bitsPerChar - 1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else context_data_position++;
+                value = value >> 1;
+              }
+            } else {
+              value = 1;
+              for (i = 0; i < context_numBits; i++) {
+                context_data_val = (context_data_val << 1) | value;
+                if (context_data_position == bitsPerChar - 1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else context_data_position++;
+                value = 0;
+              }
+              value = context_w.charCodeAt(0);
+              for (i = 0; i < 16; i++) {
+                context_data_val = (context_data_val << 1) | (value & 1);
+                if (context_data_position == bitsPerChar - 1) {
+                  context_data_position = 0;
+                  context_data.push(getCharFromInt(context_data_val));
+                  context_data_val = 0;
+                } else context_data_position++;
+                value = value >> 1;
+              }
+            }
+            context_enlargeIn--;
+            if (context_enlargeIn == 0) {
+              context_enlargeIn = Math.pow(2, context_numBits);
+              context_numBits++;
+            }
+            delete context_dictionaryToCreate[context_w];
+          } else {
+            value = context_dictionary[context_w];
+            for (i = 0; i < context_numBits; i++) {
+              context_data_val = (context_data_val << 1) | (value & 1);
+              if (context_data_position == bitsPerChar - 1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else context_data_position++;
+              value = value >> 1;
+            }
+          }
+          context_enlargeIn--;
+          if (context_enlargeIn == 0) {
+            context_enlargeIn = Math.pow(2, context_numBits);
+            context_numBits++;
+          }
+          context_dictionary[context_wc] = context_dictSize++;
+          context_w = String(context_c);
+        }
+      }
+
+      if (context_w !== "") {
+        if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+          if (context_w.charCodeAt(0) < 256) {
+            for (i = 0; i < context_numBits; i++) {
+              context_data_val = (context_data_val << 1);
+              if (context_data_position == bitsPerChar - 1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else context_data_position++;
+            }
+            value = context_w.charCodeAt(0);
+            for (i = 0; i < 8; i++) {
+              context_data_val = (context_data_val << 1) | (value & 1);
+              if (context_data_position == bitsPerChar - 1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else context_data_position++;
+              value = value >> 1;
+            }
+          } else {
+            value = 1;
+            for (i = 0; i < context_numBits; i++) {
+              context_data_val = (context_data_val << 1) | value;
+              if (context_data_position == bitsPerChar - 1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else context_data_position++;
+              value = 0;
+            }
+            value = context_w.charCodeAt(0);
+            for (i = 0; i < 16; i++) {
+              context_data_val = (context_data_val << 1) | (value & 1);
+              if (context_data_position == bitsPerChar - 1) {
+                context_data_position = 0;
+                context_data.push(getCharFromInt(context_data_val));
+                context_data_val = 0;
+              } else context_data_position++;
+              value = value >> 1;
+            }
+          }
+          context_enlargeIn--;
+          if (context_enlargeIn == 0) {
+            context_enlargeIn = Math.pow(2, context_numBits);
+            context_numBits++;
+          }
+          delete context_dictionaryToCreate[context_w];
+        } else {
+          value = context_dictionary[context_w];
+          for (i = 0; i < context_numBits; i++) {
+            context_data_val = (context_data_val << 1) | (value & 1);
+            if (context_data_position == bitsPerChar - 1) {
+              context_data_position = 0;
+              context_data.push(getCharFromInt(context_data_val));
+              context_data_val = 0;
+            } else context_data_position++;
+            value = value >> 1;
+          }
+        }
+        context_enlargeIn--;
+        if (context_enlargeIn == 0) {
+          context_enlargeIn = Math.pow(2, context_numBits);
+          context_numBits++;
+        }
+      }
+
+      value = 2;
+      for (i = 0; i < context_numBits; i++) {
+        context_data_val = (context_data_val << 1) | (value & 1);
+        if (context_data_position == bitsPerChar - 1) {
+          context_data_position = 0;
+          context_data.push(getCharFromInt(context_data_val));
+          context_data_val = 0;
+        } else context_data_position++;
+        value = value >> 1;
+      }
+
+      while (true) {
+        context_data_val = (context_data_val << 1);
+        if (context_data_position == bitsPerChar - 1) {
+          context_data.push(getCharFromInt(context_data_val));
+          break;
+        } else context_data_position++;
+      }
+      return context_data.join("");
+    }
+
+    function _decompress(length, resetValue, getNextValue) {
+      const dictionary = [];
+      let next;
+      let enlargeIn = 4;
+      let dictSize = 4;
+      let numBits = 3;
+      let entry = "";
+      const result = [];
+      let i;
+      let w;
+      let bits, resb, maxpower, power;
+      let c;
+      const data = { val: getNextValue(0), position: resetValue, index: 1 };
+
+      for (i = 0; i < 3; i += 1) dictionary[i] = i;
+
+      bits = 0; maxpower = Math.pow(2, 2); power = 1;
+      while (power != maxpower) {
+        resb = data.val & data.position;
+        data.position >>= 1;
+        if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+        bits |= (resb > 0 ? 1 : 0) * power;
+        power <<= 1;
+      }
+
+      switch (next = bits) {
+        case 0:
+          bits = 0; maxpower = Math.pow(2, 8); power = 1;
+          while (power != maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+            bits |= (resb > 0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+          c = String.fromCharCode(bits);
+          break;
+        case 1:
+          bits = 0; maxpower = Math.pow(2, 16); power = 1;
+          while (power != maxpower) {
+            resb = data.val & data.position;
+            data.position >>= 1;
+            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+            bits |= (resb > 0 ? 1 : 0) * power;
+            power <<= 1;
+          }
+          c = String.fromCharCode(bits);
+          break;
+        case 2:
+          return "";
+      }
+
+      dictionary[3] = c;
+      w = c;
+      result.push(c);
+
+      while (true) {
+        if (data.index > length) return "";
+
+        bits = 0; maxpower = Math.pow(2, numBits); power = 1;
+        while (power != maxpower) {
+          resb = data.val & data.position;
+          data.position >>= 1;
+          if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+          bits |= (resb > 0 ? 1 : 0) * power;
+          power <<= 1;
+        }
+
+        switch (c = bits) {
+          case 0:
+            bits = 0; maxpower = Math.pow(2, 8); power = 1;
+            while (power != maxpower) {
+              resb = data.val & data.position;
+              data.position >>= 1;
+              if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+              bits |= (resb > 0 ? 1 : 0) * power;
+              power <<= 1;
+            }
+            dictionary[dictSize++] = String.fromCharCode(bits);
+            c = dictSize - 1;
+            enlargeIn--;
+            break;
+          case 1:
+            bits = 0; maxpower = Math.pow(2, 16); power = 1;
+            while (power != maxpower) {
+              resb = data.val & data.position;
+              data.position >>= 1;
+              if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+              bits |= (resb > 0 ? 1 : 0) * power;
+              power <<= 1;
+            }
+            dictionary[dictSize++] = String.fromCharCode(bits);
+            c = dictSize - 1;
+            enlargeIn--;
+            break;
+          case 2:
+            return result.join("");
+        }
+
+        if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
+
+        if (dictionary[c]) entry = dictionary[c];
+        else {
+          if (c === dictSize) entry = w + w.charAt(0);
+          else return null;
+        }
+        result.push(entry);
+
+        dictionary[dictSize++] = w + entry.charAt(0);
+        enlargeIn--;
+        w = entry;
+
+        if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
+      }
+    }
+
+    // ---------------------------
     // Base links (추천)
+    // (✅ keyword-chatting removed)
     // ---------------------------
     const BASE = [
-      // comm
+      // comm (10)
       {id:'b_comm_1',cat:'comm',title:'Telegram Web',sub:'메신저',href:'https://web.telegram.org',badge:'COMM'},
       {id:'b_comm_2',cat:'comm',title:'Discord',sub:'커뮤니티/채팅',href:'https://discord.com/app',badge:'COMM'},
       {id:'b_comm_3',cat:'comm',title:'Slack',sub:'업무 메신저',href:'https://slack.com/signin',badge:'COMM'},
       {id:'b_comm_4',cat:'comm',title:'Gmail',sub:'메일',href:'https://mail.google.com',badge:'COMM'},
-      {id:'b_comm_5',cat:'comm',title:'Blind',sub:'직장인 커뮤니티',href:'https://www.blind.com',badge:'COMM'},
+      {id:'b_comm_5',cat:'comm',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
       {id:'b_comm_6',cat:'comm',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
       {id:'b_comm_7',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'COMM'},
-      {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털/메일 진입',href:'https://www.naver.com',badge:'COMM'},
+      {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털',href:'https://www.naver.com',badge:'COMM'},
       {id:'b_comm_9',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'COMM'},
-      {id:'b_comm_10',cat:'comm',title:'Messenger',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
+      {id:'b_comm_10',cat:'comm',title:'Facebook Messages',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
 
-      // prod
+      // prod (10)
       {id:'b_prod_1',cat:'prod',title:'Notion',sub:'문서 · 위키',href:'https://www.notion.so',badge:'PROD'},
       {id:'b_prod_2',cat:'prod',title:'Google Docs',sub:'문서',href:'https://docs.google.com',badge:'PROD'},
       {id:'b_prod_3',cat:'prod',title:'Google Sheets',sub:'스프레드시트',href:'https://sheets.google.com',badge:'PROD'},
@@ -753,9 +1020,9 @@
       {id:'b_prod_7',cat:'prod',title:'Microsoft 365',sub:'오피스',href:'https://www.office.com',badge:'PROD'},
       {id:'b_prod_8',cat:'prod',title:'Figma',sub:'디자인',href:'https://www.figma.com',badge:'PROD'},
       {id:'b_prod_9',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'PROD'},
-      {id:'b_prod_10',cat:'prod',title:'Canva',sub:'디자인/템플릿',href:'https://www.canva.com',badge:'PROD'},
+      {id:'b_prod_10',cat:'prod',title:'Canva',sub:'템플릿',href:'https://www.canva.com',badge:'PROD'},
 
-      // media
+      // media (10)
       {id:'b_media_1',cat:'media',title:'YouTube',sub:'동영상',href:'https://www.youtube.com',badge:'MEDIA'},
       {id:'b_media_2',cat:'media',title:'YouTube Music',sub:'음악',href:'https://music.youtube.com',badge:'MEDIA'},
       {id:'b_media_3',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'MEDIA'},
@@ -767,43 +1034,43 @@
       {id:'b_media_9',cat:'media',title:'Twitch',sub:'라이브',href:'https://www.twitch.tv',badge:'MEDIA'},
       {id:'b_media_10',cat:'media',title:'Disney+',sub:'스트리밍',href:'https://www.disneyplus.com',badge:'MEDIA'},
 
-      // finance
+      // finance (10)
       {id:'b_fin_1',cat:'finance',title:'Naver Finance',sub:'국내 시세',href:'https://finance.naver.com',badge:'FIN'},
       {id:'b_fin_2',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'FIN'},
       {id:'b_fin_3',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'FIN'},
       {id:'b_fin_4',cat:'finance',title:'Binance',sub:'거래소',href:'https://www.binance.com',badge:'FIN'},
-      {id:'b_fin_5',cat:'finance',title:'CoinMarketCap',sub:'시가총액',href:'https://www.coinmarketcap.com',badge:'FIN'},
-      {id:'b_fin_6',cat:'finance',title:'CoinGecko',sub:'코인 데이터',href:'https://www.coingecko.com',badge:'FIN'},
-      {id:'b_fin_7',cat:'finance',title:'Google Finance',sub:'시장 요약',href:'https://www.google.com/finance',badge:'FIN'},
-      {id:'b_fin_8',cat:'finance',title:'Investing',sub:'시장 데이터',href:'https://www.investing.com',badge:'FIN'},
+      {id:'b_fin_5',cat:'finance',title:'CoinMarketCap',sub:'시총',href:'https://www.coinmarketcap.com',badge:'FIN'},
+      {id:'b_fin_6',cat:'finance',title:'CoinGecko',sub:'데이터',href:'https://www.coingecko.com',badge:'FIN'},
+      {id:'b_fin_7',cat:'finance',title:'Google Finance',sub:'시장',href:'https://www.google.com/finance',badge:'FIN'},
+      {id:'b_fin_8',cat:'finance',title:'Investing',sub:'데이터',href:'https://www.investing.com',badge:'FIN'},
       {id:'b_fin_9',cat:'finance',title:'Toss',sub:'금융',href:'https://www.toss.im',badge:'FIN'},
       {id:'b_fin_10',cat:'finance',title:'KakaoBank',sub:'은행',href:'https://www.kakaobank.com',badge:'FIN'},
 
-      // ai
+      // ai (10)
       {id:'b_ai_1',cat:'ai',title:'ChatGPT',sub:'대화형 AI',href:'https://chat.openai.com',badge:'AI'},
       {id:'b_ai_2',cat:'ai',title:'Claude',sub:'대화형 AI',href:'https://claude.ai',badge:'AI'},
       {id:'b_ai_3',cat:'ai',title:'Gemini',sub:'구글 AI',href:'https://gemini.google.com',badge:'AI'},
       {id:'b_ai_4',cat:'ai',title:'Perplexity',sub:'AI 검색',href:'https://www.perplexity.ai',badge:'AI'},
       {id:'b_ai_5',cat:'ai',title:'OpenAI Platform',sub:'API',href:'https://platform.openai.com',badge:'AI'},
       {id:'b_ai_6',cat:'ai',title:'Hugging Face',sub:'모델/데이터',href:'https://huggingface.co',badge:'AI'},
-      {id:'b_ai_7',cat:'ai',title:'GitHub Copilot',sub:'코딩 보조',href:'https://copilot.github.com',badge:'AI'},
+      {id:'b_ai_7',cat:'ai',title:'GitHub Copilot',sub:'코딩',href:'https://copilot.github.com',badge:'AI'},
       {id:'b_ai_8',cat:'ai',title:'Cursor',sub:'AI 에디터',href:'https://www.cursor.com',badge:'AI'},
-      {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지 생성',href:'https://www.midjourney.com',badge:'AI'},
-      {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인 AI',href:'https://recraft.ai',badge:'AI'},
+      {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지',href:'https://www.midjourney.com',badge:'AI'},
+      {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인',href:'https://recraft.ai',badge:'AI'},
 
-      // news
+      // news (10)
       {id:'b_news_1',cat:'news',title:'Naver News',sub:'뉴스',href:'https://news.naver.com',badge:'NEWS'},
       {id:'b_news_2',cat:'news',title:'Google News',sub:'뉴스',href:'https://news.google.com',badge:'NEWS'},
       {id:'b_news_3',cat:'news',title:'Bloomberg',sub:'금융뉴스',href:'https://www.bloomberg.com',badge:'NEWS'},
-      {id:'b_news_4',cat:'news',title:'Reuters',sub:'글로벌뉴스',href:'https://www.reuters.com',badge:'NEWS'},
+      {id:'b_news_4',cat:'news',title:'Reuters',sub:'글로벌',href:'https://www.reuters.com',badge:'NEWS'},
       {id:'b_news_5',cat:'news',title:'Financial Times',sub:'금융',href:'https://www.ft.com',badge:'NEWS'},
       {id:'b_news_6',cat:'news',title:'WSJ',sub:'비즈니스',href:'https://www.wsj.com',badge:'NEWS'},
       {id:'b_news_7',cat:'news',title:'The Economist',sub:'시사',href:'https://www.economist.com',badge:'NEWS'},
       {id:'b_news_8',cat:'news',title:'arXiv',sub:'논문',href:'https://arxiv.org',badge:'NEWS'},
-      {id:'b_news_9',cat:'news',title:'The Information',sub:'테크 리서치',href:'https://www.theinformation.com',badge:'NEWS'},
+      {id:'b_news_9',cat:'news',title:'The Information',sub:'리서치',href:'https://www.theinformation.com',badge:'NEWS'},
       {id:'b_news_10',cat:'news',title:'NYTimes',sub:'뉴스',href:'https://www.nytimes.com',badge:'NEWS'},
 
-      // shop
+      // shop (10)
       {id:'b_shop_1',cat:'shop',title:'Coupang',sub:'쇼핑',href:'https://www.coupang.com',badge:'SHOP'},
       {id:'b_shop_2',cat:'shop',title:'Naver Shopping',sub:'가격비교',href:'https://shopping.naver.com',badge:'SHOP'},
       {id:'b_shop_3',cat:'shop',title:'11st',sub:'쇼핑',href:'https://www.11st.co.kr',badge:'SHOP'},
@@ -811,43 +1078,43 @@
       {id:'b_shop_5',cat:'shop',title:'Auction',sub:'쇼핑',href:'https://www.auction.co.kr',badge:'SHOP'},
       {id:'b_shop_6',cat:'shop',title:'SSG',sub:'쇼핑',href:'https://www.ssg.com',badge:'SHOP'},
       {id:'b_shop_7',cat:'shop',title:'오늘의집',sub:'리빙',href:'https://www.todayhouse.com',badge:'SHOP'},
-      {id:'b_shop_8',cat:'shop',title:'Amazon',sub:'해외 쇼핑',href:'https://www.amazon.com',badge:'SHOP'},
-      {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외 쇼핑',href:'https://www.aliexpress.com',badge:'SHOP'},
-      {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외 쇼핑',href:'https://www.temu.com',badge:'SHOP'},
+      {id:'b_shop_8',cat:'shop',title:'Amazon',sub:'해외',href:'https://www.amazon.com',badge:'SHOP'},
+      {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외',href:'https://www.aliexpress.com',badge:'SHOP'},
+      {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외',href:'https://www.temu.com',badge:'SHOP'},
 
-      // community
+      // community (10) - ✅ removed 키워드채팅
       {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'COMM'},
       {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'COMM'},
       {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'COMM'},
       {id:'b_comu_4',cat:'community',title:'Ruliweb',sub:'커뮤니티',href:'https://www.ruliweb.com',badge:'COMM'},
-      {id:'b_comu_5',cat:'community',title:'Inven',sub:'게임 커뮤니티',href:'https://www.inven.co.kr',badge:'COMM'},
+      {id:'b_comu_5',cat:'community',title:'Inven',sub:'게임',href:'https://www.inven.co.kr',badge:'COMM'},
       {id:'b_comu_6',cat:'community',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
-      {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인 커뮤니티',href:'https://www.blind.com',badge:'COMM'},
-      {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌 커뮤니티',href:'https://www.reddit.com',badge:'COMM'},
+      {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인',href:'https://www.blind.com',badge:'COMM'},
+      {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌',href:'https://www.reddit.com',badge:'COMM'},
       {id:'b_comu_9',cat:'community',title:'Quora',sub:'Q&A',href:'https://www.quora.com',badge:'COMM'},
-      {id:'b_comu_10',cat:'community',title:'키워드채팅',sub:'내 프로젝트 (URL 교체)',href:'https://example.com/keyword-chatting',badge:'ME'},
+      {id:'b_comu_10',cat:'community',title:'Namu Wiki',sub:'위키',href:'https://namu.wiki',badge:'COMM'},
 
-      // dev
-      {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드/프로젝트',href:'https://github.com',badge:'DEV'},
+      // dev (10)
+      {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드',href:'https://github.com',badge:'DEV'},
       {id:'b_dev_2',cat:'dev',title:'Vercel',sub:'배포',href:'https://vercel.com',badge:'DEV'},
       {id:'b_dev_3',cat:'dev',title:'Netlify',sub:'배포',href:'https://www.netlify.com',badge:'DEV'},
       {id:'b_dev_4',cat:'dev',title:'Google Developers',sub:'문서',href:'https://developers.google.com',badge:'DEV'},
       {id:'b_dev_5',cat:'dev',title:'Stack Overflow',sub:'Q&A',href:'https://stackoverflow.com',badge:'DEV'},
-      {id:'b_dev_6',cat:'dev',title:'CodePen',sub:'프론트 실험',href:'https://codepen.io',badge:'DEV'},
+      {id:'b_dev_6',cat:'dev',title:'CodePen',sub:'실험',href:'https://codepen.io',badge:'DEV'},
       {id:'b_dev_7',cat:'dev',title:'Replit',sub:'코딩',href:'https://replit.com',badge:'DEV'},
-      {id:'b_dev_8',cat:'dev',title:'Postman',sub:'API 테스트',href:'https://www.postman.com',badge:'DEV'},
-      {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'보안/CDN',href:'https://cloudflare.com',badge:'DEV'},
+      {id:'b_dev_8',cat:'dev',title:'Postman',sub:'API',href:'https://www.postman.com',badge:'DEV'},
+      {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'CDN',href:'https://cloudflare.com',badge:'DEV'},
       {id:'b_dev_10',cat:'dev',title:'Supabase',sub:'DB/Auth',href:'https://supabase.com',badge:'DEV'},
 
-      // util
+      // util (10)
       {id:'b_util_1',cat:'util',title:'Google Translate',sub:'번역',href:'https://translate.google.com',badge:'UTIL'},
       {id:'b_util_2',cat:'util',title:'Google Keep',sub:'메모',href:'https://keep.google.com',badge:'UTIL'},
       {id:'b_util_3',cat:'util',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'UTIL'},
       {id:'b_util_4',cat:'util',title:'Naver Map',sub:'지도',href:'https://map.naver.com',badge:'UTIL'},
       {id:'b_util_5',cat:'util',title:'Kakao Map',sub:'지도',href:'https://map.kakao.com',badge:'UTIL'},
       {id:'b_util_6',cat:'util',title:'Naver Weather',sub:'날씨',href:'https://weather.naver.com',badge:'UTIL'},
-      {id:'b_util_7',cat:'util',title:'Speedtest',sub:'인터넷 속도',href:'https://www.speedtest.net',badge:'UTIL'},
-      {id:'b_util_8',cat:'util',title:'Time & Date',sub:'시간/달력',href:'https://www.timeanddate.com',badge:'UTIL'},
+      {id:'b_util_7',cat:'util',title:'Speedtest',sub:'속도',href:'https://www.speedtest.net',badge:'UTIL'},
+      {id:'b_util_8',cat:'util',title:'Time & Date',sub:'시간',href:'https://www.timeanddate.com',badge:'UTIL'},
       {id:'b_util_9',cat:'util',title:'remove.bg',sub:'배경 제거',href:'https://www.remove.bg',badge:'UTIL'},
       {id:'b_util_10',cat:'util',title:'Google Drive',sub:'드라이브',href:'https://drive.google.com',badge:'UTIL'},
     ];
@@ -855,14 +1122,14 @@
     // ---------------------------
     // DOM refs
     // ---------------------------
-    const themeToggle = document.getElementById('themeToggle');
-    const themeLabel = document.getElementById('themeLabel');
     const resetBtn = document.getElementById('resetBtn');
     const resetOrderBtn = document.getElementById('resetOrderBtn');
     const wipeBtn = document.getElementById('wipeBtn');
     const addBtn = document.getElementById('addBtn');
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const installBtn = document.getElementById('installBtn');
 
     const naverQ = document.getElementById('naverQ');
     const googleQ = document.getElementById('googleQ');
@@ -902,32 +1169,6 @@
     let editingId = null;
 
     // ---------------------------
-    // Theme
-    // ---------------------------
-    function applyTheme(theme){
-      if(theme === 'dark'){
-        document.documentElement.setAttribute('data-theme','dark');
-        themeLabel.textContent = '다크';
-      }else{
-        document.documentElement.removeAttribute('data-theme');
-        themeLabel.textContent = '라이트';
-      }
-    }
-    function initTheme(){
-      const saved = localStorage.getItem(THEME_KEY);
-      if(saved){ applyTheme(saved); return; }
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'dark' : 'light');
-    }
-    function toggleTheme(){
-      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      const next = current === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      localStorage.setItem(THEME_KEY, next);
-    }
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // ---------------------------
     // Search
     // ---------------------------
     function openNaver(){
@@ -948,12 +1189,8 @@
     // ---------------------------
     // Favorites
     // ---------------------------
-    function getFavData(){
-      return loadJSON(FAV_KEY, {});
-    }
-    function setFavData(data){
-      saveJSON(FAV_KEY, data);
-    }
+    function getFavData(){ return loadJSON(FAV_KEY, {}); }
+    function setFavData(data){ saveJSON(FAV_KEY, data); }
     function getFavList(cat){
       const data = getFavData();
       return Array.isArray(data[cat]) ? data[cat] : [];
@@ -996,15 +1233,14 @@
     }
     function persistFavOrderFromDOM(){
       const cat = currentCat;
-      const ids = Array.from(favGrid.querySelectorAll('.favItem'))
+      const hrefs = Array.from(favGrid.querySelectorAll('.favItem'))
         .map(el => el.dataset.href)
         .filter(Boolean);
       const list = getFavList(cat);
       const map = new Map(list.map(x => [x.href, x]));
       const ordered = [];
-      ids.forEach(h => { if(map.has(h)) ordered.push(map.get(h)); });
-      // append any missing
-      list.forEach(x => { if(!ids.includes(x.href)) ordered.push(x); });
+      hrefs.forEach(h => { if(map.has(h)) ordered.push(map.get(h)); });
+      list.forEach(x => { if(!hrefs.includes(x.href)) ordered.push(x); });
       setFavList(cat, ordered);
     }
     function renderFav(){
@@ -1053,22 +1289,18 @@
           e.dataTransfer.effectAllowed = 'move';
           e.dataTransfer.setData('text/plain', el.dataset.href || '');
         });
-
         el.addEventListener('dragend', () => {
           el.classList.remove('dragging');
           items.forEach(x => x.classList.remove('dragover'));
           draggingEl = null;
           persistFavOrderFromDOM();
         });
-
         el.addEventListener('dragover', (e) => {
           e.preventDefault();
           if(!draggingEl || draggingEl === el) return;
           el.classList.add('dragover');
         });
-
         el.addEventListener('dragleave', () => el.classList.remove('dragover'));
-
         el.addEventListener('drop', (e) => {
           e.preventDefault();
           el.classList.remove('dragover');
@@ -1086,12 +1318,8 @@
     // ---------------------------
     // Custom links
     // ---------------------------
-    function loadCustom(){
-      return loadJSON(CUSTOM_KEY, []);
-    }
-    function saveCustom(arr){
-      saveJSON(CUSTOM_KEY, arr);
-    }
+    function loadCustom(){ return loadJSON(CUSTOM_KEY, []); }
+    function saveCustom(arr){ saveJSON(CUSTOM_KEY, arr); }
     function upsertCustom(item){
       const arr = loadCustom();
       const idx = arr.findIndex(x => x.id === item.id);
@@ -1100,8 +1328,7 @@
       saveCustom(arr);
     }
     function deleteCustom(id){
-      const arr = loadCustom().filter(x => x.id !== id);
-      saveCustom(arr);
+      saveCustom(loadCustom().filter(x => x.id !== id));
     }
 
     // ---------------------------
@@ -1153,14 +1380,18 @@
       grid.innerHTML = items.map(item => {
         const menuHidden = item.custom ? '' : 'hidden';
         const draggable = (currentCat === 'all') ? 'false' : 'true';
+
         return `
           <a class="card" href="${item.href}" target="_blank" rel="noopener"
              data-id="${item.id}" data-cat="${item.cat}" draggable="${draggable}">
             <div class="left">
               <div class="title">${escapeHtml(item.title)}</div>
-              <div class="sub">${escapeHtml(item.sub || '')}</div>
+              <div class="metaRow">
+                <div class="sub">${escapeHtml(item.sub || '')}</div>
+                ${item.badge ? `<div class="badge" title="${escapeHtml(item.badge)}">${escapeHtml(item.badge)}</div>` : ``}
+              </div>
             </div>
-            <div class="badge">${escapeHtml(item.badge || '')}</div>
+
             <div class="star" title="즐겨찾기">☆</div>
             <div class="menu ${menuHidden}" title="내 링크 편집/삭제">⋯</div>
           </a>
@@ -1207,7 +1438,6 @@
       const anchors = Array.from(grid.querySelectorAll('.card'));
       anchors.forEach(card => {
         const star = card.querySelector('.star');
-        if(!star) return;
         const href = card.getAttribute('href');
         const on = isFav(currentCat, href);
         star.classList.toggle('on', on);
@@ -1248,7 +1478,6 @@
 
           const rect = el.getBoundingClientRect();
           const after = (e.clientY - rect.top) > (rect.height / 2);
-
           if(after) el.insertAdjacentElement('afterend', draggingEl);
           else el.insertAdjacentElement('beforebegin', draggingEl);
         });
@@ -1282,19 +1511,14 @@
     }
 
     // ---------------------------
-    // URL
+    // URL state
     // ---------------------------
-    function updateUrl(){
-      const params = new URLSearchParams();
-      if(currentCat !== 'all') params.set('cat', currentCat);
-      const newUrl = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-      history.replaceState(null, '', newUrl);
-    }
-    function readUrl(){
+    function updateUrlStateOnly(){
       const params = new URLSearchParams(location.search);
-      const cat = params.get('cat') || 'all';
-      const exists = chips.some(c => c.dataset.cat === cat);
-      setActiveChip(exists ? cat : 'all');
+      if(currentCat === 'all') params.delete('cat');
+      else params.set('cat', currentCat);
+      const base = location.pathname + (params.toString() ? '?' + params.toString() : '');
+      history.replaceState(null,'', base + (location.hash || ''));
     }
 
     // ---------------------------
@@ -1304,7 +1528,7 @@
       chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
       currentCat = cat;
       favScope.textContent = chipLabel(cat);
-      updateUrl();
+      updateUrlStateOnly();
       renderGrid();
       renderFav();
     }
@@ -1327,12 +1551,12 @@
     });
 
     wipeBtn.addEventListener('click', () => {
+      if(!confirm('개인화(즐겨찾기/정렬/내 링크)를 전부 초기화할까요?')) return;
       localStorage.removeItem(FAV_KEY);
       localStorage.removeItem(ORDER_KEY);
       localStorage.removeItem(CUSTOM_KEY);
-      renderGrid();
-      renderFav();
-      syncStars();
+      history.replaceState(null,'', location.pathname + location.search);
+      renderGrid(); renderFav(); syncStars();
     });
 
     addBtn.addEventListener('click', () => {
@@ -1347,14 +1571,7 @@
     // Export / Import
     // ---------------------------
     exportBtn.addEventListener('click', () => {
-      const payload = {
-        v: 1,
-        exportedAt: new Date().toISOString(),
-        favorites: loadJSON(FAV_KEY, {}),
-        order: loadJSON(ORDER_KEY, {}),
-        customLinks: loadCustom(),
-      };
-
+      const payload = buildPersonalizationPayload();
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1366,47 +1583,25 @@
       URL.revokeObjectURL(url);
     });
 
-    importBtn.addEventListener('click', () => {
-      openImportModal();
-    });
+    importBtn.addEventListener('click', () => openImportModal());
 
-    function openImportModal(){
-      modalBack.style.display = 'flex';
-      editingId = null;
-
-      // switch view
-      linkFormArea.style.display = 'none';
-      importArea.style.display = 'block';
-
-      modalTitle.textContent = '개인화 가져오기';
-      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
-      importText.value = '';
+    function buildPersonalizationPayload(){
+      return {
+        v: 1,
+        exportedAt: new Date().toISOString(),
+        favorites: loadJSON(FAV_KEY, {}),
+        order: loadJSON(ORDER_KEY, {}),
+        customLinks: loadCustom(),
+      };
     }
 
-    function applyImport(jsonText){
-      let obj;
-      try{
-        obj = JSON.parse(jsonText);
-      }catch{
-        alert('JSON 파싱 실패: 형식을 확인하세요.');
-        return false;
-      }
-      if(!obj || typeof obj !== 'object'){
-        alert('JSON 형식이 올바르지 않습니다.');
-        return false;
-      }
-
-      // Validate minimal shape
+    function applyPersonalizationPayload(obj){
       const favorites = obj.favorites ?? {};
       const order = obj.order ?? {};
       const customLinks = obj.customLinks ?? [];
 
-      if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)){
-        alert('JSON 구조가 올바르지 않습니다.');
-        return false;
-      }
+      if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)) return false;
 
-      // Soft sanitize URLs for custom links
       const sanitizedCustom = customLinks
         .filter(x => x && typeof x === 'object')
         .map(x => ({
@@ -1421,7 +1616,26 @@
       saveJSON(FAV_KEY, favorites);
       saveJSON(ORDER_KEY, order);
       saveJSON(CUSTOM_KEY, sanitizedCustom);
+      return true;
+    }
 
+    function openImportModal(){
+      modalBack.style.display = 'flex';
+      editingId = null;
+      linkFormArea.style.display = 'none';
+      importArea.style.display = 'block';
+      modalTitle.textContent = '개인화 가져오기';
+      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
+      importText.value = '';
+    }
+
+    function applyImport(jsonText){
+      let obj;
+      try{ obj = JSON.parse(jsonText); }
+      catch{ alert('JSON 파싱 실패'); return false; }
+
+      const ok = applyPersonalizationPayload(obj);
+      if(!ok){ alert('JSON 구조가 올바르지 않습니다.'); return false; }
       return true;
     }
 
@@ -1433,21 +1647,63 @@
       const ok = applyImport(text);
       if(ok){
         closeModal();
-        renderGrid();
-        renderFav();
-        syncStars();
+        renderGrid(); renderFav(); syncStars();
       }
     });
-
     importCancelBtn.addEventListener('click', () => closeModal());
 
     // ---------------------------
-    // Modal (link add/edit)
+    // Share link (✅ compressed)
+    // ---------------------------
+    shareBtn.addEventListener('click', async () => {
+      const payload = buildPersonalizationPayload();
+      const json = JSON.stringify(payload);
+      const packed = compressToEncodedURIComponent(json);
+
+      const base = location.origin + location.pathname + location.search;
+      const shareUrl = base + '#p=' + packed;
+
+      try{
+        await navigator.clipboard.writeText(shareUrl);
+        alert('공유 링크(압축)가 클립보드에 복사되었습니다.');
+      }catch{
+        prompt('공유 링크를 복사하세요:', shareUrl);
+      }
+    });
+
+    function tryApplyFromHash(){
+      const hash = location.hash || '';
+      if(!hash.startsWith('#p=')) return;
+
+      const packed = hash.slice(3);
+      if(!packed) return;
+
+      const json = decompressFromEncodedURIComponent(packed);
+      if (json == null) { alert('공유 링크 해석 실패(손상됨).'); return; }
+
+      let obj;
+      try{ obj = JSON.parse(json); }
+      catch{ alert('공유 데이터 JSON 파싱 실패'); return; }
+
+      const ok = confirm('공유 링크의 개인화를 이 브라우저에 적용할까요? (기존 개인화는 덮어쓰기)');
+      if(!ok) return;
+
+      const applied = applyPersonalizationPayload(obj);
+      if(!applied){
+        alert('공유 데이터 구조가 올바르지 않습니다.');
+        return;
+      }
+
+      history.replaceState(null,'', location.pathname + location.search);
+      renderGrid(); renderFav(); syncStars();
+      alert('적용 완료');
+    }
+
+    // ---------------------------
+    // Link modal (add/edit)
     // ---------------------------
     function openLinkModal(mode, item){
       modalBack.style.display = 'flex';
-
-      // switch view
       linkFormArea.style.display = 'block';
       importArea.style.display = 'none';
 
@@ -1479,7 +1735,6 @@
       fSub.value = '';
       fHref.value = '';
       fBadge.value = '';
-      // also reset import
       importText.value = '';
     }
 
@@ -1502,11 +1757,8 @@
       if(!v.ok){ alert(v.msg); return; }
 
       const item = v.data;
-      if(editingId){
-        upsertCustom({id:editingId, ...item});
-      }else{
-        upsertCustom({id:uid(), ...item});
-      }
+      if(editingId) upsertCustom({id:editingId, ...item});
+      else upsertCustom({id:uid(), ...item});
 
       closeModal();
       renderGrid();
@@ -1524,13 +1776,46 @@
 
     modalClose.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
-    modalBack.addEventListener('click', (e) => {
-      if(e.target === modalBack) closeModal();
+    modalBack.addEventListener('click', (e) => { if(e.target === modalBack) closeModal(); });
+
+    // ---------------------------
+    // PWA install button
+    // ---------------------------
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      try{ await deferredPrompt.userChoice; } catch {}
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
     });
 
     // ---------------------------
-    // Esc behavior
+    // Service Worker register
     // ---------------------------
+    async function registerSW(){
+      if(!('serviceWorker' in navigator)) return;
+      try{ await navigator.serviceWorker.register('./sw.js'); } catch {}
+    }
+
+    // ---------------------------
+    // Init
+    // ---------------------------
+    function initChips(){
+      const params = new URLSearchParams(location.search);
+      const cat = params.get('cat') || 'all';
+      const exists = chips.some(c => c.dataset.cat === cat);
+      setActiveChip(exists ? cat : 'all');
+    }
+
+    resetBtn.addEventListener('click', resetAll);
+
     window.addEventListener('keydown', (e) => {
       if(e.key === 'Escape'){
         if(modalBack.style.display === 'flex') closeModal();
@@ -1538,13 +1823,11 @@
       }
     });
 
-    // ---------------------------
-    // Init
-    // ---------------------------
-    initTheme();
-    readUrl();
+    registerSW();
+    initChips();
     renderFav();
     renderGrid();
+    tryApplyFromHash();
   </script>
 </body>
 </html>
