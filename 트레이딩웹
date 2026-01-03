@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>X-Board (Local Demo)</title>
+  <style>
+    :root{
+      --bg:#0b0f17; --panel:#121a26; --panel2:#0f1622;
+      --text:#e7eefc; --muted:#9bb0d1; --line:#223049;
+      --accent:#7aa6ff; --danger:#ff6b7a; --ok:#59d39a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(122,166,255,.20), transparent 50%),
+                  radial-gradient(900px 500px at 80% 0%, rgba(89,211,154,.14), transparent 55%),
+                  linear-gradient(180deg, var(--bg), #070a10);
+      min-height:100vh;
+    }
+    a{color:inherit; text-decoration:none}
+    button{font:inherit}
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 18px 40px}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .logo{
+      width:42px; height:42px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(122,166,255,.95), rgba(89,211,154,.85));
+      box-shadow: var(--shadow);
+    }
+    .brand h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .brand .sub{margin:2px 0 0; color:var(--muted); font-size:12px}
+    .actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .pill{
+      padding:8px 10px; border:1px solid var(--line); border-radius:999px;
+      background: rgba(18,26,38,.6);
+      display:flex; align-items:center; gap:8px;
+    }
+    .pill input{
+      border:0; outline:0; background:transparent; color:var(--text);
+      width:220px;
+    }
+    .btn{
+      padding:9px 12px; border:1px solid var(--line);
+      background: rgba(18,26,38,.85);
+      color:var(--text);
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s transform ease, .15s background ease, .15s border-color ease;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(122,166,255,.45)}
+    .btn.primary{
+      border-color: rgba(122,166,255,.55);
+      background: rgba(122,166,255,.12);
+    }
+    .btn.danger{
+      border-color: rgba(255,107,122,.55);
+      background: rgba(255,107,122,.10);
+      color: #ffd7dc;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      gap:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      .pill input{width:160px}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(18,26,38,.92), rgba(12,18,29,.92));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 12px;
+      border-bottom:1px solid rgba(34,48,73,.7);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background: rgba(15,22,34,.6);
+    }
+    .hd .title{
+      display:flex; flex-direction:column;
+      gap:3px;
+    }
+    .hd .title strong{font-size:13px; letter-spacing:.2px}
+    .hd .title span{color:var(--muted); font-size:12px}
+    .body{padding:12px 14px 14px}
+    .list{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .item{
+      padding:12px;
+      border:1px solid rgba(34,48,73,.75);
+      border-radius:14px;
+      background: rgba(18,26,38,.55);
+      cursor:pointer;
+      transition:.12s transform ease, .12s border-color ease;
+    }
+    .item:hover{transform: translateY(-1px); border-color: rgba(122,166,255,.35)}
+    .item.active{border-color: rgba(122,166,255,.65); background: rgba(122,166,255,.10)}
+    .item .row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .item .name{font-weight:700; font-size:13px}
+    .item .meta{color:var(--muted); font-size:12px}
+    .badge{
+      font-size:11px;
+      padding:4px 8px;
+      border:1px solid rgba(34,48,73,.9);
+      border-radius:999px;
+      color:var(--muted);
+      background: rgba(15,22,34,.6);
+      white-space:nowrap;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:16px;
+    }
+    @media (max-width: 980px){
+      .split{grid-template-columns: 1fr}
+    }
+
+    .thread{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .post{
+      display:grid;
+      grid-template-columns: 60px 1fr;
+      gap:10px;
+      padding:12px;
+      border:1px solid rgba(34,48,73,.75);
+      border-radius: 16px;
+      background: rgba(18,26,38,.55);
+    }
+    .avatar{
+      width:60px; height:60px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(122,166,255,.25), rgba(89,211,154,.18));
+      border:1px solid rgba(34,48,73,.85);
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--mono);
+      color: var(--muted);
+    }
+    .phead{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px}
+    .phead .who{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .phead .who b{font-size:12px}
+    .phead .who small{font-size:11px; color:var(--muted); font-family:var(--mono)}
+    .pbody{font-size:13px; line-height:1.45; white-space:pre-wrap; word-break:break-word}
+    .pimg{
+      margin-top:8px;
+      border-radius:14px;
+      border:1px solid rgba(34,48,73,.85);
+      overflow:hidden;
+    }
+    .pimg img{display:block; width:100%; height:auto}
+    .muted{color:var(--muted)}
+    .empty{
+      padding:18px;
+      border:1px dashed rgba(34,48,73,.9);
+      border-radius: 16px;
+      color: var(--muted);
+      background: rgba(18,26,38,.35);
+      line-height:1.5;
+    }
+
+    form{display:flex; flex-direction:column; gap:10px}
+    .field{display:flex; flex-direction:column; gap:6px}
+    label{font-size:12px; color:var(--muted)}
+    input[type="text"], textarea, select{
+      width:100%;
+      padding:10px 11px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,73,.85);
+      background: rgba(15,22,34,.6);
+      color: var(--text);
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+    .row2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .help{font-size:11px; color: var(--muted); line-height:1.4}
+    .hr{height:1px; background: rgba(34,48,73,.75); margin:8px 0}
+    .kpi{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    .kpi .box{
+      border:1px solid rgba(34,48,73,.75);
+      background: rgba(18,26,38,.55);
+      border-radius: 14px;
+      padding:10px;
+    }
+    .kpi .box b{display:block; font-size:12px}
+    .kpi .box span{display:block; font-family:var(--mono); font-size:12px; color:var(--muted); margin-top:4px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>X-Board</h1>
+          <div class="sub">로컬 저장(LocalStorage) 기반 이미지보드 데모</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="pill">
+          <span class="muted" style="font-size:12px">검색</span>
+          <input id="search" type="text" placeholder="보드 / 스레드 / 본문 검색" />
+        </div>
+        <button class="btn" id="exportBtn">데이터 내보내기</button>
+        <button class="btn" id="importBtn">데이터 가져오기</button>
+        <button class="btn danger" id="resetBtn">초기화</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left: Boards -->
+      <div class="card">
+        <div class="hd">
+          <div class="title">
+            <strong>Boards</strong>
+            <span>주제별 보드</span>
+          </div>
+          <button class="btn primary" id="newBoardBtn">+ 보드</button>
+        </div>
+        <div class="body">
+          <div id="boards" class="list"></div>
+          <div class="hr"></div>
+          <div class="help">
+            · 이 페이지는 서버 없이 동작합니다. (브라우저 LocalStorage)<br/>
+            · 실제 서비스화 시: 인증/권한, 파일 업로드, 모더레이션, 스팸 방지(레이트리밋) 등을 추가하세요.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Threads + Composer -->
+      <div class="split">
+        <div class="card">
+          <div class="hd">
+            <div class="title">
+              <strong id="mainTitle">Threads</strong>
+              <span id="mainSub">보드를 선택하세요</span>
+            </div>
+            <button class="btn primary" id="newThreadBtn" disabled>+ 스레드</button>
+          </div>
+          <div class="body">
+            <div id="threads" class="list"></div>
+            <div id="threadEmpty" class="empty" style="display:none">
+              선택한 보드에 스레드가 없습니다.<br/>
+              우측 상단 <b>+ 스레드</b>로 첫 스레드를 생성하세요.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="hd">
+            <div class="title">
+              <strong>Post</strong>
+              <span id="composerSub">스레드를 선택하세요</span>
+            </div>
+          </div>
+          <div class="body">
+            <div class="kpi">
+              <div class="box">
+                <b>선택 보드</b>
+                <span id="kpiBoard">-</span>
+              </div>
+              <div class="box">
+                <b>선택 스레드</b>
+                <span id="kpiThread">-</span>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <form id="postForm">
+              <div class="field row2">
+                <div>
+                  <label>닉네임(옵션)</label>
+                  <input id="name" type="text" placeholder="Anonymous" />
+                </div>
+                <div>
+                  <label>이미지 URL(옵션)</label>
+                  <input id="imgUrl" type="text" placeholder="https://..." />
+                </div>
+              </div>
+
+              <div class="field">
+                <label>내용</label>
+                <textarea id="content" placeholder="내용을 입력하세요 (Enter 허용)"></textarea>
+              </div>
+
+              <button class="btn primary" id="submitPost" type="submit" disabled>등록</button>
+              <div class="help">
+                · 이미지 업로드는 미구현. URL로만 미리보기합니다.<br/>
+                · 운영에선 파일 업로드/리사이징/바이러스 스캔/CDN을 붙이세요.
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Full thread viewer -->
+        <div class="card" style="grid-column:1 / -1;">
+          <div class="hd">
+            <div class="title">
+              <strong id="threadTitle">Thread</strong>
+              <span id="threadSub">게시글이 여기 표시됩니다</span>
+            </div>
+            <button class="btn danger" id="deleteThreadBtn" disabled>스레드 삭제</button>
+          </div>
+          <div class="body">
+            <div id="posts" class="thread"></div>
+            <div id="postsEmpty" class="empty" style="display:none">
+              아직 게시글이 없습니다. 우측 Post 폼으로 첫 글을 등록하세요.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <input id="fileInput" type="file" accept="application/json" style="display:none" />
+  </div>
+
+  <script>
+    /**
+     * X-Board (Local Demo)
+     * - Boards -> Threads -> Posts
+     * - Persist to localStorage
+     */
+
+    const LS_KEY = "xboard_v1";
+
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      data: null,
+      selectedBoardId: null,
+      selectedThreadId: null,
+      search: ""
+    };
+
+    const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+    const nowISO = () => new Date().toISOString();
+
+    function defaultData(){
+      const b1 = { id: uid(), slug: "biz", name: "사업/전략", createdAt: nowISO() };
+      const b2 = { id: uid(), slug: "trading", name: "트레이딩", createdAt: nowISO() };
+      const t1 = { id: uid(), boardId: b1.id, title: "첫 스레드: X-Board 설계", createdAt: nowISO(), bumpedAt: nowISO() };
+      const p1 = {
+        id: uid(),
+        threadId: t1.id,
+        name: "Anonymous",
+        content: "이건 로컬 데모입니다. 실제로는 서버/DB/스토리지/모더레이션이 필요합니다.",
+        imgUrl: "",
+        createdAt: nowISO()
+      };
+      return {
+        version: 1,
+        boards: [b1, b2],
+        threads: [t1],
+        posts: [p1]
+      };
+    }
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        if(!raw){
+          state.data = defaultData();
+          save();
+        } else {
+          state.data = JSON.parse(raw);
+        }
+      }catch(e){
+        state.data = defaultData();
+        save();
+      }
+      // set defaults
+      if(state.data.boards.length){
+        state.selectedBoardId = state.data.boards[0].id;
+      }
+      const firstThread = state.data.threads.find(t => t.boardId === state.selectedBoardId);
+      state.selectedThreadId = firstThread ? firstThread.id : null;
+    }
+
+    function save(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state.data));
+    }
+
+    function fmtTime(iso){
+      const d = new Date(iso);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mi = String(d.getMinutes()).padStart(2,"0");
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    function getSelectedBoard(){
+      return state.data.boards.find(b => b.id === state.selectedBoardId) || null;
+    }
+
+    function getSelectedThread(){
+      return state.data.threads.find(t => t.id === state.selectedThreadId) || null;
+    }
+
+    function threadsForBoard(boardId){
+      return state.data.threads
+        .filter(t => t.boardId === boardId)
+        .sort((a,b) => new Date(b.bumpedAt) - new Date(a.bumpedAt));
+    }
+
+    function postsForThread(threadId){
+      return state.data.posts
+        .filter(p => p.threadId === threadId)
+        .sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+
+    function applySearchBoards(boards){
+      const q = state.search.trim().toLowerCase();
+      if(!q) return boards;
+      return boards.filter(b => (b.name+" "+b.slug).toLowerCase().includes(q));
+    }
+
+    function applySearchThreads(threads){
+      const q = state.search.trim().toLowerCase();
+      if(!q) return threads;
+      // thread title + any post content
+      return threads.filter(t => {
+        const inTitle = (t.title||"").toLowerCase().includes(q);
+        const hasPost = state.data.posts.some(p => p.threadId === t.id && (p.content||"").toLowerCase().includes(q));
+        return inTitle || hasPost;
+      });
+    }
+
+    function renderBoards(){
+      const el = $("boards");
+      el.innerHTML = "";
+
+      const boards = applySearchBoards(state.data.boards)
+        .slice()
+        .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      if(!boards.length){
+        el.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+        return;
+      }
+
+      for(const b of boards){
+        const threadCount = state.data.threads.filter(t => t.boardId === b.id).length;
+        const div = document.createElement("div");
+        div.className = "item" + (b.id === state.selectedBoardId ? " active" : "");
+        div.onclick = () => {
+          state.selectedBoardId = b.id;
+          const first = threadsForBoard(b.id)[0];
+          state.selectedThreadId = first ? first.id : null;
+          renderAll();
+        };
+
+        div.innerHTML = `
+          <div class="row">
+            <div>
+              <div class="name">/${escapeHtml(b.slug)}/</div>
+              <div class="meta">${escapeHtml(b.name)}</div>
+            </div>
+            <div class="badge">${threadCount} threads</div>
+          </div>
+        `;
+        el.appendChild(div);
+      }
+    }
+
+    function renderThreads(){
+      const board = getSelectedBoard();
+      const el = $("threads");
+      const empty = $("threadEmpty");
+      el.innerHTML = "";
+
+      if(!board){
+        $("mainTitle").textContent = "Threads";
+        $("mainSub").textContent = "보드를 선택하세요";
+        $("newThreadBtn").disabled = true;
+        empty.style.display = "none";
+        return;
+      }
+
+      $("mainTitle").textContent = `Threads · /${board.slug}/`;
+      $("mainSub").textContent = board.name;
+      $("newThreadBtn").disabled = false;
+
+      let threads = threadsForBoard(board.id);
+      threads = applySearchThreads(threads);
+
+      if(!threads.length){
+        empty.style.display = "block";
+        return;
+      } else {
+        empty.style.display = "none";
+      }
+
+      for(const t of threads){
+        const posts = postsForThread(t.id);
+        const last = posts[posts.length-1];
+        const div = document.createElement("div");
+        div.className = "item" + (t.id === state.selectedThreadId ? " active" : "");
+        div.onclick = () => {
+          state.selectedThreadId = t.id;
+          renderAll();
+        };
+        div.innerHTML = `
+          <div class="row">
+            <div style="min-width:0">
+              <div class="name" title="${escapeAttr(t.title)}">${escapeHtml(t.title)}</div>
+              <div class="meta">${posts.length} posts · last ${last ? fmtTime(last.createdAt) : fmtTime(t.createdAt)}</div>
+            </div>
+            <div class="badge">bumped ${fmtTime(t.bumpedAt)}</div>
+          </div>
+        `;
+        el.appendChild(div);
+      }
+    }
+
+    function renderPosts(){
+      const board = getSelectedBoard();
+      const thread = getSelectedThread();
+
+      $("kpiBoard").textContent = board ? `/${board.slug}/` : "-";
+      $("kpiThread").textContent = thread ? short(thread.title, 26) : "-";
+
+      $("composerSub").textContent = thread ? "게시글 작성" : "스레드를 선택하세요";
+      $("submitPost").disabled = !thread;
+
+      $("deleteThreadBtn").disabled = !thread;
+
+      const postsEl = $("posts");
+      const emptyEl = $("postsEmpty");
+      postsEl.innerHTML = "";
+
+      if(!thread){
+        $("threadTitle").textContent = "Thread";
+        $("threadSub").textContent = "게시글이 여기 표시됩니다";
+        emptyEl.style.display = "none";
+        return;
+      }
+
+      $("threadTitle").textContent = thread.title;
+      $("threadSub").textContent = `/${board.slug}/ · created ${fmtTime(thread.createdAt)} · posts ${postsForThread(thread.id).length}`;
+
+      const posts = postsForThread(thread.id);
+      if(!posts.length){
+        emptyEl.style.display = "block";
+        return;
+      }
+      emptyEl.style.display = "none";
+
+      for(const p of posts){
+        const div = document.createElement("div");
+        div.className = "post";
+        const initials = (p.name && p.name.trim()) ? p.name.trim().slice(0,2) : "AN";
+        div.innerHTML = `
+          <div class="avatar">${escapeHtml(initials.toUpperCase())}</div>
+          <div>
+            <div class="phead">
+              <div class="who">
+                <b>${escapeHtml(p.name && p.name.trim() ? p.name.trim() : "Anonymous")}</b>
+                <small>${fmtTime(p.createdAt)} · #${escapeHtml(p.id.slice(-6))}</small>
+              </div>
+              <button class="btn danger" data-delpost="${escapeAttr(p.id)}" title="삭제">삭제</button>
+            </div>
+            <div class="pbody">${escapeHtml(p.content || "")}</div>
+            ${p.imgUrl ? `
+              <div class="pimg">
+                <img src="${escapeAttr(p.imgUrl)}" alt="image" onerror="this.closest('.pimg').remove()" />
+              </div>
+            ` : ""}
+          </div>
+        `;
+        postsEl.appendChild(div);
+      }
+
+      // bind delete post buttons
+      postsEl.querySelectorAll("[data-delpost]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const id = btn.getAttribute("data-delpost");
+          deletePost(id);
+        });
+      });
+    }
+
+    function renderAll(){
+      renderBoards();
+      renderThreads();
+      renderPosts();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){
+      // minimal attribute escape
+      return escapeHtml(str).replaceAll("\n"," ");
+    }
+    function short(str, n){
+      const s = String(str||"");
+      return s.length > n ? s.slice(0, n-1) + "…" : s;
+    }
+
+    function createBoard(){
+      const slug = prompt("보드 슬러그(slug) 입력 예: trading");
+      if(!slug) return;
+      const name = prompt("보드 이름 입력 예: 트레이딩") || slug;
+      const clean = slug.trim().toLowerCase().replace(/[^a-z0-9_-]/g,"");
+      if(!clean){
+        alert("slug가 비었습니다.");
+        return;
+      }
+      if(state.data.boards.some(b => b.slug === clean)){
+        alert("이미 존재하는 slug 입니다.");
+        return;
+      }
+      const b = { id: uid(), slug: clean, name: name.trim(), createdAt: nowISO() };
+      state.data.boards.unshift(b);
+      state.selectedBoardId = b.id;
+      state.selectedThreadId = null;
+      save();
+      renderAll();
+    }
+
+    function createThread(){
+      const board = getSelectedBoard();
+      if(!board) return;
+      const title = prompt(`/${board.slug}/ 새 스레드 제목`);
+      if(!title) return;
+      const t = { id: uid(), boardId: board.id, title: title.trim(), createdAt: nowISO(), bumpedAt: nowISO() };
+      state.data.threads.unshift(t);
+      state.selectedThreadId = t.id;
+      save();
+      renderAll();
+    }
+
+    function submitPost(e){
+      e.preventDefault();
+      const thread = getSelectedThread();
+      if(!thread) return;
+
+      const name = $("name").value.trim() || "Anonymous";
+      const imgUrl = $("imgUrl").value.trim();
+      const content = $("content").value.trim();
+      if(!content){
+        alert("내용을 입력하세요.");
+        return;
+      }
+
+      const p = { id: uid(), threadId: thread.id, name, imgUrl, content, createdAt: nowISO() };
+      state.data.posts.push(p);
+
+      // bump thread
+      thread.bumpedAt = nowISO();
+
+      $("content").value = "";
+      $("imgUrl").value = "";
+
+      save();
+      renderAll();
+    }
+
+    function deletePost(postId){
+      const thread = getSelectedThread();
+      if(!thread) return;
+      const ok = confirm("이 게시글을 삭제합니까?");
+      if(!ok) return;
+
+      state.data.posts = state.data.posts.filter(p => p.id !== postId);
+
+      // if no posts left, keep thread (like empty thread)
+      save();
+      renderAll();
+    }
+
+    function deleteThread(){
+      const thread = getSelectedThread();
+      if(!thread) return;
+      const ok = confirm("스레드(게시글 포함)를 삭제합니까?");
+      if(!ok) return;
+
+      state.data.posts = state.data.posts.filter(p => p.threadId !== thread.id);
+      state.data.threads = state.data.threads.filter(t => t.id !== thread.id);
+
+      // select another thread
+      const board = getSelectedBoard();
+      const next = board ? threadsForBoard(board.id)[0] : null;
+      state.selectedThreadId = next ? next.id : null;
+
+      save();
+      renderAll();
+    }
+
+    function exportData(){
+      const blob = new Blob([JSON.stringify(state.data, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `xboard_export_${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(){
+      $("fileInput").click();
+    }
+
+    function handleImport(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const obj = JSON.parse(reader.result);
+          if(!obj || !obj.boards || !obj.threads || !obj.posts){
+            alert("형식이 올바르지 않습니다.");
+            return;
+          }
+          state.data = obj;
+          save();
+          // reset selection
+          state.selectedBoardId = state.data.boards[0]?.id || null;
+          state.selectedThreadId = state.data.threads.find(t => t.boardId === state.selectedBoardId)?.id || null;
+          renderAll();
+        }catch(e){
+          alert("가져오기 실패: JSON 파싱 오류");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAll(){
+      const ok = confirm("모든 데이터를 초기화합니까?");
+      if(!ok) return;
+      state.data = defaultData();
+      save();
+      state.selectedBoardId = state.data.boards[0].id;
+      state.selectedThreadId = state.data.threads.find(t => t.boardId === state.selectedBoardId)?.id || null;
+      renderAll();
+    }
+
+    function bind(){
+      $("newBoardBtn").addEventListener("click", createBoard);
+      $("newThreadBtn").addEventListener("click", createThread);
+      $("postForm").addEventListener("submit", submitPost);
+      $("deleteThreadBtn").addEventListener("click", deleteThread);
+
+      $("exportBtn").addEventListener("click", exportData);
+      $("importBtn").addEventListener("click", importData);
+      $("resetBtn").addEventListener("click", resetAll);
+
+      $("fileInput").addEventListener("change", (e) => {
+        const f = e.target.files && e.target.files[0];
+        e.target.value = "";
+        if(f) handleImport(f);
+      });
+
+      $("search").addEventListener("input", (e) => {
+        state.search = e.target.value || "";
+        renderAll();
+      });
+    }
+
+    // init
+    load();
+    bind();
+    renderAll();
+  </script>
+</body>
+</html>
