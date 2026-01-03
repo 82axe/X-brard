@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>북마크보다 빠른 시작 화면</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 48px 24px;
+      color: #111;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+    p {
+      color: #555;
+      margin-top: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      margin-top: 40px;
+      max-width: 900px;
+    }
+    .card {
+      border: 1px solid #eee;
+      padding: 18px 12px;
+      border-radius: 14px;
+      text-align: center;
+      text-decoration: none;
+      color: #111;
+      font-weight: 500;
+    }
+    .card:hover {
+      background: #f7f7f7;
+    }
+    footer {
+      margin-top: 80px;
+      font-size: 12px;
+      color: #888;
+      max-width: 900px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>북마크보다 빠른, 나만의 시작 화면</h1>
+<p>로그인 없이 자주 쓰는 웹서비스를 한 곳에서.</p>
+
+<div class="grid">
+  <a class="card" href="https://chat.openai.com" target="_blank">ChatGPT</a>
+  <a class="card" href="https://www.notion.so" target="_blank">Notion</a>
+  <a class="card" href="https://web.telegram.org" target="_blank">Telegram</a>
+  <a class="card" href="https://www.youtube.com" target="_blank">YouTube</a>
+  <a class="card" href="https://music.youtube.com" target="_blank">YouTube Music</a>
+  <a class="card" href="https://www.kakaocorp.com" target="_blank">Kakao</a>
+</div>
+
+<footer>
+본 사이트는 외부 서비스의 공식 링크를 정리·제공하는 정보성 페이지이며,  
+각 서비스의 상표 및 운영 권한은 해당 회사에 귀속됩니다.
+</footer>
+
+</body>
+</html>
