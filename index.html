@@ -20,6 +20,7 @@
       --accent:#111827;
       --warn:#ef4444;
       --gold:#f59e0b;
+      --ok:#10b981;
     }
     [data-theme="dark"]{
       --bg:#0b0f14;
@@ -33,6 +34,7 @@
       --accent:#e5e7eb;
       --warn:#f87171;
       --gold:#fbbf24;
+      --ok:#34d399;
     }
 
     *{box-sizing:border-box}
@@ -43,7 +45,6 @@
       background:var(--bg);
       color:var(--text);
     }
-
     .wrap{
       max-width:var(--max);
       margin:0 auto;
@@ -80,6 +81,8 @@
       gap:10px;
       margin-top:4px;
       flex:0 0 auto;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
     .btn{
       border:1px solid var(--line);
@@ -92,6 +95,15 @@
       color:var(--text);
     }
     .btn:hover{background:var(--hover);}
+    .btn.primary{
+      border-color: rgba(16,185,129,.35);
+      background: rgba(16,185,129,.10);
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.35);
+      background: rgba(239,68,68,.08);
+      color: var(--text);
+    }
     .toggle{
       display:flex;
       align-items:center;
@@ -154,10 +166,10 @@
       color:var(--muted);
       font-size:12px;
       margin-top:10px;
-      line-height:1.4;
+      line-height:1.5;
     }
 
-    /* Favorites (per category) */
+    /* Favorites */
     .favBox{
       margin-top:16px;
       border:1px solid var(--line);
@@ -172,6 +184,7 @@
       justify-content:space-between;
       gap:10px;
       margin-bottom:10px;
+      flex-wrap:wrap;
     }
     .favTitle{
       font-weight:950;
@@ -213,6 +226,18 @@
       gap:10px;
       min-height:54px;
     }
+    .favItem[draggable="true"]{cursor:grab;}
+    .favItem.dragging{opacity:.55;}
+    .favItem.dragover{
+      outline: 2px dashed rgba(16,185,129,.65);
+      outline-offset: 2px;
+    }
+    .favLeft{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
     .favLink{
       text-decoration:none;
       color:var(--text);
@@ -231,18 +256,6 @@
       text-overflow:ellipsis;
       max-width:100%;
     }
-    .favLeft{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .favActions{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex:0 0 auto;
-    }
     .iconBtn{
       width:34px;height:34px;
       border-radius:12px;
@@ -255,6 +268,7 @@
       align-items:center;
       justify-content:center;
       user-select:none;
+      flex:0 0 auto;
     }
     .iconBtn:hover{background:var(--hover);}
     .iconBtn.danger{color:var(--warn);}
@@ -292,14 +306,14 @@
       opacity:.75;
     }
 
-    /* Grid */
+    /* Grid cards */
     .grid{
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap:14px;
       margin-top:12px;
     }
-    a.card{
+    .card{
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -312,20 +326,20 @@
       color:var(--text);
       transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
       position:relative;
-      min-height:78px;
+      min-height:86px;
     }
-    a.card:hover{
+    .card:hover{
       background:var(--hover);
       transform: translateY(-1px);
       box-shadow: 0 14px 28px rgba(17,24,39,.08);
     }
-    [data-theme="dark"] a.card:hover{
+    [data-theme="dark"] .card:hover{
       box-shadow: 0 22px 46px rgba(0,0,0,.35);
     }
     .left{
       display:flex; flex-direction:column; gap:6px;
       min-width:0;
-      padding-right:44px; /* space for star button */
+      padding-right:74px; /* star + menu */
     }
     .title{
       font-weight:980;
@@ -352,11 +366,11 @@
       border-radius:12px;
     }
 
-    /* Star on cards */
+    /* Star */
     .star{
       position:absolute;
       top:12px;
-      right:12px;
+      right:44px;
       width:34px;height:34px;
       border-radius:12px;
       border:1px solid var(--line);
@@ -375,6 +389,117 @@
       border-color: rgba(245, 158, 11, .35);
     }
 
+    /* Menu (edit/delete for custom links) */
+    .menu{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:34px;height:34px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--chip);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:980;
+      user-select:none;
+      color:var(--muted);
+    }
+    .menu:hover{background:var(--hover);}
+    .menu.hidden{display:none;}
+
+    /* Dragging cards */
+    .card[draggable="true"]{cursor:grab;}
+    .card.dragging{opacity:.55; transform:none;}
+    .card.dragover{
+      outline: 2px dashed rgba(16,185,129,.65);
+      outline-offset: 2px;
+    }
+
+    /* Modal */
+    .modalBack{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.35);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:50;
+    }
+    .modal{
+      width:min(560px, 100%);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .modalTitle{
+      font-weight:980;
+      letter-spacing:-0.01em;
+    }
+    .form{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+    }
+    .field input, .field select, .field textarea{
+      border:1px solid var(--line);
+      background:var(--bg);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 12px;
+      outline:none;
+      font-weight:800;
+      font-size:14px;
+    }
+    .field textarea{
+      min-height:140px;
+      resize:vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      font-weight:700;
+      line-height:1.45;
+    }
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .modalActions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+      margin-top:8px;
+    }
+
     footer{
       margin-top:34px;
       padding-top:18px;
@@ -386,10 +511,11 @@
 
     @media (max-width:820px){
       .searchRow{grid-template-columns:1fr;}
+      .row2{grid-template-columns:1fr;}
     }
     @media (max-width:520px){
       .brand h1{font-size:24px;}
-      .grid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
+      .grid{grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));}
       .favGrid{grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
     }
   </style>
@@ -400,10 +526,18 @@
     <div class="top">
       <div class="brand">
         <h1>북마크보다 빠른, 나만의 시작 화면</h1>
-        <p>회원가입 없이 · 추적 없이 · 자주 쓰는 서비스를 한 화면에서. (즐겨찾기/다크모드는 브라우저에만 저장)</p>
+        <p>무회원 · 무수집 · 개인화는 브라우저(LocalStorage)에만 저장됩니다.</p>
       </div>
 
       <div class="right">
+        <button class="btn primary" id="addBtn" type="button" title="현재 카테고리에 내 링크 추가">내 링크 추가</button>
+        <button class="btn" id="resetOrderBtn" type="button" title="현재 카테고리 정렬을 기본값으로 되돌림">정렬 초기화</button>
+
+        <button class="btn" id="exportBtn" type="button" title="개인화 내보내기(JSON)">내보내기</button>
+        <button class="btn" id="importBtn" type="button" title="개인화 가져오기(JSON)">가져오기</button>
+
+        <button class="btn danger" id="wipeBtn" type="button" title="내 링크/정렬/즐겨찾기 전체 삭제">개인화 초기화</button>
+
         <div id="themeToggle" class="toggle" title="다크모드 전환 (저장됨)">
           <span class="dot"></span>
           <span id="themeLabel">라이트</span>
@@ -428,17 +562,17 @@
     </div>
 
     <div class="hint">
-      • 외부 서비스로 이동합니다 • 개인정보 수집/저장 없음 • ⭐: 현재 카테고리에 즐겨찾기 저장(토글) • Esc: 초기화
+      • ⭐: 즐겨찾기(카테고리별) • 즐겨찾기/카드 모두 드래그로 순서 저장 • ⋯: 내 링크 편집/삭제 • 내보내기/가져오기(JSON)
     </div>
 
-    <!-- Favorites per category -->
+    <!-- Favorites -->
     <div class="favBox">
       <div class="favTop">
         <div class="favTitle">
           <span>즐겨찾기</span>
           <span class="pill" id="favScope">전체</span>
         </div>
-        <div class="favHelp">아래 카드의 ⭐를 눌러 현재 카테고리에 저장하세요 (최대 5개).</div>
+        <div class="favHelp">현재 카테고리 기준으로 저장됩니다. (드래그로 순서 변경)</div>
       </div>
       <div class="favGrid" id="favGrid"></div>
     </div>
@@ -459,142 +593,315 @@
     </div>
 
     <!-- Grid -->
-    <div class="grid" id="grid">
-      <!-- 커뮤니케이션 10 -->
-      <a class="card" data-cat="comm" href="https://web.telegram.org" target="_blank" rel="noopener" data-title="Telegram Web" data-sub="메신저"><div class="left"><div class="title">Telegram Web</div><div class="sub">메신저</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://discord.com/app" target="_blank" rel="noopener" data-title="Discord" data-sub="커뮤니티/채팅"><div class="left"><div class="title">Discord</div><div class="sub">커뮤니티/채팅</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://slack.com/signin" target="_blank" rel="noopener" data-title="Slack" data-sub="업무 메신저"><div class="left"><div class="title">Slack</div><div class="sub">업무 메신저</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://mail.google.com" target="_blank" rel="noopener" data-title="Gmail" data-sub="메일"><div class="left"><div class="title">Gmail</div><div class="sub">메일</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://www.blind.com" target="_blank" rel="noopener" data-title="Blind" data-sub="직장인 커뮤니티"><div class="left"><div class="title">Blind</div><div class="sub">직장인 커뮤니티</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://www.dcinside.com" target="_blank" rel="noopener" data-title="DCInside" data-sub="커뮤니티"><div class="left"><div class="title">DCInside</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://open.kakao.com" target="_blank" rel="noopener" data-title="Kakao OpenChat" data-sub="오픈채팅"><div class="left"><div class="title">Kakao OpenChat</div><div class="sub">오픈채팅</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://www.naver.com" target="_blank" rel="noopener" data-title="Naver" data-sub="포털/메일 진입"><div class="left"><div class="title">Naver</div><div class="sub">포털/메일 진입</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://accounts.google.com" target="_blank" rel="noopener" data-title="Google Account" data-sub="계정"><div class="left"><div class="title">Google Account</div><div class="sub">계정</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-      <a class="card" data-cat="comm" href="https://www.facebook.com/messages" target="_blank" rel="noopener" data-title="Facebook Messenger" data-sub="메신저"><div class="left"><div class="title">Messenger</div><div class="sub">메신저</div></div><div class="badge">COMM</div><div class="star" title="즐겨찾기">☆</div></a>
-
-      <!-- 생산성 10 -->
-      <a class="card" data-cat="prod" href="https://www.notion.so" target="_blank" rel="noopener" data-title="Notion" data-sub="문서 · 위키"><div class="left"><div class="title">Notion</div><div class="sub">문서 · 위키</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://docs.google.com" target="_blank" rel="noopener" data-title="Google Docs" data-sub="문서"><div class="left"><div class="title">Google Docs</div><div class="sub">문서</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://sheets.google.com" target="_blank" rel="noopener" data-title="Google Sheets" data-sub="스프레드시트"><div class="left"><div class="title">Google Sheets</div><div class="sub">스프레드시트</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://drive.google.com" target="_blank" rel="noopener" data-title="Google Drive" data-sub="파일"><div class="left"><div class="title">Google Drive</div><div class="sub">파일</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://calendar.google.com" target="_blank" rel="noopener" data-title="Google Calendar" data-sub="일정"><div class="left"><div class="title">Google Calendar</div><div class="sub">일정</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://www.microsoft.com/microsoft-365/excel" target="_blank" rel="noopener" data-title="Microsoft Excel" data-sub="엑셀"><div class="left"><div class="title">Microsoft Excel</div><div class="sub">엑셀</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://www.office.com" target="_blank" rel="noopener" data-title="Microsoft 365" data-sub="오피스"><div class="left"><div class="title">Microsoft 365</div><div class="sub">오피스</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://www.figma.com" target="_blank" rel="noopener" data-title="Figma" data-sub="디자인"><div class="left"><div class="title">Figma</div><div class="sub">디자인</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://trello.com" target="_blank" rel="noopener" data-title="Trello" data-sub="칸반"><div class="left"><div class="title">Trello</div><div class="sub">칸반</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-      <a class="card" data-cat="prod" href="https://www.canva.com" target="_blank" rel="noopener" data-title="Canva" data-sub="디자인/템플릿"><div class="left"><div class="title">Canva</div><div class="sub">디자인/템플릿</div></div><div class="badge">PROD</div><div class="star">☆</div></a>
-
-      <!-- 미디어 10 -->
-      <a class="card" data-cat="media" href="https://www.youtube.com" target="_blank" rel="noopener" data-title="YouTube" data-sub="동영상"><div class="left"><div class="title">YouTube</div><div class="sub">동영상</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://music.youtube.com" target="_blank" rel="noopener" data-title="YouTube Music" data-sub="음악"><div class="left"><div class="title">YouTube Music</div><div class="sub">음악</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://www.netflix.com" target="_blank" rel="noopener" data-title="Netflix" data-sub="스트리밍"><div class="left"><div class="title">Netflix</div><div class="sub">스트리밍</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://comic.naver.com" target="_blank" rel="noopener" data-title="Naver Webtoon" data-sub="웹툰"><div class="left"><div class="title">Naver Webtoon</div><div class="sub">웹툰</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://webtoon.kakao.com" target="_blank" rel="noopener" data-title="Kakao Webtoon" data-sub="웹툰"><div class="left"><div class="title">Kakao Webtoon</div><div class="sub">웹툰</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://www.tving.com" target="_blank" rel="noopener" data-title="TVING" data-sub="국내 OTT"><div class="left"><div class="title">TVING</div><div class="sub">국내 OTT</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://www.wavve.com" target="_blank" rel="noopener" data-title="Wavve" data-sub="국내 OTT"><div class="left"><div class="title">Wavve</div><div class="sub">국내 OTT</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://www.spotify.com" target="_blank" rel="noopener" data-title="Spotify" data-sub="음악"><div class="left"><div class="title">Spotify</div><div class="sub">음악</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://www.twitch.tv" target="_blank" rel="noopener" data-title="Twitch" data-sub="라이브"><div class="left"><div class="title">Twitch</div><div class="sub">라이브</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-      <a class="card" data-cat="media" href="https://www.disneyplus.com" target="_blank" rel="noopener" data-title="Disney+" data-sub="스트리밍"><div class="left"><div class="title">Disney+</div><div class="sub">스트리밍</div></div><div class="badge">MEDIA</div><div class="star">☆</div></a>
-
-      <!-- 금융 10 -->
-      <a class="card" data-cat="finance" href="https://finance.naver.com" target="_blank" rel="noopener" data-title="Naver Finance" data-sub="국내 시세"><div class="left"><div class="title">Naver Finance</div><div class="sub">국내 시세</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.tradingview.com" target="_blank" rel="noopener" data-title="TradingView" data-sub="차트"><div class="left"><div class="title">TradingView</div><div class="sub">차트</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.bitget.com" target="_blank" rel="noopener" data-title="Bitget" data-sub="거래소"><div class="left"><div class="title">Bitget</div><div class="sub">거래소</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.binance.com" target="_blank" rel="noopener" data-title="Binance" data-sub="거래소"><div class="left"><div class="title">Binance</div><div class="sub">거래소</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.coinmarketcap.com" target="_blank" rel="noopener" data-title="CoinMarketCap" data-sub="시가총액"><div class="left"><div class="title">CoinMarketCap</div><div class="sub">시가총액</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.coingecko.com" target="_blank" rel="noopener" data-title="CoinGecko" data-sub="코인 데이터"><div class="left"><div class="title">CoinGecko</div><div class="sub">코인 데이터</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.google.com/finance" target="_blank" rel="noopener" data-title="Google Finance" data-sub="시장 요약"><div class="left"><div class="title">Google Finance</div><div class="sub">시장 요약</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.investing.com" target="_blank" rel="noopener" data-title="Investing" data-sub="시장 데이터"><div class="left"><div class="title">Investing</div><div class="sub">시장 데이터</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.toss.im" target="_blank" rel="noopener" data-title="Toss" data-sub="금융"><div class="left"><div class="title">Toss</div><div class="sub">금융</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-      <a class="card" data-cat="finance" href="https://www.kakaobank.com" target="_blank" rel="noopener" data-title="KakaoBank" data-sub="은행"><div class="left"><div class="title">KakaoBank</div><div class="sub">은행</div></div><div class="badge">FIN</div><div class="star">☆</div></a>
-
-      <!-- AI 10 -->
-      <a class="card" data-cat="ai" href="https://chat.openai.com" target="_blank" rel="noopener" data-title="ChatGPT" data-sub="대화형 AI"><div class="left"><div class="title">ChatGPT</div><div class="sub">대화형 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://claude.ai" target="_blank" rel="noopener" data-title="Claude" data-sub="대화형 AI"><div class="left"><div class="title">Claude</div><div class="sub">대화형 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://gemini.google.com" target="_blank" rel="noopener" data-title="Gemini" data-sub="구글 AI"><div class="left"><div class="title">Gemini</div><div class="sub">구글 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://www.perplexity.ai" target="_blank" rel="noopener" data-title="Perplexity" data-sub="AI 검색"><div class="left"><div class="title">Perplexity</div><div class="sub">AI 검색</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://platform.openai.com" target="_blank" rel="noopener" data-title="OpenAI Platform" data-sub="API"><div class="left"><div class="title">OpenAI Platform</div><div class="sub">API</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://huggingface.co" target="_blank" rel="noopener" data-title="Hugging Face" data-sub="모델/데이터"><div class="left"><div class="title">Hugging Face</div><div class="sub">모델/데이터</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://copilot.github.com" target="_blank" rel="noopener" data-title="GitHub Copilot" data-sub="코딩 보조"><div class="left"><div class="title">GitHub Copilot</div><div class="sub">코딩 보조</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://www.cursor.com" target="_blank" rel="noopener" data-title="Cursor" data-sub="AI 에디터"><div class="left"><div class="title">Cursor</div><div class="sub">AI 에디터</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://www.midjourney.com" target="_blank" rel="noopener" data-title="Midjourney" data-sub="이미지 생성"><div class="left"><div class="title">Midjourney</div><div class="sub">이미지 생성</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-      <a class="card" data-cat="ai" href="https://recraft.ai" target="_blank" rel="noopener" data-title="Recraft" data-sub="디자인 AI"><div class="left"><div class="title">Recraft</div><div class="sub">디자인 AI</div></div><div class="badge">AI</div><div class="star">☆</div></a>
-
-      <!-- 뉴스 10 -->
-      <a class="card" data-cat="news" href="https://news.naver.com" target="_blank" rel="noopener" data-title="Naver News" data-sub="뉴스"><div class="left"><div class="title">Naver News</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://news.google.com" target="_blank" rel="noopener" data-title="Google News" data-sub="뉴스"><div class="left"><div class="title">Google News</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.bloomberg.com" target="_blank" rel="noopener" data-title="Bloomberg" data-sub="금융뉴스"><div class="left"><div class="title">Bloomberg</div><div class="sub">금융뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.reuters.com" target="_blank" rel="noopener" data-title="Reuters" data-sub="글로벌뉴스"><div class="left"><div class="title">Reuters</div><div class="sub">글로벌뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.ft.com" target="_blank" rel="noopener" data-title="Financial Times" data-sub="금융"><div class="left"><div class="title">Financial Times</div><div class="sub">금융</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.wsj.com" target="_blank" rel="noopener" data-title="WSJ" data-sub="비즈니스"><div class="left"><div class="title">WSJ</div><div class="sub">비즈니스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.economist.com" target="_blank" rel="noopener" data-title="The Economist" data-sub="시사"><div class="left"><div class="title">The Economist</div><div class="sub">시사</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://arxiv.org" target="_blank" rel="noopener" data-title="arXiv" data-sub="논문"><div class="left"><div class="title">arXiv</div><div class="sub">논문</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.theinformation.com" target="_blank" rel="noopener" data-title="The Information" data-sub="테크 리서치"><div class="left"><div class="title">The Information</div><div class="sub">테크 리서치</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-      <a class="card" data-cat="news" href="https://www.nytimes.com" target="_blank" rel="noopener" data-title="NYTimes" data-sub="뉴스"><div class="left"><div class="title">NYTimes</div><div class="sub">뉴스</div></div><div class="badge">NEWS</div><div class="star">☆</div></a>
-
-      <!-- 쇼핑 10 -->
-      <a class="card" data-cat="shop" href="https://www.coupang.com" target="_blank" rel="noopener" data-title="Coupang" data-sub="쇼핑"><div class="left"><div class="title">Coupang</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://shopping.naver.com" target="_blank" rel="noopener" data-title="Naver Shopping" data-sub="가격비교"><div class="left"><div class="title">Naver Shopping</div><div class="sub">가격비교</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.11st.co.kr" target="_blank" rel="noopener" data-title="11st" data-sub="쇼핑"><div class="left"><div class="title">11st</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.gmarket.co.kr" target="_blank" rel="noopener" data-title="Gmarket" data-sub="쇼핑"><div class="left"><div class="title">Gmarket</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.auction.co.kr" target="_blank" rel="noopener" data-title="Auction" data-sub="쇼핑"><div class="left"><div class="title">Auction</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.ssg.com" target="_blank" rel="noopener" data-title="SSG" data-sub="쇼핑"><div class="left"><div class="title">SSG</div><div class="sub">쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.todayhouse.com" target="_blank" rel="noopener" data-title="오늘의집" data-sub="리빙"><div class="left"><div class="title">오늘의집</div><div class="sub">리빙</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.amazon.com" target="_blank" rel="noopener" data-title="Amazon" data-sub="해외 쇼핑"><div class="left"><div class="title">Amazon</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.aliexpress.com" target="_blank" rel="noopener" data-title="AliExpress" data-sub="해외 쇼핑"><div class="left"><div class="title">AliExpress</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-      <a class="card" data-cat="shop" href="https://www.temu.com" target="_blank" rel="noopener" data-title="Temu" data-sub="해외 쇼핑"><div class="left"><div class="title">Temu</div><div class="sub">해외 쇼핑</div></div><div class="badge">SHOP</div><div class="star">☆</div></a>
-
-      <!-- 커뮤니티 10 (키워드채팅 포함: URL 바꿔라) -->
-      <a class="card" data-cat="community" href="https://www.fmkorea.com" target="_blank" rel="noopener" data-title="FMKOREA" data-sub="커뮤니티"><div class="left"><div class="title">FMKOREA</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.clien.net" target="_blank" rel="noopener" data-title="Clien" data-sub="커뮤니티"><div class="left"><div class="title">Clien</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.ppomppu.co.kr" target="_blank" rel="noopener" data-title="Ppomppu" data-sub="커뮤니티"><div class="left"><div class="title">Ppomppu</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.ruliweb.com" target="_blank" rel="noopener" data-title="Ruliweb" data-sub="커뮤니티"><div class="left"><div class="title">Ruliweb</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.inven.co.kr" target="_blank" rel="noopener" data-title="Inven" data-sub="게임 커뮤니티"><div class="left"><div class="title">Inven</div><div class="sub">게임 커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.dcinside.com" target="_blank" rel="noopener" data-title="DCInside" data-sub="커뮤니티"><div class="left"><div class="title">DCInside</div><div class="sub">커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.blind.com" target="_blank" rel="noopener" data-title="Blind" data-sub="직장인 커뮤니티"><div class="left"><div class="title">Blind</div><div class="sub">직장인 커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.reddit.com" target="_blank" rel="noopener" data-title="Reddit" data-sub="글로벌 커뮤니티"><div class="left"><div class="title">Reddit</div><div class="sub">글로벌 커뮤니티</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://www.quora.com" target="_blank" rel="noopener" data-title="Quora" data-sub="Q&A"><div class="left"><div class="title">Quora</div><div class="sub">Q&A</div></div><div class="badge">COMM</div><div class="star">☆</div></a>
-      <a class="card" data-cat="community" href="https://example.com/keyword-chatting" target="_blank" rel="noopener" data-title="키워드채팅" data-sub="내 프로젝트 (링크 교체)"><div class="left"><div class="title">키워드채팅</div><div class="sub">내 프로젝트 (링크 교체)</div></div><div class="badge">ME</div><div class="star">☆</div></a>
-
-      <!-- 개발·도구 10 -->
-      <a class="card" data-cat="dev" href="https://github.com" target="_blank" rel="noopener" data-title="GitHub" data-sub="코드/프로젝트"><div class="left"><div class="title">GitHub</div><div class="sub">코드/프로젝트</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://vercel.com" target="_blank" rel="noopener" data-title="Vercel" data-sub="배포"><div class="left"><div class="title">Vercel</div><div class="sub">배포</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://www.netlify.com" target="_blank" rel="noopener" data-title="Netlify" data-sub="배포"><div class="left"><div class="title">Netlify</div><div class="sub">배포</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://developers.google.com" target="_blank" rel="noopener" data-title="Google Developers" data-sub="문서"><div class="left"><div class="title">Google Developers</div><div class="sub">문서</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://stackoverflow.com" target="_blank" rel="noopener" data-title="Stack Overflow" data-sub="Q&A"><div class="left"><div class="title">Stack Overflow</div><div class="sub">Q&A</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://codepen.io" target="_blank" rel="noopener" data-title="CodePen" data-sub="프론트 실험"><div class="left"><div class="title">CodePen</div><div class="sub">프론트 실험</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://replit.com" target="_blank" rel="noopener" data-title="Replit" data-sub="코딩"><div class="left"><div class="title">Replit</div><div class="sub">코딩</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://www.postman.com" target="_blank" rel="noopener" data-title="Postman" data-sub="API 테스트"><div class="left"><div class="title">Postman</div><div class="sub">API 테스트</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://cloudflare.com" target="_blank" rel="noopener" data-title="Cloudflare" data-sub="보안/CDN"><div class="left"><div class="title">Cloudflare</div><div class="sub">보안/CDN</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-      <a class="card" data-cat="dev" href="https://supabase.com" target="_blank" rel="noopener" data-title="Supabase" data-sub="DB/Auth"><div class="left"><div class="title">Supabase</div><div class="sub">DB/Auth</div></div><div class="badge">DEV</div><div class="star">☆</div></a>
-
-      <!-- 유틸리티 10 -->
-      <a class="card" data-cat="util" href="https://translate.google.com" target="_blank" rel="noopener" data-title="Google Translate" data-sub="번역"><div class="left"><div class="title">Google Translate</div><div class="sub">번역</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://keep.google.com" target="_blank" rel="noopener" data-title="Google Keep" data-sub="메모"><div class="left"><div class="title">Google Keep</div><div class="sub">메모</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://calendar.google.com" target="_blank" rel="noopener" data-title="Google Calendar" data-sub="일정"><div class="left"><div class="title">Google Calendar</div><div class="sub">일정</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://map.naver.com" target="_blank" rel="noopener" data-title="Naver Map" data-sub="지도"><div class="left"><div class="title">Naver Map</div><div class="sub">지도</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://map.kakao.com" target="_blank" rel="noopener" data-title="Kakao Map" data-sub="지도"><div class="left"><div class="title">Kakao Map</div><div class="sub">지도</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://weather.naver.com" target="_blank" rel="noopener" data-title="Naver Weather" data-sub="날씨"><div class="left"><div class="title">Naver Weather</div><div class="sub">날씨</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://www.speedtest.net" target="_blank" rel="noopener" data-title="Speedtest" data-sub="인터넷 속도"><div class="left"><div class="title">Speedtest</div><div class="sub">인터넷 속도</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://www.timeanddate.com" target="_blank" rel="noopener" data-title="Time & Date" data-sub="시간/달력"><div class="left"><div class="title">Time & Date</div><div class="sub">시간/달력</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://www.remove.bg" target="_blank" rel="noopener" data-title="remove.bg" data-sub="배경 제거"><div class="left"><div class="title">remove.bg</div><div class="sub">배경 제거</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-      <a class="card" data-cat="util" href="https://www.google.com/drive/" target="_blank" rel="noopener" data-title="Drive (Quick)" data-sub="드라이브"><div class="left"><div class="title">Drive (Quick)</div><div class="sub">드라이브</div></div><div class="badge">UTIL</div><div class="star">☆</div></a>
-    </div>
+    <div class="grid" id="grid"></div>
 
     <footer>
       본 사이트는 외부 서비스의 공식 링크를 정리·제공하는 정보성 페이지입니다. 각 서비스의 상표 및 운영 권한은 해당 회사에 귀속됩니다.<br/>
-      회원가입을 받지 않으며, 개인정보를 수집/저장하지 않습니다. (다크모드/즐겨찾기만 브라우저(LocalStorage)에 저장)
+      회원가입/로그인 없음, 개인정보 수집/저장 없음. 개인화(즐겨찾기/정렬/내 링크)는 브라우저(LocalStorage)에만 저장됩니다.
     </footer>
+  </div>
+
+  <!-- Modal: add/edit link OR import JSON -->
+  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHeader">
+        <div class="modalTitle" id="modalTitle">내 링크 추가</div>
+        <button class="iconBtn" id="modalClose" type="button" title="닫기">×</button>
+      </div>
+
+      <div class="small" id="modalDesc">현재 선택된 카테고리에 저장됩니다.</div>
+
+      <!-- Form area -->
+      <div id="linkFormArea">
+        <div class="form">
+          <div class="row2">
+            <div class="field">
+              <label>카테고리</label>
+              <select id="fCat">
+                <option value="comm">커뮤니케이션</option>
+                <option value="prod">생산성</option>
+                <option value="media">미디어</option>
+                <option value="finance">금융</option>
+                <option value="ai">AI</option>
+                <option value="news">뉴스·리서치</option>
+                <option value="shop">쇼핑</option>
+                <option value="community">커뮤니티</option>
+                <option value="dev">개발·도구</option>
+                <option value="util">유틸리티</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>뱃지(표시)</label>
+              <input id="fBadge" placeholder="예: ME / PRO / FIN" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>이름</label>
+            <input id="fTitle" placeholder="예: 키워드채팅" />
+          </div>
+
+          <div class="field">
+            <label>설명</label>
+            <input id="fSub" placeholder="예: 내 프로젝트" />
+          </div>
+
+          <div class="field">
+            <label>URL</label>
+            <input id="fHref" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="modalActions">
+          <button class="btn danger" id="deleteBtn" type="button" style="display:none;">삭제</button>
+          <button class="btn" id="cancelBtn" type="button">취소</button>
+          <button class="btn primary" id="saveBtn" type="button">저장</button>
+        </div>
+      </div>
+
+      <!-- Import area -->
+      <div id="importArea" style="display:none;">
+        <div class="form">
+          <div class="field">
+            <label>가져오기 JSON</label>
+            <textarea id="importText" placeholder='여기에 JSON을 붙여넣고 "가져오기 적용"을 누르세요.'></textarea>
+          </div>
+        </div>
+        <div class="modalActions">
+          <button class="btn" id="importCancelBtn" type="button">취소</button>
+          <button class="btn primary" id="applyImportBtn" type="button">가져오기 적용</button>
+        </div>
+        <div class="small">주의: 기존 개인화(내 링크/정렬/즐겨찾기)를 덮어씁니다.</div>
+      </div>
+
+    </div>
   </div>
 
   <script>
     // ---------------------------
-    // Theme (Dark mode) + Save
+    // Keys
     // ---------------------------
     const THEME_KEY = 'xbrand_theme';
+    const FAV_KEY = 'xbrand_favorites_v1';
+    const ORDER_KEY = 'xbrand_order_v1';
+    const CUSTOM_KEY = 'xbrand_custom_links_v1';
+    const MAX_FAV = 5;
+
+    // ---------------------------
+    // Helpers
+    // ---------------------------
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+    }
+    function safeUrl(url){
+      try{
+        const u = new URL(url);
+        if(u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+        return u.toString();
+      }catch{
+        return null;
+      }
+    }
+    function loadJSON(key, fallback){
+      try{ return JSON.parse(localStorage.getItem(key) || '') ?? fallback; }
+      catch{ return fallback; }
+    }
+    function saveJSON(key, val){
+      localStorage.setItem(key, JSON.stringify(val));
+    }
+    function uid(){
+      return 'id_' + Math.random().toString(16).slice(2) + Date.now().toString(16);
+    }
+    function chipLabel(cat){
+      const map = {
+        all:'전체', comm:'커뮤니케이션', prod:'생산성', media:'미디어', finance:'금융', ai:'AI',
+        news:'뉴스·리서치', shop:'쇼핑', community:'커뮤니티', dev:'개발·도구', util:'유틸리티'
+      };
+      return map[cat] || cat;
+    }
+
+    // ---------------------------
+    // Base links (추천)
+    // ---------------------------
+    const BASE = [
+      // comm
+      {id:'b_comm_1',cat:'comm',title:'Telegram Web',sub:'메신저',href:'https://web.telegram.org',badge:'COMM'},
+      {id:'b_comm_2',cat:'comm',title:'Discord',sub:'커뮤니티/채팅',href:'https://discord.com/app',badge:'COMM'},
+      {id:'b_comm_3',cat:'comm',title:'Slack',sub:'업무 메신저',href:'https://slack.com/signin',badge:'COMM'},
+      {id:'b_comm_4',cat:'comm',title:'Gmail',sub:'메일',href:'https://mail.google.com',badge:'COMM'},
+      {id:'b_comm_5',cat:'comm',title:'Blind',sub:'직장인 커뮤니티',href:'https://www.blind.com',badge:'COMM'},
+      {id:'b_comm_6',cat:'comm',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
+      {id:'b_comm_7',cat:'comm',title:'Kakao OpenChat',sub:'오픈채팅',href:'https://open.kakao.com',badge:'COMM'},
+      {id:'b_comm_8',cat:'comm',title:'Naver',sub:'포털/메일 진입',href:'https://www.naver.com',badge:'COMM'},
+      {id:'b_comm_9',cat:'comm',title:'Google Account',sub:'계정',href:'https://accounts.google.com',badge:'COMM'},
+      {id:'b_comm_10',cat:'comm',title:'Messenger',sub:'메신저',href:'https://www.facebook.com/messages',badge:'COMM'},
+
+      // prod
+      {id:'b_prod_1',cat:'prod',title:'Notion',sub:'문서 · 위키',href:'https://www.notion.so',badge:'PROD'},
+      {id:'b_prod_2',cat:'prod',title:'Google Docs',sub:'문서',href:'https://docs.google.com',badge:'PROD'},
+      {id:'b_prod_3',cat:'prod',title:'Google Sheets',sub:'스프레드시트',href:'https://sheets.google.com',badge:'PROD'},
+      {id:'b_prod_4',cat:'prod',title:'Google Drive',sub:'파일',href:'https://drive.google.com',badge:'PROD'},
+      {id:'b_prod_5',cat:'prod',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'PROD'},
+      {id:'b_prod_6',cat:'prod',title:'Microsoft Excel',sub:'엑셀',href:'https://www.microsoft.com/microsoft-365/excel',badge:'PROD'},
+      {id:'b_prod_7',cat:'prod',title:'Microsoft 365',sub:'오피스',href:'https://www.office.com',badge:'PROD'},
+      {id:'b_prod_8',cat:'prod',title:'Figma',sub:'디자인',href:'https://www.figma.com',badge:'PROD'},
+      {id:'b_prod_9',cat:'prod',title:'Trello',sub:'칸반',href:'https://trello.com',badge:'PROD'},
+      {id:'b_prod_10',cat:'prod',title:'Canva',sub:'디자인/템플릿',href:'https://www.canva.com',badge:'PROD'},
+
+      // media
+      {id:'b_media_1',cat:'media',title:'YouTube',sub:'동영상',href:'https://www.youtube.com',badge:'MEDIA'},
+      {id:'b_media_2',cat:'media',title:'YouTube Music',sub:'음악',href:'https://music.youtube.com',badge:'MEDIA'},
+      {id:'b_media_3',cat:'media',title:'Netflix',sub:'스트리밍',href:'https://www.netflix.com',badge:'MEDIA'},
+      {id:'b_media_4',cat:'media',title:'Naver Webtoon',sub:'웹툰',href:'https://comic.naver.com',badge:'MEDIA'},
+      {id:'b_media_5',cat:'media',title:'Kakao Webtoon',sub:'웹툰',href:'https://webtoon.kakao.com',badge:'MEDIA'},
+      {id:'b_media_6',cat:'media',title:'TVING',sub:'국내 OTT',href:'https://www.tving.com',badge:'MEDIA'},
+      {id:'b_media_7',cat:'media',title:'Wavve',sub:'국내 OTT',href:'https://www.wavve.com',badge:'MEDIA'},
+      {id:'b_media_8',cat:'media',title:'Spotify',sub:'음악',href:'https://www.spotify.com',badge:'MEDIA'},
+      {id:'b_media_9',cat:'media',title:'Twitch',sub:'라이브',href:'https://www.twitch.tv',badge:'MEDIA'},
+      {id:'b_media_10',cat:'media',title:'Disney+',sub:'스트리밍',href:'https://www.disneyplus.com',badge:'MEDIA'},
+
+      // finance
+      {id:'b_fin_1',cat:'finance',title:'Naver Finance',sub:'국내 시세',href:'https://finance.naver.com',badge:'FIN'},
+      {id:'b_fin_2',cat:'finance',title:'TradingView',sub:'차트',href:'https://www.tradingview.com',badge:'FIN'},
+      {id:'b_fin_3',cat:'finance',title:'Bitget',sub:'거래소',href:'https://www.bitget.com',badge:'FIN'},
+      {id:'b_fin_4',cat:'finance',title:'Binance',sub:'거래소',href:'https://www.binance.com',badge:'FIN'},
+      {id:'b_fin_5',cat:'finance',title:'CoinMarketCap',sub:'시가총액',href:'https://www.coinmarketcap.com',badge:'FIN'},
+      {id:'b_fin_6',cat:'finance',title:'CoinGecko',sub:'코인 데이터',href:'https://www.coingecko.com',badge:'FIN'},
+      {id:'b_fin_7',cat:'finance',title:'Google Finance',sub:'시장 요약',href:'https://www.google.com/finance',badge:'FIN'},
+      {id:'b_fin_8',cat:'finance',title:'Investing',sub:'시장 데이터',href:'https://www.investing.com',badge:'FIN'},
+      {id:'b_fin_9',cat:'finance',title:'Toss',sub:'금융',href:'https://www.toss.im',badge:'FIN'},
+      {id:'b_fin_10',cat:'finance',title:'KakaoBank',sub:'은행',href:'https://www.kakaobank.com',badge:'FIN'},
+
+      // ai
+      {id:'b_ai_1',cat:'ai',title:'ChatGPT',sub:'대화형 AI',href:'https://chat.openai.com',badge:'AI'},
+      {id:'b_ai_2',cat:'ai',title:'Claude',sub:'대화형 AI',href:'https://claude.ai',badge:'AI'},
+      {id:'b_ai_3',cat:'ai',title:'Gemini',sub:'구글 AI',href:'https://gemini.google.com',badge:'AI'},
+      {id:'b_ai_4',cat:'ai',title:'Perplexity',sub:'AI 검색',href:'https://www.perplexity.ai',badge:'AI'},
+      {id:'b_ai_5',cat:'ai',title:'OpenAI Platform',sub:'API',href:'https://platform.openai.com',badge:'AI'},
+      {id:'b_ai_6',cat:'ai',title:'Hugging Face',sub:'모델/데이터',href:'https://huggingface.co',badge:'AI'},
+      {id:'b_ai_7',cat:'ai',title:'GitHub Copilot',sub:'코딩 보조',href:'https://copilot.github.com',badge:'AI'},
+      {id:'b_ai_8',cat:'ai',title:'Cursor',sub:'AI 에디터',href:'https://www.cursor.com',badge:'AI'},
+      {id:'b_ai_9',cat:'ai',title:'Midjourney',sub:'이미지 생성',href:'https://www.midjourney.com',badge:'AI'},
+      {id:'b_ai_10',cat:'ai',title:'Recraft',sub:'디자인 AI',href:'https://recraft.ai',badge:'AI'},
+
+      // news
+      {id:'b_news_1',cat:'news',title:'Naver News',sub:'뉴스',href:'https://news.naver.com',badge:'NEWS'},
+      {id:'b_news_2',cat:'news',title:'Google News',sub:'뉴스',href:'https://news.google.com',badge:'NEWS'},
+      {id:'b_news_3',cat:'news',title:'Bloomberg',sub:'금융뉴스',href:'https://www.bloomberg.com',badge:'NEWS'},
+      {id:'b_news_4',cat:'news',title:'Reuters',sub:'글로벌뉴스',href:'https://www.reuters.com',badge:'NEWS'},
+      {id:'b_news_5',cat:'news',title:'Financial Times',sub:'금융',href:'https://www.ft.com',badge:'NEWS'},
+      {id:'b_news_6',cat:'news',title:'WSJ',sub:'비즈니스',href:'https://www.wsj.com',badge:'NEWS'},
+      {id:'b_news_7',cat:'news',title:'The Economist',sub:'시사',href:'https://www.economist.com',badge:'NEWS'},
+      {id:'b_news_8',cat:'news',title:'arXiv',sub:'논문',href:'https://arxiv.org',badge:'NEWS'},
+      {id:'b_news_9',cat:'news',title:'The Information',sub:'테크 리서치',href:'https://www.theinformation.com',badge:'NEWS'},
+      {id:'b_news_10',cat:'news',title:'NYTimes',sub:'뉴스',href:'https://www.nytimes.com',badge:'NEWS'},
+
+      // shop
+      {id:'b_shop_1',cat:'shop',title:'Coupang',sub:'쇼핑',href:'https://www.coupang.com',badge:'SHOP'},
+      {id:'b_shop_2',cat:'shop',title:'Naver Shopping',sub:'가격비교',href:'https://shopping.naver.com',badge:'SHOP'},
+      {id:'b_shop_3',cat:'shop',title:'11st',sub:'쇼핑',href:'https://www.11st.co.kr',badge:'SHOP'},
+      {id:'b_shop_4',cat:'shop',title:'Gmarket',sub:'쇼핑',href:'https://www.gmarket.co.kr',badge:'SHOP'},
+      {id:'b_shop_5',cat:'shop',title:'Auction',sub:'쇼핑',href:'https://www.auction.co.kr',badge:'SHOP'},
+      {id:'b_shop_6',cat:'shop',title:'SSG',sub:'쇼핑',href:'https://www.ssg.com',badge:'SHOP'},
+      {id:'b_shop_7',cat:'shop',title:'오늘의집',sub:'리빙',href:'https://www.todayhouse.com',badge:'SHOP'},
+      {id:'b_shop_8',cat:'shop',title:'Amazon',sub:'해외 쇼핑',href:'https://www.amazon.com',badge:'SHOP'},
+      {id:'b_shop_9',cat:'shop',title:'AliExpress',sub:'해외 쇼핑',href:'https://www.aliexpress.com',badge:'SHOP'},
+      {id:'b_shop_10',cat:'shop',title:'Temu',sub:'해외 쇼핑',href:'https://www.temu.com',badge:'SHOP'},
+
+      // community
+      {id:'b_comu_1',cat:'community',title:'FMKOREA',sub:'커뮤니티',href:'https://www.fmkorea.com',badge:'COMM'},
+      {id:'b_comu_2',cat:'community',title:'Clien',sub:'커뮤니티',href:'https://www.clien.net',badge:'COMM'},
+      {id:'b_comu_3',cat:'community',title:'Ppomppu',sub:'커뮤니티',href:'https://www.ppomppu.co.kr',badge:'COMM'},
+      {id:'b_comu_4',cat:'community',title:'Ruliweb',sub:'커뮤니티',href:'https://www.ruliweb.com',badge:'COMM'},
+      {id:'b_comu_5',cat:'community',title:'Inven',sub:'게임 커뮤니티',href:'https://www.inven.co.kr',badge:'COMM'},
+      {id:'b_comu_6',cat:'community',title:'DCInside',sub:'커뮤니티',href:'https://www.dcinside.com',badge:'COMM'},
+      {id:'b_comu_7',cat:'community',title:'Blind',sub:'직장인 커뮤니티',href:'https://www.blind.com',badge:'COMM'},
+      {id:'b_comu_8',cat:'community',title:'Reddit',sub:'글로벌 커뮤니티',href:'https://www.reddit.com',badge:'COMM'},
+      {id:'b_comu_9',cat:'community',title:'Quora',sub:'Q&A',href:'https://www.quora.com',badge:'COMM'},
+      {id:'b_comu_10',cat:'community',title:'키워드채팅',sub:'내 프로젝트 (URL 교체)',href:'https://example.com/keyword-chatting',badge:'ME'},
+
+      // dev
+      {id:'b_dev_1',cat:'dev',title:'GitHub',sub:'코드/프로젝트',href:'https://github.com',badge:'DEV'},
+      {id:'b_dev_2',cat:'dev',title:'Vercel',sub:'배포',href:'https://vercel.com',badge:'DEV'},
+      {id:'b_dev_3',cat:'dev',title:'Netlify',sub:'배포',href:'https://www.netlify.com',badge:'DEV'},
+      {id:'b_dev_4',cat:'dev',title:'Google Developers',sub:'문서',href:'https://developers.google.com',badge:'DEV'},
+      {id:'b_dev_5',cat:'dev',title:'Stack Overflow',sub:'Q&A',href:'https://stackoverflow.com',badge:'DEV'},
+      {id:'b_dev_6',cat:'dev',title:'CodePen',sub:'프론트 실험',href:'https://codepen.io',badge:'DEV'},
+      {id:'b_dev_7',cat:'dev',title:'Replit',sub:'코딩',href:'https://replit.com',badge:'DEV'},
+      {id:'b_dev_8',cat:'dev',title:'Postman',sub:'API 테스트',href:'https://www.postman.com',badge:'DEV'},
+      {id:'b_dev_9',cat:'dev',title:'Cloudflare',sub:'보안/CDN',href:'https://cloudflare.com',badge:'DEV'},
+      {id:'b_dev_10',cat:'dev',title:'Supabase',sub:'DB/Auth',href:'https://supabase.com',badge:'DEV'},
+
+      // util
+      {id:'b_util_1',cat:'util',title:'Google Translate',sub:'번역',href:'https://translate.google.com',badge:'UTIL'},
+      {id:'b_util_2',cat:'util',title:'Google Keep',sub:'메모',href:'https://keep.google.com',badge:'UTIL'},
+      {id:'b_util_3',cat:'util',title:'Google Calendar',sub:'일정',href:'https://calendar.google.com',badge:'UTIL'},
+      {id:'b_util_4',cat:'util',title:'Naver Map',sub:'지도',href:'https://map.naver.com',badge:'UTIL'},
+      {id:'b_util_5',cat:'util',title:'Kakao Map',sub:'지도',href:'https://map.kakao.com',badge:'UTIL'},
+      {id:'b_util_6',cat:'util',title:'Naver Weather',sub:'날씨',href:'https://weather.naver.com',badge:'UTIL'},
+      {id:'b_util_7',cat:'util',title:'Speedtest',sub:'인터넷 속도',href:'https://www.speedtest.net',badge:'UTIL'},
+      {id:'b_util_8',cat:'util',title:'Time & Date',sub:'시간/달력',href:'https://www.timeanddate.com',badge:'UTIL'},
+      {id:'b_util_9',cat:'util',title:'remove.bg',sub:'배경 제거',href:'https://www.remove.bg',badge:'UTIL'},
+      {id:'b_util_10',cat:'util',title:'Google Drive',sub:'드라이브',href:'https://drive.google.com',badge:'UTIL'},
+    ];
+
+    // ---------------------------
+    // DOM refs
+    // ---------------------------
     const themeToggle = document.getElementById('themeToggle');
     const themeLabel = document.getElementById('themeLabel');
+    const resetBtn = document.getElementById('resetBtn');
+    const resetOrderBtn = document.getElementById('resetOrderBtn');
+    const wipeBtn = document.getElementById('wipeBtn');
+    const addBtn = document.getElementById('addBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
 
+    const naverQ = document.getElementById('naverQ');
+    const googleQ = document.getElementById('googleQ');
+    const naverGo = document.getElementById('naverGo');
+    const googleGo = document.getElementById('googleGo');
+
+    const chips = Array.from(document.querySelectorAll('.chipbtn'));
+    const grid = document.getElementById('grid');
+    const favGrid = document.getElementById('favGrid');
+    const favScope = document.getElementById('favScope');
+
+    // Modal refs
+    const modalBack = document.getElementById('modalBack');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalClose = document.getElementById('modalClose');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    const linkFormArea = document.getElementById('linkFormArea');
+    const importArea = document.getElementById('importArea');
+    const importText = document.getElementById('importText');
+    const importCancelBtn = document.getElementById('importCancelBtn');
+    const applyImportBtn = document.getElementById('applyImportBtn');
+
+    const fCat = document.getElementById('fCat');
+    const fBadge = document.getElementById('fBadge');
+    const fTitle = document.getElementById('fTitle');
+    const fSub = document.getElementById('fSub');
+    const fHref = document.getElementById('fHref');
+
+    // ---------------------------
+    // State
+    // ---------------------------
+    let currentCat = 'all';
+    let editingId = null;
+
+    // ---------------------------
+    // Theme
+    // ---------------------------
     function applyTheme(theme){
       if(theme === 'dark'){
         document.documentElement.setAttribute('data-theme','dark');
@@ -619,13 +926,8 @@
     themeToggle.addEventListener('click', toggleTheme);
 
     // ---------------------------
-    // Two Search Bars
+    // Search
     // ---------------------------
-    const naverQ = document.getElementById('naverQ');
-    const googleQ = document.getElementById('googleQ');
-    const naverGo = document.getElementById('naverGo');
-    const googleGo = document.getElementById('googleGo');
-
     function openNaver(){
       const q = (naverQ.value || '').trim();
       if(!q) return;
@@ -642,123 +944,35 @@
     googleQ.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openGoogle(); });
 
     // ---------------------------
-    // Categories + counts + URL
+    // Favorites
     // ---------------------------
-    const resetBtn = document.getElementById('resetBtn');
-    const chips = Array.from(document.querySelectorAll('.chipbtn'));
-    const cards = Array.from(document.querySelectorAll('.card'));
-    const favGrid = document.getElementById('favGrid');
-    const favScope = document.getElementById('favScope');
-
-    let currentCat = 'all';
-
-    function setActiveChip(cat){
-      chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
-      currentCat = cat;
-      favScope.textContent = chipLabel(cat);
-      filterCards();
-      updateUrl();
-      renderFav();
-      syncStars();
+    function getFavData(){
+      return loadJSON(FAV_KEY, {});
     }
-
-    function chipLabel(cat){
-      const map = {
-        all:'전체', comm:'커뮤니케이션', prod:'생산성', media:'미디어', finance:'금융', ai:'AI',
-        news:'뉴스·리서치', shop:'쇼핑', community:'커뮤니티', dev:'개발·도구', util:'유틸리티'
-      };
-      return map[cat] || cat;
+    function setFavData(data){
+      saveJSON(FAV_KEY, data);
     }
-
-    function filterCards(){
-      cards.forEach(card => {
-        const cat = card.dataset.cat;
-        card.style.display = (currentCat === 'all' || cat === currentCat) ? 'flex' : 'none';
-      });
-      updateCounts();
-    }
-
-    function updateCounts(){
-      const cats = ['all','comm','prod','media','finance','ai','news','shop','community','dev','util'];
-      const counts = {};
-      cats.forEach(c => counts[c] = 0);
-
-      cards.forEach(card => {
-        const cat = card.dataset.cat;
-        counts['all'] += 1;
-        if(counts[cat] !== undefined) counts[cat] += 1;
-      });
-
-      cats.forEach(c => {
-        const el = document.querySelector(`[data-count="${c}"]`);
-        if(el) el.textContent = `(${counts[c]})`;
-      });
-    }
-
-    function updateUrl(){
-      const params = new URLSearchParams();
-      if(currentCat && currentCat !== 'all') params.set('cat', currentCat);
-      const newUrl = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-      history.replaceState(null, '', newUrl);
-    }
-
-    function readUrl(){
-      const params = new URLSearchParams(location.search);
-      const cat = params.get('cat') || 'all';
-      const exists = chips.some(c => c.dataset.cat === cat);
-      setActiveChip(exists ? cat : 'all');
-    }
-
-    function resetAll(){
-      naverQ.value = '';
-      googleQ.value = '';
-      setActiveChip('all');
-    }
-
-    chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
-    resetBtn.addEventListener('click', resetAll);
-    window.addEventListener('keydown', (e) => { if(e.key === 'Escape') resetAll(); });
-
-    // ---------------------------
-    // Favorites per category (LocalStorage)
-    // ---------------------------
-    const FAV_KEY = 'xbrand_favorites_v1';
-    const MAX_FAV = 5;
-
-    function loadFav(){
-      try{ return JSON.parse(localStorage.getItem(FAV_KEY) || '{}'); }
-      catch{ return {}; }
-    }
-    function saveFav(data){
-      localStorage.setItem(FAV_KEY, JSON.stringify(data));
-    }
-
     function getFavList(cat){
-      const data = loadFav();
+      const data = getFavData();
       return Array.isArray(data[cat]) ? data[cat] : [];
     }
-
     function setFavList(cat, list){
-      const data = loadFav();
+      const data = getFavData();
       data[cat] = list;
-      saveFav(data);
+      setFavData(data);
     }
-
     function isFav(cat, href){
       return getFavList(cat).some(x => x.href === href);
     }
-
     function toggleFav(cat, item){
-      // cat: currentCat 기준으로 저장 (all도 허용)
       const list = getFavList(cat);
       const idx = list.findIndex(x => x.href === item.href);
 
       if(idx >= 0){
         list.splice(idx, 1);
+        setFavList(cat, list);
       }else{
-        // prepend newest
         list.unshift(item);
-        // dedupe by href
         const seen = new Set();
         const deduped = [];
         for(const x of list){
@@ -768,22 +982,29 @@
         }
         while(deduped.length > MAX_FAV) deduped.pop();
         setFavList(cat, deduped);
-        renderFav();
-        syncStars();
-        return;
       }
-      setFavList(cat, list);
       renderFav();
       syncStars();
     }
-
     function removeFav(cat, href){
       const list = getFavList(cat).filter(x => x.href !== href);
       setFavList(cat, list);
       renderFav();
       syncStars();
     }
-
+    function persistFavOrderFromDOM(){
+      const cat = currentCat;
+      const ids = Array.from(favGrid.querySelectorAll('.favItem'))
+        .map(el => el.dataset.href)
+        .filter(Boolean);
+      const list = getFavList(cat);
+      const map = new Map(list.map(x => [x.href, x]));
+      const ordered = [];
+      ids.forEach(h => { if(map.has(h)) ordered.push(map.get(h)); });
+      // append any missing
+      list.forEach(x => { if(!ids.includes(x.href)) ordered.push(x); });
+      setFavList(cat, ordered);
+    }
     function renderFav(){
       const cat = currentCat;
       const list = getFavList(cat);
@@ -804,23 +1025,185 @@
       list.forEach(item => {
         const div = document.createElement('div');
         div.className = 'favItem';
+        div.setAttribute('draggable','true');
+        div.dataset.href = item.href;
         div.innerHTML = `
           <div class="favLeft">
             <a class="favLink" href="${item.href}" target="_blank" rel="noopener">${escapeHtml(item.title)}</a>
             <div class="favMeta">${escapeHtml(item.sub || '')}</div>
           </div>
-          <div class="favActions">
-            <button class="iconBtn danger" title="삭제">×</button>
-          </div>
+          <button class="iconBtn danger" title="삭제">×</button>
         `;
         div.querySelector('.iconBtn').addEventListener('click', () => removeFav(cat, item.href));
         favGrid.appendChild(div);
       });
+
+      enableFavDrag();
+    }
+    function enableFavDrag(){
+      const items = Array.from(favGrid.querySelectorAll('.favItem'));
+      let draggingEl = null;
+
+      items.forEach(el => {
+        el.addEventListener('dragstart', (e) => {
+          draggingEl = el;
+          el.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', el.dataset.href || '');
+        });
+
+        el.addEventListener('dragend', () => {
+          el.classList.remove('dragging');
+          items.forEach(x => x.classList.remove('dragover'));
+          draggingEl = null;
+          persistFavOrderFromDOM();
+        });
+
+        el.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if(!draggingEl || draggingEl === el) return;
+          el.classList.add('dragover');
+        });
+
+        el.addEventListener('dragleave', () => el.classList.remove('dragover'));
+
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          el.classList.remove('dragover');
+          if(!draggingEl || draggingEl === el) return;
+
+          const rect = el.getBoundingClientRect();
+          const after = (e.clientY - rect.top) > (rect.height / 2);
+
+          if(after) el.insertAdjacentElement('afterend', draggingEl);
+          else el.insertAdjacentElement('beforebegin', draggingEl);
+        });
+      });
+    }
+
+    // ---------------------------
+    // Custom links
+    // ---------------------------
+    function loadCustom(){
+      return loadJSON(CUSTOM_KEY, []);
+    }
+    function saveCustom(arr){
+      saveJSON(CUSTOM_KEY, arr);
+    }
+    function upsertCustom(item){
+      const arr = loadCustom();
+      const idx = arr.findIndex(x => x.id === item.id);
+      if(idx >= 0) arr[idx] = item;
+      else arr.unshift(item);
+      saveCustom(arr);
+    }
+    function deleteCustom(id){
+      const arr = loadCustom().filter(x => x.id !== id);
+      saveCustom(arr);
+    }
+
+    // ---------------------------
+    // Order per category
+    // ---------------------------
+    function getOrderData(){ return loadJSON(ORDER_KEY, {}); }
+    function setOrderData(data){ saveJSON(ORDER_KEY, data); }
+    function getOrder(cat){
+      const data = getOrderData();
+      return Array.isArray(data[cat]) ? data[cat] : null;
+    }
+    function setOrder(cat, ids){
+      const data = getOrderData();
+      data[cat] = ids;
+      setOrderData(data);
+    }
+    function clearOrder(cat){
+      const data = getOrderData();
+      delete data[cat];
+      setOrderData(data);
+    }
+
+    // ---------------------------
+    // Build items for category
+    // ---------------------------
+    function getItemsForCat(cat){
+      const custom = loadCustom().map(x => ({...x, custom:true}));
+      const all = BASE.map(x => ({...x, custom:false})).concat(custom);
+
+      let items = (cat === 'all') ? all : all.filter(x => x.cat === cat);
+
+      const order = getOrder(cat);
+      if(order && order.length){
+        const map = new Map(items.map(x => [x.id, x]));
+        const ordered = [];
+        order.forEach(id => { if(map.has(id)) ordered.push(map.get(id)); });
+        items.forEach(x => { if(!order.includes(x.id)) ordered.push(x); });
+        items = ordered;
+      }
+      return items;
+    }
+
+    // ---------------------------
+    // Render grid
+    // ---------------------------
+    function renderGrid(){
+      const items = getItemsForCat(currentCat);
+
+      grid.innerHTML = items.map(item => {
+        const menuHidden = item.custom ? '' : 'hidden';
+        const draggable = (currentCat === 'all') ? 'false' : 'true';
+        return `
+          <a class="card" href="${item.href}" target="_blank" rel="noopener"
+             data-id="${item.id}" data-cat="${item.cat}" draggable="${draggable}">
+            <div class="left">
+              <div class="title">${escapeHtml(item.title)}</div>
+              <div class="sub">${escapeHtml(item.sub || '')}</div>
+            </div>
+            <div class="badge">${escapeHtml(item.badge || '')}</div>
+            <div class="star" title="즐겨찾기">☆</div>
+            <div class="menu ${menuHidden}" title="내 링크 편집/삭제">⋯</div>
+          </a>
+        `;
+      }).join('');
+
+      attachCardHandlers();
+      syncStars();
+      updateCounts();
+    }
+
+    function attachCardHandlers(){
+      const cards = Array.from(grid.querySelectorAll('.card'));
+
+      cards.forEach(card => {
+        const star = card.querySelector('.star');
+        star.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const item = {
+            title: card.querySelector('.title')?.innerText || '즐겨찾기',
+            sub: card.querySelector('.sub')?.innerText || '',
+            href: card.getAttribute('href')
+          };
+          toggleFav(currentCat, item);
+        });
+
+        const menu = card.querySelector('.menu');
+        if(!menu.classList.contains('hidden')){
+          menu.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = card.dataset.id;
+            const item = loadCustom().find(x => x.id === id);
+            if(item) openLinkModal('edit', item);
+          });
+        }
+      });
+
+      if(currentCat !== 'all') enableCardDrag(cards);
     }
 
     function syncStars(){
-      // 현재 카테고리에서만 별 표시 동기화 (필요하면 all에도 적용 가능)
-      cards.forEach(card => {
+      const anchors = Array.from(grid.querySelectorAll('.card'));
+      anchors.forEach(card => {
         const star = card.querySelector('.star');
         if(!star) return;
         const href = card.getAttribute('href');
@@ -830,39 +1213,336 @@
       });
     }
 
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
+    function enableCardDrag(cards){
+      let draggingEl = null;
+
+      cards.forEach(el => {
+        el.addEventListener('dragstart', (e) => {
+          draggingEl = el;
+          el.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', el.dataset.id);
+        });
+
+        el.addEventListener('dragend', () => {
+          el.classList.remove('dragging');
+          cards.forEach(x => x.classList.remove('dragover'));
+          draggingEl = null;
+          persistOrderFromDOM();
+        });
+
+        el.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if(!draggingEl || draggingEl === el) return;
+          el.classList.add('dragover');
+        });
+
+        el.addEventListener('dragleave', () => el.classList.remove('dragover'));
+
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          el.classList.remove('dragover');
+          if(!draggingEl || draggingEl === el) return;
+
+          const rect = el.getBoundingClientRect();
+          const after = (e.clientY - rect.top) > (rect.height / 2);
+
+          if(after) el.insertAdjacentElement('afterend', draggingEl);
+          else el.insertAdjacentElement('beforebegin', draggingEl);
+        });
+      });
     }
 
-    // Attach star handlers (prevent link click)
-    cards.forEach(card => {
-      const star = card.querySelector('.star');
-      if(!star) return;
+    function persistOrderFromDOM(){
+      if(currentCat === 'all') return;
+      const ids = Array.from(grid.querySelectorAll('.card')).map(x => x.dataset.id);
+      setOrder(currentCat, ids);
+    }
 
-      star.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    // ---------------------------
+    // Counts
+    // ---------------------------
+    function updateCounts(){
+      const cats = ['all','comm','prod','media','finance','ai','news','shop','community','dev','util'];
+      const allItems = getItemsForCat('all');
+      const counts = {};
+      cats.forEach(c => counts[c] = 0);
 
-        const item = {
-          title: card.dataset.title || card.querySelector('.title')?.innerText || '즐겨찾기',
-          sub: card.dataset.sub || card.querySelector('.sub')?.innerText || '',
-          href: card.getAttribute('href')
-        };
-        toggleFav(currentCat, item);
+      allItems.forEach(item => {
+        counts['all'] += 1;
+        if(counts[item.cat] !== undefined) counts[item.cat] += 1;
       });
+
+      cats.forEach(c => {
+        const el = document.querySelector(`[data-count="${c}"]`);
+        if(el) el.textContent = `(${counts[c]})`;
+      });
+    }
+
+    // ---------------------------
+    // URL
+    // ---------------------------
+    function updateUrl(){
+      const params = new URLSearchParams();
+      if(currentCat !== 'all') params.set('cat', currentCat);
+      const newUrl = `${location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+      history.replaceState(null, '', newUrl);
+    }
+    function readUrl(){
+      const params = new URLSearchParams(location.search);
+      const cat = params.get('cat') || 'all';
+      const exists = chips.some(c => c.dataset.cat === cat);
+      setActiveChip(exists ? cat : 'all');
+    }
+
+    // ---------------------------
+    // Category switch
+    // ---------------------------
+    function setActiveChip(cat){
+      chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
+      currentCat = cat;
+      favScope.textContent = chipLabel(cat);
+      updateUrl();
+      renderGrid();
+      renderFav();
+    }
+    chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
+
+    // ---------------------------
+    // Buttons
+    // ---------------------------
+    function resetAll(){
+      naverQ.value = '';
+      googleQ.value = '';
+      setActiveChip('all');
+    }
+    resetBtn.addEventListener('click', resetAll);
+
+    resetOrderBtn.addEventListener('click', () => {
+      if(currentCat === 'all') return;
+      clearOrder(currentCat);
+      renderGrid();
     });
 
+    wipeBtn.addEventListener('click', () => {
+      localStorage.removeItem(FAV_KEY);
+      localStorage.removeItem(ORDER_KEY);
+      localStorage.removeItem(CUSTOM_KEY);
+      renderGrid();
+      renderFav();
+      syncStars();
+    });
+
+    addBtn.addEventListener('click', () => {
+      if(currentCat === 'all'){
+        openLinkModal('add', {cat:'comm',badge:'ME',title:'',sub:'',href:''});
+      }else{
+        openLinkModal('add', {cat:currentCat,badge:'ME',title:'',sub:'',href:''});
+      }
+    });
+
+    // ---------------------------
+    // Export / Import
+    // ---------------------------
+    exportBtn.addEventListener('click', () => {
+      const payload = {
+        v: 1,
+        exportedAt: new Date().toISOString(),
+        favorites: loadJSON(FAV_KEY, {}),
+        order: loadJSON(ORDER_KEY, {}),
+        customLinks: loadCustom(),
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dashboard-personalization.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    importBtn.addEventListener('click', () => {
+      openImportModal();
+    });
+
+    function openImportModal(){
+      modalBack.style.display = 'flex';
+      editingId = null;
+
+      // switch view
+      linkFormArea.style.display = 'none';
+      importArea.style.display = 'block';
+
+      modalTitle.textContent = '개인화 가져오기';
+      modalDesc.textContent = 'JSON을 붙여넣고 가져오기 적용을 누르세요.';
+      importText.value = '';
+    }
+
+    function applyImport(jsonText){
+      let obj;
+      try{
+        obj = JSON.parse(jsonText);
+      }catch{
+        alert('JSON 파싱 실패: 형식을 확인하세요.');
+        return false;
+      }
+      if(!obj || typeof obj !== 'object'){
+        alert('JSON 형식이 올바르지 않습니다.');
+        return false;
+      }
+
+      // Validate minimal shape
+      const favorites = obj.favorites ?? {};
+      const order = obj.order ?? {};
+      const customLinks = obj.customLinks ?? [];
+
+      if(typeof favorites !== 'object' || typeof order !== 'object' || !Array.isArray(customLinks)){
+        alert('JSON 구조가 올바르지 않습니다.');
+        return false;
+      }
+
+      // Soft sanitize URLs for custom links
+      const sanitizedCustom = customLinks
+        .filter(x => x && typeof x === 'object')
+        .map(x => ({
+          id: String(x.id || uid()),
+          cat: String(x.cat || 'comm'),
+          badge: String(x.badge || 'ME').slice(0,10),
+          title: String(x.title || '').slice(0,60),
+          sub: String(x.sub || '').slice(0,80),
+          href: safeUrl(String(x.href || '')) || 'https://example.com'
+        }));
+
+      saveJSON(FAV_KEY, favorites);
+      saveJSON(ORDER_KEY, order);
+      saveJSON(CUSTOM_KEY, sanitizedCustom);
+
+      return true;
+    }
+
+    applyImportBtn.addEventListener('click', () => {
+      const text = (importText.value || '').trim();
+      if(!text){ alert('JSON을 붙여넣으세요.'); return; }
+      if(!confirm('기존 개인화를 덮어쓰고 가져오겠습니까?')) return;
+
+      const ok = applyImport(text);
+      if(ok){
+        closeModal();
+        renderGrid();
+        renderFav();
+        syncStars();
+      }
+    });
+
+    importCancelBtn.addEventListener('click', () => closeModal());
+
+    // ---------------------------
+    // Modal (link add/edit)
+    // ---------------------------
+    function openLinkModal(mode, item){
+      modalBack.style.display = 'flex';
+
+      // switch view
+      linkFormArea.style.display = 'block';
+      importArea.style.display = 'none';
+
+      editingId = (mode === 'edit') ? item.id : null;
+
+      if(mode === 'edit'){
+        modalTitle.textContent = '내 링크 편집';
+        modalDesc.textContent = '이 링크는 브라우저에만 저장됩니다.';
+        deleteBtn.style.display = 'inline-flex';
+      }else{
+        modalTitle.textContent = '내 링크 추가';
+        modalDesc.textContent = '현재 선택된 카테고리에 저장됩니다.';
+        deleteBtn.style.display = 'none';
+      }
+
+      fCat.value = item.cat || 'comm';
+      fBadge.value = item.badge || 'ME';
+      fTitle.value = item.title || '';
+      fSub.value = item.sub || '';
+      fHref.value = item.href || '';
+
+      if(currentCat !== 'all') fCat.value = currentCat;
+    }
+
+    function closeModal(){
+      modalBack.style.display = 'none';
+      editingId = null;
+      fTitle.value = '';
+      fSub.value = '';
+      fHref.value = '';
+      fBadge.value = '';
+      // also reset import
+      importText.value = '';
+    }
+
+    function validateForm(){
+      const cat = fCat.value;
+      const badge = (fBadge.value || '').trim().slice(0,10);
+      const title = (fTitle.value || '').trim().slice(0,60);
+      const sub = (fSub.value || '').trim().slice(0,80);
+      const hrefRaw = (fHref.value || '').trim();
+
+      if(!title) return {ok:false, msg:'이름을 입력하세요.'};
+      const href = safeUrl(hrefRaw);
+      if(!href) return {ok:false, msg:'URL은 http/https 형식만 허용됩니다.'};
+
+      return {ok:true, data:{cat, badge, title, sub, href}};
+    }
+
+    saveBtn.addEventListener('click', () => {
+      const v = validateForm();
+      if(!v.ok){ alert(v.msg); return; }
+
+      const item = v.data;
+      if(editingId){
+        upsertCustom({id:editingId, ...item});
+      }else{
+        upsertCustom({id:uid(), ...item});
+      }
+
+      closeModal();
+      renderGrid();
+      updateCounts();
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      if(!editingId) return;
+      if(!confirm('이 내 링크를 삭제할까요?')) return;
+      deleteCustom(editingId);
+      closeModal();
+      renderGrid();
+      updateCounts();
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modalBack.addEventListener('click', (e) => {
+      if(e.target === modalBack) closeModal();
+    });
+
+    // ---------------------------
+    // Esc behavior
+    // ---------------------------
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){
+        if(modalBack.style.display === 'flex') closeModal();
+        else resetAll();
+      }
+    });
+
+    // ---------------------------
     // Init
+    // ---------------------------
     initTheme();
     readUrl();
-    filterCards();
     renderFav();
-    syncStars();
+    renderGrid();
   </script>
 </body>
 </html>
