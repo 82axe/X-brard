@@ -3,68 +3,339 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>북마크보다 빠른 시작 화면</title>
+  <title>나만의 시작 화면</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #ffffff;
-      margin: 0;
-      padding: 48px 24px;
-      color: #111;
+    :root{
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --hover:#f9fafb;
+      --chip:#f3f4f6;
+      --shadow: 0 10px 30px rgba(17,24,39,.06);
+      --radius:16px;
+      --max:980px;
     }
-    h1 {
-      font-size: 36px;
-      margin-bottom: 8px;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
     }
-    p {
-      color: #555;
-      margin-top: 0;
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:36px 20px 56px;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-      margin-top: 40px;
-      max-width: 900px;
+
+    /* Top */
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
     }
-    .card {
-      border: 1px solid #eee;
-      padding: 18px 12px;
-      border-radius: 14px;
-      text-align: center;
-      text-decoration: none;
-      color: #111;
-      font-weight: 500;
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
-    .card:hover {
-      background: #f7f7f7;
+    .brand h1{
+      font-size:34px;
+      letter-spacing:-0.02em;
+      margin:0;
+      line-height:1.1;
     }
-    footer {
-      margin-top: 80px;
-      font-size: 12px;
-      color: #888;
-      max-width: 900px;
+    .brand p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:4px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:var(--card);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:600;
+      font-size:13px;
+      cursor:pointer;
+    }
+    .btn:hover{background:var(--hover);}
+
+    /* Search */
+    .search{
+      margin-top:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background:var(--card);
+      box-shadow: var(--shadow);
+    }
+    .search .icon{
+      width:36px;height:36px;border-radius:12px;
+      background:var(--chip);
+      display:flex;align-items:center;justify-content:center;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .search input{
+      border:0;
+      outline:none;
+      width:100%;
+      font-size:15px;
+    }
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    /* Categories (UI only for now) */
+    .cats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:20px 0 12px;
+    }
+    .chip{
+      border:1px solid var(--line);
+      background:var(--chip);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+      color:#374151;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip:hover{background:#eef2f7;}
+    .chip.active{
+      background:#111827;
+      color:white;
+      border-color:#111827;
+    }
+
+    /* Grid */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap:14px;
+      margin-top:12px;
+    }
+    a.card{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 16px;
+      border-radius:var(--radius);
+      border:1px solid var(--line);
+      background:var(--card);
+      text-decoration:none;
+      color:var(--text);
+      box-shadow: 0 1px 0 rgba(17,24,39,.02);
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+    }
+    a.card:hover{
+      background:var(--hover);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(17,24,39,.08);
+    }
+    .left{
+      display:flex; flex-direction:column; gap:6px;
+      min-width:0;
+    }
+    .title{
+      font-weight:800;
+      letter-spacing:-0.01em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .badge{
+      flex:0 0 auto;
+      font-size:12px;
+      font-weight:800;
+      color:#111827;
+      background:var(--chip);
+      border:1px solid var(--line);
+      padding:8px 10px;
+      border-radius:12px;
+    }
+
+    /* Footer */
+    footer{
+      margin-top:34px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    @media (max-width:520px){
+      .brand h1{font-size:28px;}
+      .grid{grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));}
     }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <h1>북마크보다 빠른, 나만의 시작 화면</h1>
+        <p>로그인 없이 자주 쓰는 웹서비스를 한 곳에서. 설정은 브라우저에만 저장됩니다.</p>
+      </div>
+      <div class="right">
+        <button class="btn" type="button" onclick="alert('다음 단계에서: 카테고리/정렬/다크모드 추가합니다.')">커스텀</button>
+      </div>
+    </div>
 
-<h1>북마크보다 빠른, 나만의 시작 화면</h1>
-<p>로그인 없이 자주 쓰는 웹서비스를 한 곳에서.</p>
+    <div class="search">
+      <div class="icon">⌕</div>
+      <input id="q" placeholder="서비스 이름으로 검색 (예: Notion, Telegram, YouTube)" />
+      <button class="btn" type="button" onclick="document.getElementById('q').value=''; filterCards();">초기화</button>
+    </div>
+    <div class="hint">회원가입 없음 · 추적 없음 · 외부 서비스의 공식 링크만 제공합니다.</div>
 
-<div class="grid">
-  <a class="card" href="https://chat.openai.com" target="_blank">ChatGPT</a>
-  <a class="card" href="https://www.notion.so" target="_blank">Notion</a>
-  <a class="card" href="https://web.telegram.org" target="_blank">Telegram</a>
-  <a class="card" href="https://www.youtube.com" target="_blank">YouTube</a>
-  <a class="card" href="https://music.youtube.com" target="_blank">YouTube Music</a>
-  <a class="card" href="https://www.kakaocorp.com" target="_blank">Kakao</a>
-</div>
+    <div class="cats">
+      <div class="chip active" data-cat="all">전체</div>
+      <div class="chip" data-cat="comm">커뮤니케이션</div>
+      <div class="chip" data-cat="prod">생산성</div>
+      <div class="chip" data-cat="media">미디어</div>
+      <div class="chip" data-cat="finance">금융</div>
+      <div class="chip" data-cat="ai">AI</div>
+    </div>
 
-<footer>
-본 사이트는 외부 서비스의 공식 링크를 정리·제공하는 정보성 페이지이며,  
-각 서비스의 상표 및 운영 권한은 해당 회사에 귀속됩니다.
-</footer>
+    <div class="grid" id="grid">
+      <!-- AI -->
+      <a class="card" data-cat="ai" href="https://chat.openai.com" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">ChatGPT</div>
+          <div class="sub">대화형 AI 바로가기</div>
+        </div>
+        <div class="badge">AI</div>
+      </a>
 
+      <!-- Productivity -->
+      <a class="card" data-cat="prod" href="https://www.notion.so" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">Notion</div>
+          <div class="sub">문서 · 위키 · 업무</div>
+        </div>
+        <div class="badge">PRO</div>
+      </a>
+
+      <a class="card" data-cat="prod" href="https://mail.google.com" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">Gmail</div>
+          <div class="sub">메일</div>
+        </div>
+        <div class="badge">MAIL</div>
+      </a>
+
+      <!-- Communication -->
+      <a class="card" data-cat="comm" href="https://web.telegram.org" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">Telegram</div>
+          <div class="sub">메신저</div>
+        </div>
+        <div class="badge">MSG</div>
+      </a>
+
+      <a class="card" data-cat="comm" href="https://www.kakaocorp.com" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">Kakao</div>
+          <div class="sub">카카오 서비스</div>
+        </div>
+        <div class="badge">KOR</div>
+      </a>
+
+      <!-- Media -->
+      <a class="card" data-cat="media" href="https://www.youtube.com" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">YouTube</div>
+          <div class="sub">동영상</div>
+        </div>
+        <div class="badge">VID</div>
+      </a>
+
+      <a class="card" data-cat="media" href="https://music.youtube.com" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">YouTube Music</div>
+          <div class="sub">음악</div>
+        </div>
+        <div class="badge">MUS</div>
+      </a>
+
+      <!-- Finance (예시) -->
+      <a class="card" data-cat="finance" href="https://www.google.com/finance" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">Google Finance</div>
+          <div class="sub">시장 요약</div>
+        </div>
+        <div class="badge">FIN</div>
+      </a>
+
+      <a class="card" data-cat="finance" href="https://www.investing.com" target="_blank" rel="noopener">
+        <div class="left">
+          <div class="title">Investing</div>
+          <div class="sub">시장 데이터</div>
+        </div>
+        <div class="badge">FIN</div>
+      </a>
+    </div>
+
+    <footer>
+      본 사이트는 외부 서비스의 공식 링크를 정리·제공하는 정보성 페이지입니다. 각 서비스의 상표 및 운영 권한은 해당 회사에 귀속됩니다.<br/>
+      회원가입을 받지 않으며, 개인 설정은 사용자 브라우저(LocalStorage)에만 저장되는 방식으로 확장할 수 있습니다.
+    </footer>
+  </div>
+
+  <script>
+    const q = document.getElementById('q');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const cards = Array.from(document.querySelectorAll('.card'));
+    let currentCat = 'all';
+
+    function setActiveChip(cat){
+      chips.forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
+      currentCat = cat;
+      filterCards();
+    }
+
+    function filterCards(){
+      const keyword = (q.value || '').toLowerCase().trim();
+      cards.forEach(card => {
+        const cat = card.dataset.cat;
+        const text = card.innerText.toLowerCase();
+        const catOk = (currentCat === 'all') || (cat === currentCat);
+        const keyOk = (!keyword) || text.includes(keyword);
+        card.style.display = (catOk && keyOk) ? 'flex' : 'none';
+      });
+    }
+
+    chips.forEach(chip => chip.addEventListener('click', () => setActiveChip(chip.dataset.cat)));
+    q.addEventListener('input', filterCards);
+  </script>
 </body>
 </html>
